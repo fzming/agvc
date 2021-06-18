@@ -1,4 +1,4 @@
-﻿namespace IMCommunication.Robot.Protocol
+﻿namespace IMCommunication.Robot.Protocol.Core
 {
     public abstract class BaseQuery : Base
     {

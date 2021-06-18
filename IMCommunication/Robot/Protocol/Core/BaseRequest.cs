@@ -1,6 +1,6 @@
 ﻿using IMCommunication.Robot.Protocol.Request;
 
-namespace IMCommunication.Robot.Protocol
+namespace IMCommunication.Robot.Protocol.Core
 {
     public abstract class BaseRequest : Base
     {
@@ -14,7 +14,9 @@ namespace IMCommunication.Robot.Protocol
                 Log = log,
                 SN = base.SN
             };
-
+        /// <summary>
+        /// 机器人编号
+        /// </summary>
         public string MRID { get; set; }
     }
 }

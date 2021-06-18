@@ -1,4 +1,6 @@
-﻿namespace IMCommunication.Robot.Protocol.Mission
+﻿using IMCommunication.Robot.Protocol.Core;
+
+namespace IMCommunication.Robot.Protocol.Mission
 {
     public class Swap : BaseMission
     {

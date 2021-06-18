@@ -1,4 +1,6 @@
-﻿namespace IMCommunication.Robot.Protocol.Report
+﻿using IMCommunication.Robot.Protocol.Core;
+
+namespace IMCommunication.Robot.Protocol.Report
 {
     public class Response : Base
     {

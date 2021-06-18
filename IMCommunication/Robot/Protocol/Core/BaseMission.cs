@@ -1,6 +1,6 @@
 ﻿using IMCommunication.Robot.Protocol.Mission;
 
-namespace IMCommunication.Robot.Protocol
+namespace IMCommunication.Robot.Protocol.Core
 {
     public abstract class BaseMission : Base
     {
@@ -14,9 +14,13 @@ namespace IMCommunication.Robot.Protocol
                 Log = log,
                 SN = base.SN
             };
-
+        /// <summary>
+        /// 任務編號
+        /// </summary>
         public string MissionID { get; set; }
-
+        /// <summary>
+        /// 机器人编号
+        /// </summary>
         public string MRID { get; set; }
     }
 }

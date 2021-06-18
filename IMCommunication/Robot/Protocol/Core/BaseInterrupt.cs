@@ -1,6 +1,6 @@
 ﻿using IMCommunication.Robot.Protocol.Interrupt;
 
-namespace IMCommunication.Robot.Protocol
+namespace IMCommunication.Robot.Protocol.Core
 {
     public abstract class BaseInterrupt : Base
     {
@@ -14,7 +14,9 @@ namespace IMCommunication.Robot.Protocol
                 Log = log,
                 SN = base.SN
             };
-
+        /// <summary>
+        /// 機器人編號
+        /// </summary>
         public string MRID { get; set; }
     }
 }

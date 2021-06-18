@@ -1,4 +1,6 @@
-﻿namespace IMCommunication.Robot.Protocol.Request
+﻿using IMCommunication.Robot.Protocol.Core;
+
+namespace IMCommunication.Robot.Protocol.Request
 {
     public class ArmConfirm : BaseRequest
     {
