@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AgvcAgent": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
