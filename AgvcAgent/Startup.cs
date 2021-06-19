@@ -32,8 +32,9 @@ namespace AgvcAgent
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            
             app.UseMvc(s => {
-                s.MapRoute("default", "{controller}/{action}/{id?}", "test/index");
+                s.MapRoute("default", "{controller}/{action}/{id?}");
             });
             if (env.IsDevelopment())
             {
@@ -50,10 +51,10 @@ namespace AgvcAgent
             {
                 endpoints.MapControllers();
             });
-            app.Run(context =>
-            {
-                return context.Response.WriteAsync("Hello world");
-            });
+            // app.Run(context =>
+            // {
+            //     return context.Response.WriteAsync("Hello world");
+            // });
         }
     }
 }
