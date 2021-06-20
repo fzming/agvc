@@ -20,7 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MesCommunication\MesCommunication.csproj" />
+    <ProjectReference Include="..\IM\RobotFactory\RobotFactory.csproj" />
+    <ProjectReference Include="..\MES\Messages\Messages.csproj" />
   </ItemGroup>
 
 </Project>

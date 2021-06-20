@@ -1,6 +1,4 @@
-﻿using Protocol.Core;
-
-namespace Protocol.Query
+﻿namespace Protocol.Query
 {
     public class Echo : Base
     {

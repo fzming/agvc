@@ -1,6 +1,4 @@
-﻿using Protocol.Core;
-
-namespace Protocol.Interrupt
+﻿namespace Protocol.Interrupt
 {
     public class StopMove : BaseInterrupt
     {

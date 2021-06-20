@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Protocol.Core;
 
 namespace Protocol.Mission
 {

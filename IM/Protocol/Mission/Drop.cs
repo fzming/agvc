@@ -1,6 +1,4 @@
-﻿using Protocol.Core;
-
-namespace Protocol.Mission
+﻿namespace Protocol.Mission
 {
     /// <summary>
     /// 當機器人身上有 B001 時，命令機器人前往放貨				

@@ -1,6 +1,4 @@
-﻿using Protocol.Core;
-
-namespace Protocol.Mission
+﻿namespace Protocol.Mission
 {
     public class Swap : BaseMission
     {

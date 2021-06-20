@@ -1,6 +1,4 @@
-﻿using Protocol.Core;
-
-namespace Protocol.Report
+﻿namespace Protocol.Report
 {
     public class MissionFail : BaseReport
     {

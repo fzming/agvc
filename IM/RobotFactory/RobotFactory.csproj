@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AgvUtility\AgvcUtility.csproj" />
+    <ProjectReference Include="..\..\MES\Messages\Messages.csproj" />
+    <ProjectReference Include="..\Protocol\Protocol.csproj" />
+    <ProjectReference Include="..\RobotDefine\RobotDefine.csproj" />
+  </ItemGroup>
+
+</Project>

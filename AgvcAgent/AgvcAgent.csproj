@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IM\Protocol\Protocol.csproj" />
+    <ProjectReference Include="..\IM\RobotFactory\RobotFactory.csproj" />
   </ItemGroup>
 
   <ItemGroup>

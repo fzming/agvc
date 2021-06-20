@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Protocol.Core;
+using Protocol;
 using Protocol.Query;
+using RobotFactory;
 using Serialize;
 
 namespace AgvcAgent.Api
@@ -37,7 +38,7 @@ namespace AgvcAgent.Api
             object obj2 = json?.DeserializeJsonToObject();
             string str = obj2 switch
             {
-                BaseReport report => report.GetResponse(true).SerializeJSONObject(),
+                BaseReport report => IMReporter.OnReport(report).SerializeJSONObject(),
                 BaseRequest request => request.GetResponse(true, "Allways True").SerializeJSONObject(),
                 Echo echo => echo.GetResponse().SerializeJSONObject(),
                 _ => string.Empty
