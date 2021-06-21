@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Messages.Parser;
 using Microsoft.AspNetCore.Mvc;
 using Protocol;
 using Protocol.Query;
 using RobotFactory;
+using RobotFactory.Tasks;
 using Serialize;
 
 namespace AgvcAgent.Api
@@ -24,6 +26,17 @@ namespace AgvcAgent.Api
         {
             Console.WriteLine($"DateTime.Now={DateTime.Now}");
             return Task.FromResult("hello api from async task");
+        } 
+        [Route("tx501i")]
+        public string tx501i()
+        {
+            //測試任務
+            var mqMessage =
+                "TX501I                      001BL$WMS202                                        BL        N    A               LKXLJBT01 01        DJSLJBT01 01                            10105114601764                  ";
+
+            var message = MessageParser.Parse(mqMessage);
+            AgvcCenter.TaskEngine.TransferMessage(message);
+            return mqMessage;
         }
         /// <summary>
         /// 測試用，同意 iM 所有請求及回報。呼叫方式：http://localhost:5001/IMServer/AllwaysTrue?json= 
@@ -33,7 +46,7 @@ namespace AgvcAgent.Api
         [HttpGet, Route("AllwaysTrue")]
         public string AllwaysTrue([FromQuery] string json)
         {
-            Console.WriteLine(">>" + json);
+           // Console.WriteLine(">>" + json);
              
             object obj2 = json?.DeserializeJsonToObject();
             string str = obj2 switch
@@ -43,7 +56,7 @@ namespace AgvcAgent.Api
                 Echo echo => echo.GetResponse().SerializeJSONObject(),
                 _ => string.Empty
             };
-            Console.WriteLine("<< " + str);
+           // Console.WriteLine("<< " + str);
             return str;
         }
 

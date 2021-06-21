@@ -9,10 +9,14 @@ namespace AgvcAgent
 {
     class Program
     {
+        
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("[Begin Run]");
+            AgvcCenter.Run();
             CreateWebHostBuilder(args).Build().Run();
+            AgvcCenter.Stop();
+            Console.WriteLine("[End Run]");
         }
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration(builder =>

@@ -14,15 +14,18 @@ namespace RobotFactory
         public AutoResetEvent AutoResetEvent { get; set; }
         public BaseReport Report { get; set; }
         public bool Received { get; set; }
+        public DateTime CreateTime { get; set; }
+        public double Ms { get; set; }
     }
 
-    public class IMReporter
+    public static class IMReporter
     {
         private static List<ReportHanlder> reportHanlders = new List<ReportHanlder>();
         public static void Watch(ReportHanlder reportHanlder)
         {
+            reportHanlder.CreateTime = DateTime.Now;
+            
             reportHanlders.Add(reportHanlder);
-
         }
 
         public static void Remove(Type type, string missionId)
@@ -37,6 +40,7 @@ namespace RobotFactory
             if (handle != null)
             {
                 handle.Report = report;
+                handle.Ms = DateTime.Now.Subtract(handle.CreateTime).TotalMilliseconds;
                 handle.AutoResetEvent.Set();// 发送信号
                 received = handle.Received;
             }

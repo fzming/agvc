@@ -1,6 +1,6 @@
 ﻿namespace AgvcAgent
 {
-    public class TimedExecutServiceSettings
+    public class TimedExecuteServiceSettings
     {
         public int CheckUpdateTime { get; set; }
     }

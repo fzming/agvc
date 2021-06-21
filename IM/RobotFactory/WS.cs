@@ -1,8 +1,11 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+
 using Protocol;
 using Protocol.Query;
+
 using Serialize;
 
 namespace RobotFactory
@@ -21,10 +24,19 @@ namespace RobotFactory
             var json = query.SerializeJSONObject();
             using (WebClient client = new WebClient())
             {
-                byte[] bytes = client.DownloadData(header + json);
-                char[] trimChars = new char[] { '"' };
-                string str = Encoding.ASCII.GetString(bytes).Trim(trimChars).Replace("\\\"", "\"");
-                return str.DeserializeJsonToObject() as T;
+                try
+                {
+                    byte[] bytes = client.DownloadData(header + json);
+                    char[] trimChars = new char[] { '"' };
+                    string str = Encoding.ASCII.GetString(bytes).Trim(trimChars).Replace("\\\"", "\"");
+                    return str.DeserializeJsonToObject() as T;
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception.Message);
+                    return default;
+                }
+
             }
 
         }
@@ -39,10 +51,18 @@ namespace RobotFactory
             var json = query.SerializeJSONObject();
             using (WebClient client = new WebClient())
             {
-                byte[] bytes = await client.DownloadDataTaskAsync(header + json);
-                char[] trimChars = new char[] { '"' };
-                string str = Encoding.ASCII.GetString(bytes).Trim(trimChars).Replace("\\\"", "\"");
-                return str.DeserializeJsonToObject() as T;
+                try
+                {
+                    byte[] bytes = await client.DownloadDataTaskAsync(header + json);
+                    char[] trimChars = new char[] { '"' };
+                    string str = Encoding.ASCII.GetString(bytes).Trim(trimChars).Replace("\\\"", "\"");
+                    return str.DeserializeJsonToObject() as T;
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception.Message);
+                    return default;
+                }
             }
 
         }

@@ -6,12 +6,12 @@ using Microsoft.Extensions.Options;
 
 namespace AgvcAgent
 {
-    public class TimedExecutService : BackgroundService
+    public class TimedExecuteService : BackgroundService
     {
-        private readonly ILogger<TimedExecutService> _logger;
-        private readonly TimedExecutServiceSettings _settings;
+        private readonly ILogger<TimedExecuteService> _logger;
+        private readonly TimedExecuteServiceSettings _settings;
 
-        public TimedExecutService(IOptions<TimedExecutServiceSettings> settings, ILogger<TimedExecutService> logger)
+        public TimedExecuteService(IOptions<TimedExecuteServiceSettings> settings, ILogger<TimedExecuteService> logger)
         {
             //Constructor’s parameters validations   
             _settings = settings.Value;

@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
 using AgvUtility;
+
 using RobotDefine;
 
 namespace RobotFactory
@@ -18,8 +22,7 @@ namespace RobotFactory
             statusWatcher = new RobotStatusWatcher();
             statusWatcher.MrStatusReceived += StatusWatcher_MrStatusReceived;
         }
-
-        public static List<VirtualRobot> VirtualRobots { get; set; } = new List<VirtualRobot>();
+        private static List<VirtualRobot> VirtualRobots { get; set; } = new List<VirtualRobot>();
 
         public static VirtualRobot FindRobot(string MRID)
         {
@@ -29,15 +32,23 @@ namespace RobotFactory
         public static VirtualRobot FindIdleRobot()
         {
             var idleRobot = VirtualRobots.FirstOrDefault(p =>
-                p.TaskCount == 0 && (
-                    p.MRStatus.IOperatorStatus == IOperatorStatus.Idle ||
-                    p.MRStatus.MissionStatus == MissionStatus.Standby));
-            if (idleRobot == null)
-            {
-                TryRefreshMRStatus();
-            }
-
+                p.TaskCount == 0 && p.IsIdle());
             return idleRobot;
+        }
+        public static Task<VirtualRobot> FindIdleRobotAsync()
+        {
+            return Task.Run(() =>
+          {
+              var idleRobot = VirtualRobots.FirstOrDefault(p =>
+                  p.TaskCount == 0 && p.IsIdle());
+              if (idleRobot == null)
+              {
+                  TryRefreshMRStatus();
+              }
+
+              return idleRobot;
+          });
+
         }
         /// <summary>
         /// 尝试刷新所有机器状态
@@ -85,8 +96,10 @@ namespace RobotFactory
 
         private static void StatusWatcher_MrStatusReceived(object sender, MrStatusEventArg e)
         {
+            // Console.WriteLine("[StatusWatcher_MrStatusReceived]");
+            // Console.WriteLine(e.MrStatus.ToJson());
             var robot = FindRobot(e.MrStatus.MRID);
-            if (robot != null) robot.MRStatus = e.MrStatus;
+            robot?.OnMRStatusChange(e.MrStatus);
         }
 
         public static void Dispose()
@@ -98,8 +111,18 @@ namespace RobotFactory
         {
             if (FindRobot(virtualRobot.MRStatus.MRID) == null)
             {
+                virtualRobot.OnMrRequestStatusRefresh += (sender, e) =>
+                {
+                    TryRefreshMRStatus(e.MRID);
+                };
                 VirtualRobots.Add(virtualRobot);
             }
+        }
+
+
+        public static IEnumerable<VirtualRobot> GetAllVirtualRobots()
+        {
+            return VirtualRobots;
         }
     }
 }

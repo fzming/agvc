@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AgvcUtility;
 using AgvUtility;
 using Messages.Transfers.Core;
-using Microsoft.VisualBasic;
 using Protocol;
-using Protocol.Mission;
-using RobotDefine;
-
-namespace RobotFactory
+namespace RobotFactory.Tasks
 {
     public enum RobotTaskType
     {
@@ -51,8 +45,6 @@ namespace RobotFactory
     }
     public abstract class RobotTask : IRobotTask
     {
-        private AutoResetEvent _waitHandle;
-
         /// <summary>
         ///  任务ID
         /// </summary>
@@ -74,7 +66,10 @@ namespace RobotFactory
         public void Run(VirtualRobot virtualRobot)
         {
             this.VirtualRobot = virtualRobot;
+            virtualRobot.OnMission(true);
             this.OnRun();
+
+            virtualRobot.OnMission(false);
 
         }
 
@@ -85,57 +80,42 @@ namespace RobotFactory
         /// <typeparam name="T"></typeparam>
         /// <param name="recvFunc"></param>
         /// <param name="timeout">超時時間(MS)</param>
-        protected void WaitReport<T>(Func<T, bool> recvFunc, int timeout = 5000) where T : BaseReport
+        protected void WaitReport<T>(Func<T, bool> recvFunc, int timeout = 50000) where T : BaseReport
         {
-            _waitHandle = new AutoResetEvent(false);
+            var _waitHandle = new AutoResetEvent(false);
             var reportTask = new ReportHanlder
             {
                 MissionId = Id,
                 Type = typeof(T),
                 AutoResetEvent = _waitHandle,
             };
-            IMReporter.Watch(reportTask);
-            ThreadPool.QueueUserWorkItem(new WaitCallback(WorkMethod), _waitHandle);
-            if (_waitHandle.WaitOne(timeout, false))
+            AsyncHelper.RunSync(() =>
             {
-                Console.WriteLine("Work method signaled.");
+                return Task.Run(() =>
+                {
+                    IMReporter.Watch(reportTask);
+                    Console.WriteLine($"[期待IM汇报]{typeof(T).Name} 最大超时设定:{timeout}ms");
+                    _waitHandle.WaitOne(TimeSpan.FromMilliseconds(timeout)); //挂起綫程等待
+                    
+                    if (reportTask.Report!=null)
+                    {  
+                        Console.WriteLine($"[收到IM汇报]{typeof(T).Name}  耗时：{reportTask.Ms} ms");
+                        var received = recvFunc(reportTask.Report as T);
+                        reportTask.Received = received;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[IM汇报已超时]{typeof(T).FullName}");
+                    }
+                    
 
-            }
-            else
-            {
-                Console.WriteLine("Timed out waiting for work " + "method to signal.");
-
-            }
-            // AsyncHelper.RunSync(() =>
-            //     {
-            //         return Task.Run(() =>
-            //         {
-            //             _waitHandle.WaitOne(); //挂起綫程等待
-            //             var received = recvFunc(reportTask.Report as T);
-            //             reportTask.Received = received;
-            //
-            //         }).TimeoutAfter(TimeSpan.FromMilliseconds(timeout)); //超時退出
-            //
-            //     });
-
-            IMReporter.Remove(typeof(T),Id);
+                });
+            });
+            
+            IMReporter.Remove(typeof(T), Id);
 
         }
 
-        private void WorkMethod(object stateInfo)
-        {
-            Console.WriteLine("Work starting.");
-
-            // Simulate time spent working.
-
-            Thread.Sleep(new Random().Next(100, 2000));
-
-            // Signal that work is finished.
-
-            Console.WriteLine("Work ending.");
-
-            ((AutoResetEvent)stateInfo).Set();
-        }
 
         /// <summary>
         /// 發送Mission
@@ -145,7 +125,11 @@ namespace RobotFactory
         {
             mission.MRID = MRID;
             mission.MissionID = Id;
-            return WS.Dispatch<Protocol.BaseMission.Response>(mission);
+
+            return AsyncHelper.RunSync(() =>
+            {
+               return WS.DispatchAsync<Protocol.BaseMission.Response>(mission);
+            });
         }
 
     }

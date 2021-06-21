@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-using AgvUtility;
+﻿using AgvUtility;
 using Messages.Transfers;
-using Messages.Transfers.Core;
 using Protocol.Mission;
-using Protocol.Query;
 using Protocol.Report;
 
-
-namespace RobotFactory
+namespace RobotFactory.Tasks
 {
     /// <summary>
     /// 执行搬运单条指令(Stock To EQP)
@@ -33,17 +29,17 @@ namespace RobotFactory
             //3.Arrived
             WaitReport<Arrived>(arrived =>
             {
-                return true;
+                return true;//ack
             });
             //4.Transfer End
             WaitReport<TransportEnd>(transportEnd =>
             {
-                return true;
+                return true;//ack
             });
             //5.Pick MissionDone
-            WaitReport<MissionDone>(transportEnd =>
+            WaitReport<MissionDone>(missionDone =>
             {
-                return true;
+                return true;//ack
             });
 
         }
