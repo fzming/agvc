@@ -6,7 +6,6 @@ using AgvUtility;
 using Protocol;
 using Protocol.Mission;
 using Protocol.Query;
-
 using Serialize;
 using MRStatus = RobotDefine.MRStatus;
 
