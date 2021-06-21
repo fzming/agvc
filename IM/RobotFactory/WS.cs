@@ -67,7 +67,11 @@ namespace RobotFactory
             }
 
         }
-
+        /// <summary>
+        /// 取得線上機器人狀態	
+        /// </summary>
+        /// <param name="mrid"></param>
+        /// <returns></returns>
         public static MRStatus GetMRStatus(string mrid)
         {
             var response = Dispatch<Protocol.Query.MRStatus.Response>(new Protocol.Query.MRStatus
