@@ -28,14 +28,14 @@ namespace AgvcAgent.Api
             return Task.FromResult("hello api from async task");
         } 
         [Route("tx501i")]
-        public string tx501i()
+        public string tx501i(string mrid)
         {
             //測試任務
             var mqMessage =
                 "TX501I                      001BL$WMS202                                        BL        N    A               LKXLJBT01 01        DJSLJBT01 01                            10105114601764                  ";
 
             var message = MessageParser.Parse(mqMessage);
-            AgvcCenter.TaskEngine.TransferMessage(message);
+            AgvcCenter.TaskEngine.TransferMessage(message, mrid);
             return mqMessage;
         }
         /// <summary>

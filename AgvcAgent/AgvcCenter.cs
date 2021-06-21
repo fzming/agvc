@@ -20,7 +20,7 @@ namespace AgvcAgent
             var mrList = VirtualRobotManager.ReadMrListFromIm();
             if (mrList.Any())
             {
-                mrList.ForEach(mrid =>
+                mrList.ToList().ForEach(mrid =>
                 {
                     VirtualRobotManager.AddVirtualRobot(new VirtualRobot
                     {

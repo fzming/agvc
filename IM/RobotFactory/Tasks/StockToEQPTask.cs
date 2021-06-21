@@ -17,7 +17,7 @@ namespace RobotFactory.Tasks
         {
             var trx = TransferRequestMessage as Tx501i;
             //1.MrStatus
-            VirtualRobot.UpdateStatus(); 
+            VirtualRobot.RequestUpdateStatusAsync(); 
             //2.Pick
             SendMission(new Pick
             {

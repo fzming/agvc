@@ -29,26 +29,24 @@ namespace RobotFactory
             return VirtualRobots.FirstOrDefault(p => p?.MRStatus.MRID == MRID);
         }
 
-        public static VirtualRobot FindIdleRobot()
+        public static IEnumerable<VirtualRobot> FindIdleRobots()
         {
-            var idleRobot = VirtualRobots.FirstOrDefault(p =>
-                p.TaskCount == 0 && p.IsIdle());
-            return idleRobot;
-        }
-        public static Task<VirtualRobot> FindIdleRobotAsync()
-        {
-            return Task.Run(() =>
-          {
-              var idleRobot = VirtualRobots.FirstOrDefault(p =>
-                  p.TaskCount == 0 && p.IsIdle());
-              if (idleRobot == null)
-              {
-                  TryRefreshMRStatus();
-              }
-
-              return idleRobot;
-          });
-
+            var idleRobots = new List<VirtualRobot>();
+            Console.WriteLine($"-----------------FindIdleRobots-------------------");
+            VirtualRobots.ForEach(robot =>
+            {
+                Console.WriteLine($"-[{robot.MRStatus.MRID}] TaskCount:{robot.TaskCount} Idle:{robot.IsIdle()} Working:{robot.Working}");
+                if (robot.IsIdle())
+                {
+                    if(!robot.Working) idleRobots.Add(robot);
+                }
+                else
+                {
+                    TryRefreshMRStatus(robot.MRStatus.MRID);
+                }
+            });
+            Console.WriteLine($"------------------------------------------------");
+            return idleRobots;
         }
         /// <summary>
         /// 尝试刷新所有机器状态
@@ -75,16 +73,21 @@ namespace RobotFactory
             {
                 MRID = MRID
             }));
-            var mrStatus = response.MRStatus;
+            var mrStatus = response?.MRStatus;
+            if (mrStatus == null)
+            {
+                return null;
+            }
             var robot = FindRobot(mrStatus.MRID);
             if (robot != null) robot.MRStatus = mrStatus;
             return mrStatus;
         }
 
-        public static List<string> ReadMrListFromIm()
+        public static IEnumerable<string> ReadMrListFromIm()
         {
             var response = AsyncHelper.RunSync(() => WS.DispatchAsync<Protocol.Query.MRList.Response>(new Protocol.Query.MRList()));
-            return response.MRIDs;
+
+            return response?.MRIDs ?? Enumerable.Empty<string>();
         }
         /// <summary>
         /// 尝试机器状态数据

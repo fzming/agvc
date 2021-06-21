@@ -11,12 +11,11 @@ namespace AgvcAgent
     {
         
         static void Main(string[] args)
-        {
-            Console.WriteLine("[Begin Run]");
+        { 
             AgvcCenter.Run();
-            CreateWebHostBuilder(args).Build().Run();
-            AgvcCenter.Stop();
-            Console.WriteLine("[End Run]");
+           CreateWebHostBuilder(args).Build().Run();
+           AgvcCenter.Stop();
+          
         }
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration(builder =>

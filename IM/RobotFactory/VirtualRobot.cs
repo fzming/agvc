@@ -25,8 +25,8 @@ namespace RobotFactory
         /// <summary>
         /// 当前電池電量百分比（充电前）,充电停止后会自动更新此电量
         /// </summary>
-        public double Battery { get; set; }
-
+        public double BeforeDockBattery { get; set; }
+        public bool Docking { get; set; }
         #region 任务
 
         /// <summary>
@@ -38,22 +38,49 @@ namespace RobotFactory
         public int TaskCount => _tasks.Count;
         private object syncRoot = new object();
         private AutoResetEvent _waitHandle = new AutoResetEvent(false);
-
-        public void AddTask(IRobotTask task)
+        /// <summary>
+        /// 正处于任务执行状态
+        /// </summary>
+        public bool Working { get; set; }
+        /// <summary>
+        /// 将任务直接加入队列并等待执行
+        /// </summary>
+        /// <param name="task"></param>
+        private void AddTaskInQueque(IRobotTask task)
         {
-            lock (syncRoot)
+
+            Console.WriteLine($"[{MRStatus.MRID}] 添加了新任务->TaskId:{task.Id} TaskCount:{TaskCount} ");
+            _tasks.Enqueue(task);
+            if (_watchThread == null) //启动任务线程
             {
-                _tasks.Enqueue(task);
-                if (_tasks.Count > 0 && _watchThread == null) //启动任务线程
-                {
-                    _cancelTokenSource = new CancellationTokenSource();
-                    _watchThread = new Thread(TaskWorkerThread) { IsBackground = true };
-                    _watchThread.Start();
-                }
+                _cancelTokenSource = new CancellationTokenSource();
+                _watchThread = new Thread(TaskWorkerThread) { IsBackground = true };
+                _watchThread.Start();
             }
-            _waitHandle.Set(); // Signal to the thread there is data to process
+
+            if (!Working)
+            {
+                Console.WriteLine($"尝试取消{MRStatus.MRID}阻塞状态");
+                _waitHandle.Set(); //取消阻塞
+            }
 
         }
+        public void AddTask(IRobotTask task)
+        {
+            if (string.IsNullOrEmpty(task.MRID))
+            {
+                lock (syncRoot)
+                {
+                    //锁住，当MR正在做任务时，不允许新的任务加入。
+                    AddTaskInQueque(task);
+                }
+            }
+            else
+            {
+                AddTaskInQueque(task);
+            }
+        }
+
         /// <summary>执行与释放或重置非托管资源相关的应用程序定义的任务。</summary>
         public void Dispose()
         {
@@ -77,21 +104,43 @@ namespace RobotFactory
                 var rollUpdateStatus = false;
                 lock (syncRoot) //锁住防止新的Task被加入
                 {
-                    if (_tasks.Count > 0)
+                    if (!Working && _tasks.Count > 0) //只有在非工作状态标记下才执行
                     {
-                        if (!IsVirtualRobotCanWork(_tasks.First()))
+                        if (!IsRobotReadyWork(_tasks.First()))
                         {
-                            Console.WriteLine($"[当前Robot正忙({MRStatus.MRID})] Execute:UpdateStatus");
-                            //VirtualRobot状态此时不适合做任务，那么开启状态轮询线程，直到状态检查被通过。
-                            UpdateStatus(); //刷新状态
-                            rollUpdateStatus = true;//开启轮询
+                            //不适合做任务的原因================
+                            //1.电量不足
+                            //2.不处于空闲状态
+                            //3.当前任务因素
+                            //================================
+                            RequestUpdateStatusAsync();
+
+                            Console.WriteLine($"[{MRStatus.MRID}]开启状态轮询");
+
+                            rollUpdateStatus = true;//开启状态轮询
                         }
-                        else
+                        else //注意：下列代码将长时间运行，会导致SyncRoot被长期占用
                         {
-                            task = _tasks.Dequeue(); //任務出列
-                            Console.WriteLine($"[{MRStatus.MRID}：开始任务->{task.Id}]");
-                            task.Run(this); //運行任務
-                            Console.WriteLine($"[{MRStatus.MRID}：结束任务->{task.Id}]");
+                            try
+                            {
+                                SetWorkingStatus(true);
+                                task = _tasks.Dequeue(); //任務出列
+                                Console.WriteLine($"[{MRStatus.MRID}：开始任务->{task.Id}] 剩余任务数：{_tasks.Count}");
+                                task.Run(this); //運行任務
+                                Console.WriteLine($"[{MRStatus.MRID}：结束任务->{task.Id}]");
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                throw;
+                            }
+                            finally
+                            {
+                                SetWorkingStatus(false);
+                                //任务执行完毕后，需要更新MR状态
+                                RequestUpdateStatusSync();
+                            }
+
                         }
                     }
                 }
@@ -99,10 +148,12 @@ namespace RobotFactory
                 if ((task != null || rollUpdateStatus) && _tasks.Count > 0)
                 {
                     //Thread.Sleep(300);
-                    Thread.Sleep(rollUpdateStatus?5000:100); //轮询为5秒一次
+                    Thread.Sleep(rollUpdateStatus ? 5000 : 100); //轮询为5秒一次
                 }
                 else
                 {
+                    Console.WriteLine($"[{MRStatus.MRID}] 阻塞");
+                    SetWorkingStatus(false);
                     _waitHandle.WaitOne();
                 }
 
@@ -113,34 +164,59 @@ namespace RobotFactory
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        private bool IsVirtualRobotCanWork(IRobotTask task)
+        private bool IsRobotReadyWork(IRobotTask task)
         {
-            if (MRStatus.Battery < 30) //电池规则检查
+            if (MRStatus.IOperatorStatus == IOperatorStatus.Docked) //当前正在充电
             {
+                return CheckBattery();//仅检查充电是否可以完毕
+            }
+            return CheckBattery() && IsIdle();
+        }
+        /// <summary>
+        /// 检查电池电量
+        /// </summary>
+        private bool CheckBattery()
+        {
+            if (MRStatus.Battery < 55) //电池规则检查
+            {
+                Console.WriteLine($"[CheckBattery]{MRStatus.MRID} Battery:{MRStatus.Battery}");
+                //命令MR去充电
+                if (!Docking && MRStatus.IOperatorStatus != IOperatorStatus.Docked)
+                {
+                    Console.WriteLine("命令MR去充电");
+                    this.BeforeDockBattery = MRStatus.Battery;
+                    this.Docking = WS.SendDockMission(MRStatus.MRID);
+                    Console.WriteLine($"[DockingBattery]{MRStatus.MRID} Dock:{this.Docking}");
+                }
+
                 return false;
             }
-
-            return IsIdle();
+            //todo:有充足电量，但是充电前电量是否达标
+            this.Docking = false;
+            return true;
         }
+
+
 
         #endregion
 
-        public void UpdateStatus()
+        public void RequestUpdateStatusAsync()
         {
+            Console.WriteLine($"[{MRStatus.MRID} Request RequestUpdateStatusAsync]");
             OnMrRequestStatusRefresh?.Invoke(this, new MrIdArg
             {
                 MRID = MRStatus.MRID
             });
         }
-
-        public void OnMission(bool mission)
+        public void RequestUpdateStatusSync()
         {
-            MRStatus.IOperatorStatus = mission ? IOperatorStatus.Busy : IOperatorStatus.Idle;
-            MRStatus.MissionStatus = mission ? MissionStatus.OnMission : MissionStatus.Standby;
-            if (!mission)
-            {
-                UpdateStatus();
-            }
+            OnMRStatusChange(WS.GetMRStatus(MRStatus.MRID));
+        }
+        public void SetWorkingStatus(bool working)
+        {
+            this.Working = working;
+            MRStatus.IOperatorStatus = working ? IOperatorStatus.Busy : IOperatorStatus.Idle;
+            MRStatus.MissionStatus = working ? MissionStatus.OnMission : MissionStatus.Standby;
         }
         /// <summary>
         /// 当更新最新的MRStatus事件
@@ -148,11 +224,8 @@ namespace RobotFactory
         /// <param name="eMrStatus"></param>
         public void OnMRStatusChange(MRStatus eMrStatus)
         {
-            this.MRStatus = eMrStatus;
-            if (this.TaskCount > 0) //当前还有任务。继续执行
-            {
-                _waitHandle.Set(); // Signal to the thread there is data to process
-            }
+            if (eMrStatus != null)
+                this.MRStatus = eMrStatus;
         }
         /// <summary>
         /// 是否处于空闲状态
@@ -160,7 +233,7 @@ namespace RobotFactory
         /// <returns></returns>
         public bool IsIdle()
         {
-            return  MRStatus.IOperatorStatus == IOperatorStatus.Idle && MRStatus.MissionStatus == MissionStatus.Standby;
+            return MRStatus.IOperatorStatus == IOperatorStatus.Idle && MRStatus.MissionStatus == MissionStatus.Standby;
         }
     }
 }

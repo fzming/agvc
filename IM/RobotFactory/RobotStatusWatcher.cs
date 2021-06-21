@@ -47,6 +47,7 @@ namespace RobotFactory
             }
 
         }
+        
         private void QueueWatchThread()
         {
             while (!_cancelTokenSource.IsCancellationRequested)
@@ -60,15 +61,12 @@ namespace RobotFactory
                         mrid = queue.Dequeue();
                         //调用IM WS 更新MR状态
                        // Console.WriteLine($"[StatusWatcher->调用IM WS 更新MR({mrid})状态]");
-                        var response = WS.Dispatch<Protocol.Query.MRStatus.Response>(new Protocol.Query.MRStatus
-                        {
-                            MRID = mrid
-                        });
-                        if (response!=null)
+                        var mrStatus = WS.GetMRStatus(mrid);
+                        if (mrStatus!=null)
                         {
                             MrStatusReceived?.Invoke(this, new MrStatusEventArg
                             {
-                                MrStatus = response.MRStatus
+                                MrStatus = mrStatus
                             });
                         }
                         

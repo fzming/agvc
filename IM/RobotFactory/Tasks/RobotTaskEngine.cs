@@ -33,28 +33,40 @@ namespace RobotFactory.Tasks
         /// 任务队列
         /// </summary>
         public Queue<IRobotTask> TaskQueue { get; set; } = new();
+
         /// <summary>
         /// 传输MES消息 Transfer Request
         /// </summary>
         /// <param name="message"></param>
-        public void TransferMessage(IMessage message)
+        /// <param name="MRID">指定MR任务</param>
+        public void TransferMessage(IMessage message, string MRID)
         {
 
             if (message is Tx501i tx501I) // Transfer Request
             {
 
                 var robotTask = CreateRobotTask(GetTaskTypeFromMessage(tx501I));
+                robotTask.MRID = MRID;
                 robotTask.TransferRequestMessage = message;
 
-                //将任务加入到队列
-                TaskQueue.Enqueue(robotTask);
-
-                _waitHandle.Set(); // Signal to the thread there is data to process
-
+                AddTask(robotTask);
 
 
             }
         }
+
+        private void AddTask(IRobotTask robotTask)
+        {
+            lock (syncRoot)
+            {
+                //将任务加入到队列
+                TaskQueue.Enqueue(robotTask);
+                Console.WriteLine($"New Task:{TaskQueue.Count} ID:{robotTask.Id}");
+                _waitHandle.Set(); // Signal to the thread there is data to process
+            }
+
+        }
+
         #region IDisposable
 
 
@@ -102,26 +114,38 @@ namespace RobotFactory.Tasks
                 {
                     if (TaskQueue.Count > 0)
                     {
-                        //查找空闲可执行任务的机器人
-                        var robot = VirtualRobotManager.FindIdleRobot();
+                       
+                        //bug:无法正确获取MR的正确工作状态，导致每次查找出来的MR都是空闲的。 这里有BUG,每次都是MR01
+                        var forDequeueTask = TaskQueue.First();
+                        VirtualRobot idleRobot;
+                        if (!string.IsNullOrEmpty(forDequeueTask.MRID)) //如果是指定了MRID
+                        {
+                            idleRobot = VirtualRobotManager.FindRobot(forDequeueTask.MRID);
+                        }
+                        else  //查找空闲可执行任务的机器人
+                        {
+                            var idleRobots = VirtualRobotManager.FindIdleRobots();
+                            idleRobot = idleRobots.FirstOrDefault();
+                        }
 
-                        if (robot != null)
+                        Console.WriteLine($"[TaskQueue.Count={TaskQueue.Count}] Robot:{idleRobot?.MRStatus.MRID ?? "null"}");
+                        if (idleRobot != null)
                         {
                             var task = TaskQueue.Dequeue(); //出队
-                            robot.AddTask(task); //为机器人添加新任务
+                            idleRobot.AddTask(task); //为机器人添加新任务
                         }
                     }
                 }
 
                 if (TaskQueue.Count > 0)
                 {
-                    Console.WriteLine("当前任务剩余：" + TaskQueue.Count);
+                    // Console.WriteLine("当前任务剩余：" + TaskQueue.Count);
                     Thread.Sleep(500); // 当有任务时：每隔500毫秒检查空闲机器人
 
                 }
                 else
                 {
-                    Console.WriteLine("当前无任务指派");
+                    Console.WriteLine("当前无任务指派[阻塞]");
                     _waitHandle.WaitOne();//阻塞
                 }
 

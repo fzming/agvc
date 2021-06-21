@@ -33,6 +33,10 @@ namespace RobotFactory.Tasks
         /// </summary>
         string Id { get; }
         /// <summary>
+        /// MRID
+        /// </summary>
+        public string MRID { get; set; }
+        /// <summary>
         /// Transfer Request [TX501I]
         /// </summary>
         IMessage TransferRequestMessage { get; set; }
@@ -49,10 +53,12 @@ namespace RobotFactory.Tasks
         ///  任务ID
         /// </summary>
         public string Id { get; } = Guid.NewGuid().ToString("N");
+
         /// <summary>
         /// MRID
         /// </summary>
-        public string MRID => VirtualRobot.MRStatus.MRID;
+        public string MRID { get; set; }
+
 
         /// <summary>
         /// Transfer Request [TX501I]
@@ -65,12 +71,9 @@ namespace RobotFactory.Tasks
 
         public void Run(VirtualRobot virtualRobot)
         {
+            this.MRID = virtualRobot.MRStatus.MRID;
             this.VirtualRobot = virtualRobot;
-            virtualRobot.OnMission(true);
             this.OnRun();
-
-            virtualRobot.OnMission(false);
-
         }
 
         protected VirtualRobot VirtualRobot { get; set; }
@@ -80,7 +83,7 @@ namespace RobotFactory.Tasks
         /// <typeparam name="T"></typeparam>
         /// <param name="recvFunc"></param>
         /// <param name="timeout">超時時間(MS)</param>
-        protected void WaitReport<T>(Func<T, bool> recvFunc, int timeout = 50000) where T : BaseReport
+        protected void WaitReport<T>(Func<T, bool> recvFunc, int timeout = 50*1000) where T : BaseReport
         {
             var _waitHandle = new AutoResetEvent(false);
             var reportTask = new ReportHanlder
