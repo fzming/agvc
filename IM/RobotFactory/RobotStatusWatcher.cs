@@ -8,9 +8,10 @@ namespace RobotFactory
     /// <summary>
     /// MR状态监控
     /// </summary>
-    public class RobotStatusWatcher
+    public class RobotStatusWatcher : IDisposable
     {
         public event MrStatusReceivedEventHandler MrStatusReceived;
+        public event MrStatusErrorEventHandler MrStatusError;
         private Queue<string> queue = new Queue<string>();
         private CancellationTokenSource _cancelTokenSource;
         private Thread _watchThread;
@@ -42,7 +43,7 @@ namespace RobotFactory
                     _watchThread.Start();
                 }
                 queue.Enqueue(MRID);
-                _waitHandle.Set(); //非轮询发送信号
+                _waitHandle.Set(); //发送信号
             }
 
         }
@@ -67,6 +68,14 @@ namespace RobotFactory
                                 MrStatus = mrStatus
                             });
                         }
+                        else
+                        {
+                            MrStatusError?.Invoke(this, new MrStatusErrorArg
+                            {
+                                MRID = mrid,
+                                Error = "GetMRStatus Network Error"
+                            });
+                        }
 
                     }
                 }
@@ -83,5 +92,15 @@ namespace RobotFactory
 
             }
         }
+
+        #region IDisposable
+
+        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        public void Dispose()
+        {
+            this.Stop();
+        }
+
+        #endregion
     }
 }

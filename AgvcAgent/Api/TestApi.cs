@@ -35,7 +35,7 @@ namespace AgvcAgent.Api
                 "TX501I                      001BL$WMS202                                        BL        N    A               LKXLJBT01 01        DJSLJBT01 01                            10105114601764                  ";
 
             var message = MessageParser.Parse(mqMessage);
-            AgvcCenter.TaskEngine.TransferMessage(message, mrid);
+            AgvcCenter.Instance.TaskEngine.TransferMessage(message, mrid);
             return mqMessage;
         }
         /// <summary>
@@ -46,18 +46,19 @@ namespace AgvcAgent.Api
         [HttpGet, Route("AllwaysTrue")]
         public string AllwaysTrue([FromQuery] string json)
         {
-           // Console.WriteLine(">>" + json);
+            Console.WriteLine(">>" + json);
              
-            object obj2 = json?.DeserializeJsonToObject();
-            string str = obj2 switch
+            var obj2 = json?.DeserializeJsonToObject();
+            
+            var serializeJson = obj2 switch
             {
-                BaseReport report => AgvReporter.OnReport(report).SerializeJSONObject(),
+                BaseReport report => AgvReporter.Instance.OnReport(report).SerializeJSONObject(),
                 BaseRequest request => request.GetResponse(true, "Allways True").SerializeJSONObject(),
                 Echo echo => echo.GetResponse().SerializeJSONObject(),
                 _ => string.Empty
             };
            // Console.WriteLine("<< " + str);
-            return str;
+            return serializeJson;
         }
 
 

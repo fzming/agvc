@@ -199,16 +199,10 @@ namespace RobotFactory.Tasks
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="recvFunc"></param>
-        /// <param name="timeout">最大超時時間(MS) 默认50秒</param>
         protected void WaitReport<T>(Func<T, bool> recvFunc) where T : BaseReport
         {
             var _waitHandle = new AutoResetEvent(false);
-            var reportTask = new AgvReport
-            {
-                MissionId = Id,
-                Type = typeof(T),
-                AutoResetEvent = _waitHandle,
-            };
+            var reportTask = new AgvReport(MRID, Id, typeof(T), _waitHandle);
             //默认Report Timeout 配置覆盖最大超时设定【已废弃】
             // if (OptionalReportTimeouts.TryGetValue(typeof(T).Name, out var ms))
             // {
@@ -218,14 +212,17 @@ namespace RobotFactory.Tasks
             {
                 return Task.Run(() =>
                 {
-                    AgvReporter.Watch(reportTask);
-                    //Console.WriteLine($"[期待IM汇报]{typeof(T).Name} 最大超时设定:{timeout}ms");
-                    _waitHandle.WaitOne(); //挂起綫程等待，直到有任务上报或者轮询AGV为故障状态。
-                     //=======================================================================
-                     //在等待上报期间：如果AGV发生了故障或者通讯异常，那么需要每隔一分钟去轮询AGV状态，
-                     //如果轮询到AGV IO 狀態=Initialize 时：此任务已无效。
-                     //注意：机器人初始化之后没有接收到任务就标志为initial状态
-                     //=======================================================================
+                    var agvReporter = AgvReporter.Instance;
+                    agvReporter.Watch(reportTask);
+                    // Console.WriteLine($"[期待IM汇报]{typeof(T).Name} 挂起綫程等待，直到有任务上报或者轮询AGV为故障状态 ");
+                    VirtualRobot.State = $"等待AGV信号：{typeof(T).Name}中";
+                    _waitHandle.WaitOne();
+                    //挂起綫程等待，直到有任务上报或者轮询AGV为故障状态。
+                    //=======================================================================
+                    //在等待上报期间：如果AGV发生了故障或者通讯异常，那么需要每隔一分钟去轮询AGV状态，
+                    //如果轮询到AGV IO 狀態=Initialize 时：此任务已无效。
+                    //注意：机器人初始化之后没有接收到任务就标志为initial状态
+                    //=======================================================================
                     if (reportTask.Report != null)
                     {
                         Console.WriteLine($"{MRID}->[{typeof(T).Name}] 实际耗时：{reportTask.Ms} ms");
@@ -234,14 +231,10 @@ namespace RobotFactory.Tasks
                     }
                     else
                     {
-                        Console.WriteLine($"{MRID}->[{typeof(T).Name}] Timeout!");
+                        Console.WriteLine($"{MRID}->[{typeof(T).Name}] Report ERROR");
                     }
-
-
                 });
             });
-
-            AgvReporter.Remove(typeof(T), Id);
 
         }
         /// <summary>

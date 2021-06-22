@@ -35,7 +35,10 @@ namespace RobotFactory
         /// </summary>
         public bool Working { get; set; }
         #region 任务
-
+        /// <summary>
+        /// 当前状态描述
+        /// </summary>
+         public string State { get; set; }
         /// <summary>
         /// 当前待处理任务
         /// </summary>
@@ -65,7 +68,7 @@ namespace RobotFactory
             if (!Working)
             {
                 Console.WriteLine($"尝试取消{MRStatus.MRID}阻塞状态");
-                _waitHandle.Set(); //取消阻塞
+               _waitHandle.Set(); //取消阻塞
             }
 
         }
@@ -195,6 +198,7 @@ namespace RobotFactory
                     this.BeforeDockBattery = MRStatus.Battery;
                     this.Docking = WS.SendDockMission(MRStatus.MRID);
                     Console.WriteLine($"[DockingBattery]{MRStatus.MRID} Dock:{this.Docking}");
+                    this.State = "充电中";
                 }
 
                 return false;
@@ -204,6 +208,7 @@ namespace RobotFactory
                 //当前正在充电中,且30%<电量<70%,若充电前电量小于30.不允许继续分派任务
                 if (this.BeforeDockBattery < 30 && MRStatus.Battery < 70)
                 {
+                    this.State = "充电中（保养策略）";
                     return false;
                 }
                 //满足电量要求：可以指派任务
@@ -230,7 +235,8 @@ namespace RobotFactory
         public void SetWorkingStatus(bool working)
         {
             this.Working = working;
-            MRStatus.IOperatorStatus = working ? IOperatorStatus.Busy : IOperatorStatus.Idle;
+            this.State = "空闲";
+                MRStatus.IOperatorStatus = working ? IOperatorStatus.Busy : IOperatorStatus.Idle;
             MRStatus.MissionStatus = working ? MissionStatus.OnMission : MissionStatus.Standby;
         }
         /// <summary>
@@ -251,7 +257,7 @@ namespace RobotFactory
         /// <returns></returns>
         public bool IsIdle()
         {
-            return MRStatus.IOperatorStatus == IOperatorStatus.Idle && MRStatus.MissionStatus == MissionStatus.Standby;
+            return !Working&&MRStatus.IOperatorStatus == IOperatorStatus.Idle && MRStatus.MissionStatus == MissionStatus.Standby;
         }
     }
 }

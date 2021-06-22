@@ -9,13 +9,14 @@ namespace AgvcAgent
 {
     class Program
     {
-        
+
         static void Main(string[] args)
-        { 
-            AgvcCenter.Run();
-           CreateWebHostBuilder(args).Build().Run();
-           AgvcCenter.Stop();
-          
+        {
+            var agvc = AgvcCenter.Instance;
+            agvc.Run();
+            CreateWebHostBuilder(args).Build().Run();
+            agvc.Stop();
+
         }
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration(builder =>
@@ -27,7 +28,7 @@ namespace AgvcAgent
                 {
                     options.Limits.MaxRequestBodySize = 20000000;
                 })
-                .ConfigureLogging(logging=>
+                .ConfigureLogging(logging =>
                 {
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-5.0
                     logging.ClearProviders();

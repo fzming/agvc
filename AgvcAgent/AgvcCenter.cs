@@ -9,12 +9,34 @@ using RobotFactory.Tasks;
 
 namespace AgvcAgent
 {
-    public static class AgvcCenter
+    public class AgvcCenter
     {
-        public static RobotTaskEngine TaskEngine { get; set; }
+        #region Singleton
+
+        private static readonly Lazy<AgvcCenter> Instancelock = new Lazy<AgvcCenter>(() => new AgvcCenter());
 
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        public static void Run()
+        public AgvcCenter()
+        {
+            VirtualRobotManager = VirtualRobotManager.Instance;
+            TaskEngine = new RobotTaskEngine(VirtualRobotManager);
+        }
+
+        public static AgvcCenter Instance
+        {
+            get
+            {
+                return Instancelock.Value;
+            }
+        }
+
+        #endregion
+        public RobotTaskEngine TaskEngine { get;  }
+
+        public VirtualRobotManager VirtualRobotManager { get; }
+
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public void Run()
         {
             
             var mrList = VirtualRobotManager.ReadMrListFromIm();
@@ -32,13 +54,14 @@ namespace AgvcAgent
                 });
                 VirtualRobotManager.TryRefreshMRStatus();
             }
-            TaskEngine = new RobotTaskEngine();
+            
             TaskEngine.Start(); //启动工作引擎
         }
 
-        public static void Stop()
+        public void Stop()
         {
             TaskEngine.Dispose();
+            VirtualRobotManager.Dispose();
         }
     }
 }

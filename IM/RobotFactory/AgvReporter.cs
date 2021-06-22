@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-
 using AgvcUtility;
-
 using Protocol;
 using Protocol.Report;
 
@@ -14,6 +13,15 @@ namespace RobotFactory
 {
     public class AgvReport
     {
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public AgvReport(string mrId, string missionId, Type type, AutoResetEvent autoResetEvent)
+        {
+            MrId = mrId;
+            MissionId = missionId;
+            Type = type;
+            AutoResetEvent = autoResetEvent;
+        }
+
         public string MrId { get; set; }
         public string MissionId { get; set; }
         public Type Type { get; set; }
@@ -22,105 +30,156 @@ namespace RobotFactory
         public bool Received { get; set; }
         public DateTime CreateTime { get; set; }
         public double Ms { get; set; }
+        public string WatchId { get; set; }
     }
-
-    public static class AgvReporter
+    /// <summary>
+    /// AGV设备回调监控
+    /// </summary>
+    public class AgvReporter
     {
-        private static readonly List<AgvReport> Reports = new List<AgvReport>();
-        private static object _locker = new object();
+        private static readonly Lazy<AgvReporter> Instancelock = new Lazy<AgvReporter>(
+            () => new AgvReporter());
+
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        static AgvReporter()
+        public AgvReporter()
         {
             AgvStatusWatcher = new RobotStatusWatcher();
             AgvStatusWatcher.MrStatusReceived += AgvStatusWatcher_MrStatusReceived;
+            AgvStatusWatcher.MrStatusError += AgvStatusWatcher_MrStatusError;
         }
 
-        private static void AgvStatusWatcher_MrStatusReceived(object sender, MrStatusEventArg e)
-        {
+        public static AgvReporter Instance => Instancelock.Value;
+        private static object _locker = new object();
+        private readonly ConcurrentDictionary<string, AgvReport> Reports =
+                    new ConcurrentDictionary<string, AgvReport>();
 
-            if (e.MrStatus.IOperatorStatus == IOperatorStatus.Initialize ||
-                e.MrStatus.MissionStatus == MissionStatus.Initialize)
+
+        private void AgvStatusWatcher_MrStatusError(object sender, MrStatusErrorArg e)
+        {
+            if (Reports.TryGetValue(e.MRID, out var agvReport)) //MR还在监控状态列表中
             {
-                OnAgvcInitialize(e.MrStatus.MRID);
+                RetryWatch(e.MRID, agvReport.WatchId, "故障：" + e.Error);
             }
-            else
+        }
+
+        private void AgvStatusWatcher_MrStatusReceived(object sender, MrStatusEventArg e)
+        {
+            if (Reports.TryGetValue(e.MrStatus.MRID, out var agvReport)) //MR还在监控状态列表中
+            {
+                Console.WriteLine($"{e.MrStatus.MRID}: IOperatorStatus={e.MrStatus.IOperatorStatus} MissionStatus={e.MrStatus.MissionStatus}");
+                //初始化MR状态
+                if (e.MrStatus.IOperatorStatus == IOperatorStatus.Initialize &&
+                    e.MrStatus.MissionStatus == MissionStatus.Initialize)
+                {
+                    OnAgvError(e.MrStatus.MRID);
+                }
+                else
+                {
+
+                    RetryWatch(e.MrStatus.MRID, agvReport.WatchId, "監控循環時間已到");
+
+                }
+            }
+
+        }
+
+        private void RetryWatch(string mrStatusMrid, string watchId, string reason, int interval = 60 * 1000)
+        {
+            AgvcTimer.SetTimeout(interval, () =>
             {
                 lock (_locker)
                 {
-                    if (Reports.Any(p => p.MrId == e.MrStatus.MRID)) //还在监控列表中
+                    if (Reports.TryGetValue(mrStatusMrid, out var agvReport)) //还在监控列表中
                     {
-                        AgvcTimer.SetTimeout(60 * 1000, delegate
-                        {
-                            AgvStatusWatcher.Watch(e.MrStatus.MRID); //1分钟后重新加入监控队列
-                        });
+                        if (agvReport.WatchId != watchId) return;
+
+                        Console.WriteLine(
+                            $"{mrStatusMrid}:重新加入监控队列[{agvReport.Type.Name}] [{DateTime.Now:T}]，原因：{reason}");
+                        AgvStatusWatcher.Watch(mrStatusMrid); //重新加入监控队列
                     }
                 }
-
-            }
+            });
 
         }
 
         /// <summary>
-        /// AGVC在汇报期间重启
+        /// AGV在汇报期间重启
         /// </summary>
         /// <param name="mrid"></param>
-        private static void OnAgvcInitialize(string mrid)
+        private void OnAgvError(string mrid)
         {
-            lock (_locker)
-            {
-                var mrReports = Reports.Where(p => p.MrId == mrid);
-                foreach (var agvReport in mrReports)
-                {
-                    agvReport.Report = null;
-                    agvReport.Ms = DateTime.Now.Subtract(agvReport.CreateTime).TotalMilliseconds;
-                    agvReport.AutoResetEvent.Set(); // 发送信号
-                }
 
-                Reports.RemoveAll(p => p.MrId == mrid);//clear all mrid reports
+            if (Reports.TryGetValue(mrid, out var agvReport))
+            {
+                agvReport.Report = null;
+                agvReport.Ms = DateTime.Now.Subtract(agvReport.CreateTime).TotalMilliseconds;
+                RemoveWatch(mrid);
+                agvReport.AutoResetEvent.Set(); // 发送信号
+
             }
         }
 
-        private static RobotStatusWatcher AgvStatusWatcher { get; }
-        public static void Watch(AgvReport agvReport)
+        private RobotStatusWatcher AgvStatusWatcher { get; }
+
+        public void Watch(AgvReport agvReport)
         {
             lock (_locker)
             {
                 agvReport.CreateTime = DateTime.Now;
-                Reports.Add(agvReport);
-                AgvStatusWatcher.Watch(agvReport.MrId);//监控Agv状态
+                agvReport.WatchId = Guid.NewGuid().ToString("N");
+                if (Reports.TryAdd(agvReport.MrId, agvReport))
+                {
+
+                    Console.WriteLine($"[加入监控] {agvReport.MrId} {agvReport.Type.Name}");
+                    AgvStatusWatcher.Watch(agvReport.MrId); //监控Agv状态
+                }
+                else
+                {
+                    Console.Error.WriteLine($"{agvReport.MrId} 不能重复加入监控");
+                }
             }
         }
 
-        public static void Remove(Type type, string missionId)
+        private void RemoveWatch(string mrid)
         {
             lock (_locker)
             {
-                Reports.RemoveAll(p => p.Type == type && p.MissionId == missionId);
+                if (Reports.TryRemove(mrid, out var agvReport))
+                {
+                    Console.WriteLine($"[移除监控] {agvReport.MrId} {agvReport.Type.Name}");
+                }
             }
         }
+
         /// <summary>
         /// IMG->AGVC 汇报了状态
         /// </summary>
         /// <param name="report"></param>
         /// <returns></returns>
-        public static Response OnReport(BaseReport report)
+        public Response OnReport(BaseReport report)
         {
-            lock (_locker)
+            Console.WriteLine($"[IM -> REPORT] {report.MRID} ->{report.Type.Name}");
+            var received = true; //默认agree = true
+            if (Reports.TryGetValue(report.MRID, out var agvReport))
             {
-                var needReport = Reports.FirstOrDefault(p => p.Type == report.Type && p.MissionId == report.MissionID);
-                var received = true; //默认agree = true
-                if (needReport != null)
+                if (agvReport.Type == report.Type && agvReport.MissionId == report.MissionID) //有可能回报的类型跟现在监控的类型不一样。此时应该抛弃。
                 {
-                    needReport.Report = report;
-                    needReport.Ms = DateTime.Now.Subtract(needReport.CreateTime).TotalMilliseconds;
-                    needReport.AutoResetEvent.Set(); // 发送信号
-                    received = needReport.Received;
+                    agvReport.Report = report;
+                    agvReport.Ms = DateTime.Now.Subtract(agvReport.CreateTime).TotalMilliseconds;
+                    RemoveWatch(report.MRID);
+                    agvReport.AutoResetEvent.Set(); // 发送信号
+                    received = agvReport.Received;
                 }
-
-                Remove(report.Type, report.MissionID);
-                return report.GetResponse(received);
+                else
+                {
+                    Console.Error.WriteLine($"report error:{report.MRID}->{report.Type.Name} 状态不正确");
+                }
             }
-
+            else
+            {
+                Console.Error.WriteLine($"report error:{report.MRID}->{report.Type.Name} 未找到可释放句柄，请检查是否提前释放了此AGV的锁信号");
+            }
+            return report.GetResponse(received);
         }
     }
 }

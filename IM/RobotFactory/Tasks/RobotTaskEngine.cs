@@ -15,11 +15,19 @@ namespace RobotFactory.Tasks
     /// </summary>
     public sealed class RobotTaskEngine : IDisposable
     {
+        private VirtualRobotManager RobotManager { get; }
         private static IEnumerable<Type> _taskTypes;
         private CancellationTokenSource _cancelTokenSource;
         private Thread _watchThread;
         private readonly object _syncRoot = new object();
         private readonly AutoResetEvent _waitHandle = new AutoResetEvent(false);
+
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public RobotTaskEngine(VirtualRobotManager robotManager)
+        {
+            RobotManager = robotManager;
+        }
+
         private static IEnumerable<Type> TaskTypes
         {
             get
@@ -50,7 +58,7 @@ namespace RobotFactory.Tasks
                     robotTask.MRID = MRID;
                     //执行两条搬运指令
                     robotTask.AddTrxMessage(message);
-                    robotTask.AddTrxMessage(message);
+                   // robotTask.AddTrxMessage(message);
 
                     AddTask(robotTask);
                     break;
@@ -95,7 +103,6 @@ namespace RobotFactory.Tasks
             try
             {
                 Console.WriteLine("[RobotTaskEngine->Stopping]");
-                VirtualRobotManager.Dispose();
                 _cancelTokenSource.Cancel(false);
                 _watchThread.Join();
                 _watchThread = null;
@@ -122,11 +129,11 @@ namespace RobotFactory.Tasks
                         VirtualRobot idleRobot;
                         if (!string.IsNullOrEmpty(forDequeueTask.MRID)) //如果是指定了MRID
                         {
-                            idleRobot = VirtualRobotManager.FindRobot(forDequeueTask.MRID);
+                            idleRobot = RobotManager.FindRobot(forDequeueTask.MRID);
                         }
                         else  //查找空闲可执行任务的机器人
                         {
-                            var idleRobots = VirtualRobotManager.FindIdleRobots();
+                            var idleRobots = RobotManager.FindIdleRobots();
                             idleRobot = idleRobots.FirstOrDefault();
                         }
 
@@ -142,7 +149,7 @@ namespace RobotFactory.Tasks
                 if (TaskQueue.Count > 0)
                 {
                     // Console.WriteLine("当前任务剩余：" + TaskQueue.Count);
-                    Thread.Sleep(5000); // 当有任务时：每隔5秒检查空闲机器人
+                    Thread.Sleep(1000); // 当有任务时：每隔5秒检查空闲机器人
 
                 }
                 else
