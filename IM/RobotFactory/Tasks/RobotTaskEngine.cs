@@ -18,13 +18,13 @@ namespace RobotFactory.Tasks
         private static IEnumerable<Type> _taskTypes;
         private CancellationTokenSource _cancelTokenSource;
         private Thread _watchThread;
-        private object syncRoot = new object();
-        private AutoResetEvent _waitHandle = new AutoResetEvent(false);
+        private readonly object _syncRoot = new object();
+        private readonly AutoResetEvent _waitHandle = new AutoResetEvent(false);
         private static IEnumerable<Type> TaskTypes
         {
             get
             {
-                _taskTypes ??= Assembly.GetAssembly(typeof(RobotTask)).GetTypes()
+                _taskTypes ??= Assembly.GetAssembly(typeof(AbstractRobotTask)).GetTypes()
                     .Where(t => t.GetInterfaces().Contains(typeof(IRobotTask)) && t.IsAbstract == false);
                 return _taskTypes;
             }
@@ -38,26 +38,29 @@ namespace RobotFactory.Tasks
         /// 传输MES消息 Transfer Request
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="MRID">指定MR任务</param>
+        /// <param name="MRID">指定MR接受任务</param>
         public void TransferMessage(IMessage message, string MRID)
         {
-
-            if (message is Tx501i tx501I) // Transfer Request
+            switch (message)
             {
+                // Transfer Request
+                case Tx501i tx501I:
+                {
+                    var robotTask = CreateRobotTask(GetTaskTypeFromMessage(tx501I));
+                    robotTask.MRID = MRID;
+                    //执行两条搬运指令
+                    robotTask.AddTrxMessage(message);
+                    robotTask.AddTrxMessage(message);
 
-                var robotTask = CreateRobotTask(GetTaskTypeFromMessage(tx501I));
-                robotTask.MRID = MRID;
-                robotTask.TransferRequestMessage = message;
-
-                AddTask(robotTask);
-
-
+                    AddTask(robotTask);
+                    break;
+                }
             }
         }
 
         private void AddTask(IRobotTask robotTask)
         {
-            lock (syncRoot)
+            lock (_syncRoot)
             {
                 //将任务加入到队列
                 TaskQueue.Enqueue(robotTask);
@@ -110,12 +113,11 @@ namespace RobotFactory.Tasks
             while (!_cancelTokenSource.IsCancellationRequested)
             {
 
-                lock (syncRoot)
+                lock (_syncRoot)
                 {
                     if (TaskQueue.Count > 0)
                     {
-                       
-                        //bug:无法正确获取MR的正确工作状态，导致每次查找出来的MR都是空闲的。 这里有BUG,每次都是MR01
+                        //bug:如果无法正确获取MR的正确工作状态，导致每次查找出来的MR都是空闲的。
                         var forDequeueTask = TaskQueue.First();
                         VirtualRobot idleRobot;
                         if (!string.IsNullOrEmpty(forDequeueTask.MRID)) //如果是指定了MRID
@@ -140,7 +142,7 @@ namespace RobotFactory.Tasks
                 if (TaskQueue.Count > 0)
                 {
                     // Console.WriteLine("当前任务剩余：" + TaskQueue.Count);
-                    Thread.Sleep(500); // 当有任务时：每隔500毫秒检查空闲机器人
+                    Thread.Sleep(5000); // 当有任务时：每隔5秒检查空闲机器人
 
                 }
                 else
@@ -159,8 +161,7 @@ namespace RobotFactory.Tasks
 
         private RobotTaskType GetTaskTypeFromMessage(Tx501i tx501I)
         {
-            //暂定为Stock2EQP
-            return RobotTaskType.Stock2EQP;
+            return RobotTaskType.Transfer;
         }
 
         private IRobotTask CreateRobotTask(RobotTaskType taskType)

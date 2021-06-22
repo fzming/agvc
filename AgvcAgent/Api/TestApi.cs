@@ -51,7 +51,7 @@ namespace AgvcAgent.Api
             object obj2 = json?.DeserializeJsonToObject();
             string str = obj2 switch
             {
-                BaseReport report => IMReporter.OnReport(report).SerializeJSONObject(),
+                BaseReport report => AgvReporter.OnReport(report).SerializeJSONObject(),
                 BaseRequest request => request.GetResponse(true, "Allways True").SerializeJSONObject(),
                 Echo echo => echo.GetResponse().SerializeJSONObject(),
                 _ => string.Empty
