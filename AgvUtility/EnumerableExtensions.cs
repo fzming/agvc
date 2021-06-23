@@ -6,11 +6,25 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AgvcUtility
+namespace Utility
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public static class EnumerableExtensions
     {
+        public static TAttribute GetAttribute<TAttribute>(this Enum t) where
+            TAttribute : Attribute
+        {
+
+            var type = t.GetType();
+            var memInfo = type.GetMember(t.ToString());
+            if (memInfo.Length > 0)
+            {
+                var attrs = memInfo[0].GetCustomAttributes(typeof(TAttribute), false);
+                if (attrs.Length > 0)
+                    return (TAttribute)attrs[0];
+            }
+            return default;
+        }
         /// <summary>
         /// 使用hashtable形式快速去重
         /// </summary>

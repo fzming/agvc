@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AgvcUtility
+namespace Utility
 {
     public static class TaskExtensions
     {

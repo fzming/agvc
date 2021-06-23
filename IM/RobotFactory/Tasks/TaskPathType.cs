@@ -29,13 +29,13 @@
         /// 重Tray From 1F to 3F
         /// 晶棒从1楼搬到3楼，单晶就是指只有1个货物
         /// </summary>
-        [TaskType(RobotTaskType.Transfer)]
+        [TaskType(RobotTaskType.Tray)]
         HeaveTray,
         /// <summary>
         /// 空Tray From 3F To 1F
         /// 晶棒从3楼搬到1楼，单晶就是指只有1个货物
         /// </summary>
-        [TaskType(RobotTaskType.Transfer)]
+        [TaskType(RobotTaskType.Tray)]
         EmptyTray
 
     }

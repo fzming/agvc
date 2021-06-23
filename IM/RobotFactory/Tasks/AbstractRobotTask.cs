@@ -4,12 +4,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using AgvUtility;
 using Messages.Transfers;
 using Messages.Transfers.Core;
 using Protocol;
 using Protocol.Mission;
 using Protocol.Report;
+using RobotFactory.Interfaces;
+using Utility;
 
 namespace RobotFactory.Tasks
 {
@@ -40,6 +41,17 @@ namespace RobotFactory.Tasks
             this.TrxRequestMessages.Add(message);
             this.OnTrxMessageAdded(message);
         }
+
+        #region Agv Reporter
+
+        public void SetAgvReporter(IAgvReporter agvReporter)
+        {
+            this._agvReporter = agvReporter;
+        }
+
+        private IAgvReporter _agvReporter { get; set; }
+
+        #endregion
 
         #region OptionalReportTimeouts
 
@@ -151,10 +163,9 @@ namespace RobotFactory.Tasks
             //     if (ms > 0) timeout = ms;
             // }
             var agvError = false;
-            var agvReporter = AgvReporter.Instance;
             var reportKey = reportTask.GetKey();
             Thread.Sleep(10);
-            if (agvReporter.TryAddWatch(reportTask))//IM Report是不受控制的。有可能这里还没有AddWatch,通知却已经到达了。
+            if (_agvReporter.TryAddWatch(reportTask))//IM Report是不受控制的。有可能这里还没有AddWatch,通知却已经到达了。
             {
                 while (reportTask.Report == null && !agvError)
                 {
@@ -181,7 +192,7 @@ namespace RobotFactory.Tasks
                 }
             }
             //已经成功Report
-            var report = agvReporter.GetReport(reportKey);
+            var report = _agvReporter.GetReport(reportKey);
             if (report != null)
             {
                 if (report is MissionDone done && !string.IsNullOrEmpty(done.Error)) //正对MissionDone特殊判断
@@ -189,7 +200,7 @@ namespace RobotFactory.Tasks
                     throw new Exception($"MissionFail:{done.Error}");
                 }
                 Console.WriteLine($"<<OK>><<{reportKey}>> 实际耗时：{reportTask.Ms} ms");
-                agvReporter.RemoveWatch(reportKey);
+                _agvReporter.RemoveWatch(reportKey);
             }
             else
             {

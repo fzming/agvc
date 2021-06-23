@@ -2,62 +2,22 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-
-using AgvcUtility;
-
 using Protocol;
 using Protocol.Report;
 
 using RobotDefine;
+using RobotFactory.Interfaces;
 
 namespace RobotFactory
 {
-    public class AgvReport
-    {
-        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        public AgvReport(string mrId, string missionId, Type type, AutoResetEvent waitHandle)
-        {
-            MrId = mrId;
-            MissionId = missionId;
-            Type = type;
-            WaitHandle = waitHandle;
-            CreateTime = DateTime.Now;
-        }
-
-        public string GetKey()
-        {
-            return $"{MrId}-{MissionId}-{Type.FullName}";
-        }
-        public string MrId { get; set; }
-        public string MissionId { get; set; }
-        public Type Type { get; set; }
-        public AutoResetEvent WaitHandle { get; set; }
-        public DateTime CreateTime { get; set; }
-        //汇报后========
-        public Func<BaseReport, bool> AgreeCall { get; set; }
-        public BaseReport Report { get; set; }
-        public bool Received { get; set; }
-        public double Ms { get; set; }
-
-    }
     /// <summary>
     /// AGV设备回调监控
     /// </summary>
-    public class AgvReporter
+    public class AgvReporter : IAgvReporter
     {
-        #region sington
-
-        private static readonly Lazy<AgvReporter> Instancelock = new Lazy<AgvReporter>(
-            () => new AgvReporter());
-
-        public static AgvReporter Instance => Instancelock.Value;
-
+        
         private readonly ConcurrentDictionary<string, AgvReport> Watchs =
             new ConcurrentDictionary<string, AgvReport>();
-
-
-        #endregion
 
         public bool TryAddWatch(AgvReport agvReport)
         {

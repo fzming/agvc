@@ -2,33 +2,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AgvUtility;
 using RobotDefine;
+using RobotFactory.Interfaces;
+using Utility;
+
 namespace RobotFactory
 {
-    public class VirtualRobotManager : IDisposable
+    public class VirtualRobotManager : IVirtualRobotManager
     {
-        #region Singleton
-
-        private static readonly Lazy<VirtualRobotManager> Instancelock = new Lazy<VirtualRobotManager>(() => new VirtualRobotManager());
-
+        private IRobotStatusWatcher statusWatcher;
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        public VirtualRobotManager()
+        public VirtualRobotManager(IRobotStatusWatcher statusWatcher)
         {
-            statusWatcher = new RobotStatusWatcher();
-            statusWatcher.MrStatusReceived += StatusWatcher_MrStatusReceived;
+            this.statusWatcher = statusWatcher;
+            this.statusWatcher.MrStatusReceived += StatusWatcher_MrStatusReceived1;
         }
 
-        public static VirtualRobotManager Instance
+        private void StatusWatcher_MrStatusReceived1(object sender, MrStatusEventArg e)
         {
-            get
-            {
-                return Instancelock.Value;
-            }
+            // Console.WriteLine("[StatusWatcher_MrStatusReceived]");
+            // Console.WriteLine(e.MrStatus.ToJson());
+            var robot = FindRobot(e.MrStatus.MRID);
+            robot?.OnMRStatusChange(e.MrStatus);
         }
 
-        #endregion
-        private RobotStatusWatcher statusWatcher;
         private List<VirtualRobot> VirtualRobots { get; set; } = new List<VirtualRobot>();
 
         public VirtualRobot FindRobot(string MRID)
@@ -104,19 +101,6 @@ namespace RobotFactory
             statusWatcher.Watch(MRID);
         }
 
-        private void StatusWatcher_MrStatusReceived(object sender, MrStatusEventArg e)
-        {
-            // Console.WriteLine("[StatusWatcher_MrStatusReceived]");
-            // Console.WriteLine(e.MrStatus.ToJson());
-            var robot = FindRobot(e.MrStatus.MRID);
-            robot?.OnMRStatusChange(e.MrStatus);
-        }
-
-        public void Dispose()
-        {
-            statusWatcher?.Stop();
-        }
-
         public void AddVirtualRobot(VirtualRobot virtualRobot)
         {
             if (FindRobot(virtualRobot.MRStatus.MRID) == null)
@@ -133,5 +117,6 @@ namespace RobotFactory
         {
             return VirtualRobots;
         }
+
     }
 }

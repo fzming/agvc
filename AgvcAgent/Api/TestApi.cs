@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AgvcRepository;
+using AgvcRepository.Entitys;
 using Messages.Parser;
 using Microsoft.AspNetCore.Mvc;
 using Protocol;
 using Protocol.Query;
 using RobotFactory;
+using RobotFactory.Interfaces;
 using Serialize;
 
 namespace AgvcAgent.Api
@@ -14,6 +17,19 @@ namespace AgvcAgent.Api
     [Route("IMServer")]
     public class TestApi : ControllerBase
     {
+        private IRobotTaskEngine TaskEngine { get; }
+        private IAgvReporter AgvReporter { get; }
+        private IMessageParser MessageParser { get; }
+        private IMrRepository MrRepository { get; }
+
+        public TestApi(IRobotTaskEngine TaskEngine,IAgvReporter agvReporter,IMessageParser messageParser,IMrRepository mrRepository)
+        {
+            this.TaskEngine = TaskEngine;
+            AgvReporter = agvReporter;
+            MessageParser = messageParser;
+            MrRepository = mrRepository;
+        }
+
         [Route("tx501i")]
         public string tx501i(string mrid)
         {
@@ -22,8 +38,18 @@ namespace AgvcAgent.Api
                 "TX501I                      001BL$WMS202                                        BL        N    A               LKXLJBT01 01        DJSLJBT01 01                            10105114601764                  ";
 
             var message = MessageParser.Parse(mqMessage);
-            AgvcCenter.Instance.TaskEngine.AcceptMessage(message, mrid);
+            TaskEngine.AcceptMessage(message, mrid);
             return mqMessage;
+        }
+        [Route("dbtest")]
+        public Task dbtest()
+        {
+           return MrRepository.InsertAsync(new MrEntity
+            {
+                MrId = "MR01",
+                MrName = "MR-1"
+            });
+
         }
         /// <summary>
         /// 測試用，同意 iM 所有請求及回報。呼叫方式：http://localhost:5001/IMServer/AllwaysTrue?json= 
@@ -38,7 +64,7 @@ namespace AgvcAgent.Api
             var o = json?.DeserializeJsonToObject();
             var serializeJson = o switch
             {
-                BaseReport report => AgvReporter.Instance.OnReport(report).SerializeJSONObject(),
+                BaseReport report => AgvReporter.OnReport(report).SerializeJSONObject(),
                 BaseRequest request => request.GetResponse(true, "Allways True").SerializeJSONObject(),
                 Echo echo => echo.GetResponse().SerializeJSONObject(),
                 _ => string.Empty

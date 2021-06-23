@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AgvUtility\AgvcUtility.csproj" />
+    <ProjectReference Include="..\..\AgvUtility\Utility.csproj" />
     <ProjectReference Include="..\..\MES\Messages\Messages.csproj" />
     <ProjectReference Include="..\Protocol\Protocol.csproj" />
     <ProjectReference Include="..\RobotDefine\RobotDefine.csproj" />

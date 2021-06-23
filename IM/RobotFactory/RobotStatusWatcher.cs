@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using RobotFactory.Interfaces;
 
 namespace RobotFactory
 {
     /// <summary>
     /// MR状态监控
     /// </summary>
-    public class RobotStatusWatcher : IDisposable
+    public class RobotStatusWatcher : IDisposable, IRobotStatusWatcher
     {
         public event MrStatusReceivedEventHandler MrStatusReceived;
         public event MrStatusErrorEventHandler MrStatusError;

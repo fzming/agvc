@@ -1,4 +1,5 @@
 ﻿using Messages.Transfers.Core;
+using RobotFactory.Interfaces;
 
 namespace RobotFactory.Tasks
 {
@@ -9,6 +10,7 @@ namespace RobotFactory.Tasks
         /// </summary>
         /// <param name="message"></param>
         void AddTrxMessage(IMessage message);
+        void SetAgvReporter(IAgvReporter agvReporter);
         /// <summary>
         /// 执行任务
         /// </summary>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace AgvUtility
+namespace Utility
 {
     [DebuggerStepThrough]
     public static class Check

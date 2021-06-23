@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading;
-using AgvUtility;
 using Messages.Parser;
 using RobotDefine;
 using RobotFactory;
@@ -21,15 +20,15 @@ namespace AgvcUnitTest
             _testOutputHelper = testOutputHelper;
         }
 
-        [Fact]
-        public void TestCommandParser()
-        {
-            var mqMessage =
-                "TX501I                      001BL$WMS202                                        BL        N    A               LKXLJBT01 01        DJSLJBT01 01                            10105114601764                  ";
-
-            var command = MessageParser.Parse(mqMessage);
-            Assert.NotNull(command);
-        }
+        // [Fact]
+        // public void TestCommandParser()
+        // {
+        //     var mqMessage =
+        //         "TX501I                      001BL$WMS202                                        BL        N    A               LKXLJBT01 01        DJSLJBT01 01                            10105114601764                  ";
+        //
+        //     var command = MessageParser.Parse(mqMessage);
+        //     Assert.NotNull(command);
+        // }
 
         [Fact]
         public void TestWS()

@@ -11,7 +11,7 @@ namespace RobotFactory.Tasks
         /// <summary>
         /// 目標點
         /// </summary>
-        public string Goal { get; set; } //设备 EQP OR STK
+        public string Goal { get; set; } //设备 EQP OR STK OR 1F 3F
         /// <summary>
         /// 目標儲位
         /// </summary>

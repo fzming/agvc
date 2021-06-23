@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
 
-namespace AgvUtility
+namespace Utility
 {
     /// <summary>
     /// 基于Nito.AsyncEx.AsyncContext的异步转同步执行器

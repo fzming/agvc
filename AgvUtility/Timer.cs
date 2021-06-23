@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Timers;
 
-namespace AgvcUtility
+namespace Utility
 {
     public static class AgvcTimer
     {

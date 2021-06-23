@@ -6,20 +6,24 @@ using Messages.Transfers.Core;
 
 namespace Messages.Parser
 {
-    public static class MessageParser
+    public  class MessageParser : IMessageParser
     {
-        static Dictionary<string, MessageMap> MessagePropsCache = new();
+        private static Dictionary<string, MessageMap> _p;
 
-        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        static MessageParser()
+        static Dictionary<string, MessageMap> MessagePropsCache
         {
-            ReflectionMessageMap();
+            get
+            {
+                return _p ??= ReflectionMessageMap();
+            }
         }
+
         /// <summary>
         /// 反射获取所有Command类型映射
         /// </summary>
-        private static void ReflectionMessageMap()
+        private static Dictionary<string, MessageMap> ReflectionMessageMap()
         {
+            var dics = new Dictionary<string, MessageMap>();
             var types = Assembly.GetAssembly(typeof(MessageBase)).GetTypes()
                 .Where(t => t.GetInterfaces().Contains(typeof(IMessage)) && t.IsAbstract == false);
             foreach (var type in types)
@@ -32,15 +36,17 @@ namespace Messages.Parser
                     Order = p.GetCustomAttribute<DeserializationAttribute>()?.Order ?? 0,
                     Length = p.GetCustomAttribute<DeserializationAttribute>()?.Length ?? 0
                 }).OrderBy(o => o.Order).ToList();
-                MessagePropsCache.Add(key, new MessageMap()
+                dics.Add(key, new MessageMap()
                 {
                     Type = type,
                     CommandProperties = propertys
                 });
             }
+
+            return dics;
         }
 
-        public static IMessage Parse(string message)
+        public IMessage Parse(string message)
         {
             var header = message.Substring(0, 6).ToUpper();
             if (MessagePropsCache.TryGetValue(header, out var commandMap))

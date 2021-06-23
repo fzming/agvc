@@ -1,33 +1,40 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using AgvcUtility;
 using Messages.Transfers;
 using Messages.Transfers.Core;
+using RobotFactory.Interfaces;
 using RobotFactory.Tasks;
+using Utility;
 
 namespace RobotFactory
 {
     /// <summary>
     /// Robot 任务引擎
     /// </summary>
-    public sealed class RobotTaskEngine : IDisposable
+    public sealed class RobotTaskEngine : IRobotTaskEngine
     {
-        private VirtualRobotManager RobotManager { get; }
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public RobotTaskEngine(IVirtualRobotManager robotManager,IAgvReporter agvReporter)
+        {
+            RobotManager = robotManager;
+            AgvReporter = agvReporter;
+            Console.WriteLine("AgvReporter->" + AgvReporter.GetHashCode());
+        }
+
+        private IVirtualRobotManager RobotManager { get; }
+        private IAgvReporter AgvReporter { get; }
         private static IEnumerable<Type> _taskTypes;
         private CancellationTokenSource _cancelTokenSource;
         private Thread _watchThread;
         private readonly object _locker = new object();
         private readonly AutoResetEvent _waitHandle = new AutoResetEvent(false);
 
-        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        public RobotTaskEngine(VirtualRobotManager robotManager)
-        {
-            RobotManager = robotManager;
-        }
+  
 
         private static IEnumerable<Type> TaskTypes
         {
@@ -191,20 +198,21 @@ namespace RobotFactory
         #region 创建RobotTask
         private IRobotTask CreateRobotTask(TaskPathType pathType)
         {
-            var taskType = pathType.GetType().GetCustomAttribute<TaskTypeAttribute>().TaskType;
+            var taskType = pathType.GetAttribute<TaskTypeAttribute>().TaskType;
             var type = TaskTypes.FirstOrDefault(p => p.GetCustomAttribute<TaskTypeAttribute>().TaskType == taskType);
             if (type != null)
             {
-                var task =  Activator.CreateInstance(type) as IRobotTask;
+                var task = Activator.CreateInstance(type) as IRobotTask;
                 task.TaskType = taskType;
                 task.PathType = pathType;
+                task.SetAgvReporter(AgvReporter);
                 return task;
             }
 
             return null;
         }
 
-        
+
 
         #endregion
     }

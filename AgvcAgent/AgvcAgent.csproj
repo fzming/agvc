@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DependencyInjection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
@@ -14,6 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AgvcRepository\AgvcRepository.csproj" />
+    <ProjectReference Include="..\AgvUtility\Utility.csproj" />
     <ProjectReference Include="..\IM\Protocol\Protocol.csproj" />
     <ProjectReference Include="..\IM\RobotFactory\RobotFactory.csproj" />
   </ItemGroup>
