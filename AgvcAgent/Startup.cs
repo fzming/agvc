@@ -22,8 +22,8 @@ namespace AgvcAgent
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<TimedExecuteServiceSettings>(Configuration.GetSection("TCS"));
-            services.AddSingleton<IHostedService, TimedExecuteService>();
+           // services.Configure<TimedExecuteServiceSettings>(Configuration.GetSection("TCS"));
+           // services.AddSingleton<IHostedService, TimedExecuteService>();
             //  services.AddMvc(options => { options.EnableEndpointRouting = false; });//注册MVC服务，启用MVC应用程序模型，
             services.AddControllers(configure =>
             {

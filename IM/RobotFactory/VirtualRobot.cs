@@ -97,6 +97,7 @@ namespace RobotFactory
             {
                 _cancelTokenSource.Cancel(false);
                 _watchThread.Join();
+                _waitHandle.Close();
                 _watchThread = null;
             }
             catch
@@ -115,7 +116,7 @@ namespace RobotFactory
                 {
                     if (!Working && _tasks.Count > 0) //只有在非工作状态标记下才执行
                     {
-                        if (!IsRobotReadyWork(_tasks.First()))
+                        if (!IsRobotReadyWork())
                         {
                             //不适合做任务的原因================
                             //1.电量不足
@@ -163,7 +164,7 @@ namespace RobotFactory
                 }
                 else
                 {
-                    Console.WriteLine($"[{MRStatus.MRID}] 阻塞");
+                    Console.WriteLine($"[{MRStatus.MRID}] 工作线程已休眠，等待任务。");
                     SetWorkingStatus(false);
                     _waitHandle.WaitOne();
                 }
@@ -173,15 +174,14 @@ namespace RobotFactory
         /// <summary>
         /// 檢查MR狀態是否可以執行任務
         /// </summary>
-        /// <param name="task"></param>
         /// <returns></returns>
-        private bool IsRobotReadyWork(IRobotTask task)
+        public bool IsRobotReadyWork()
         {
             if (MRStatus.IOperatorStatus == IOperatorStatus.Docked) //当前正在充电
             {
                 return CheckBattery();//仅检查充电是否可以完毕
             }
-            return CheckBattery() && IsIdle();
+            return !Working&&CheckBattery() && IsIdle();
         }
         /// <summary>
         /// 检查电池电量
@@ -208,6 +208,7 @@ namespace RobotFactory
                 //当前正在充电中,且30%<电量<70%,若充电前电量小于30.不允许继续分派任务
                 if (this.BeforeDockBattery < 30 && MRStatus.Battery < 70)
                 {
+                    Console.WriteLine($"充电中（保养策略）充电前：{this.BeforeDockBattery} 当前电量：{MRStatus.Battery}");
                     this.State = "充电中（保养策略）";
                     return false;
                 }
@@ -257,7 +258,13 @@ namespace RobotFactory
         /// <returns></returns>
         public bool IsIdle()
         {
-            return !Working&&MRStatus.IOperatorStatus == IOperatorStatus.Idle && MRStatus.MissionStatus == MissionStatus.Standby;
+            return MRStatus.IOperatorStatus == IOperatorStatus.Idle && MRStatus.MissionStatus == MissionStatus.Standby;
+        }
+
+        public bool IsInitialize()
+        {
+            return (MRStatus.IOperatorStatus == IOperatorStatus.Initialize &&
+                    MRStatus.MissionStatus == MissionStatus.Initialize);
         }
     }
 }

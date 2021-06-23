@@ -43,7 +43,7 @@ namespace RobotFactory
             VirtualRobots.ForEach(robot =>
             {
                 Console.WriteLine($"-[{robot.MRStatus.MRID}] TaskCount:{robot.TaskCount} Idle:{robot.IsIdle()} Working:{robot.Working} State:{robot.State}");
-                if (robot.IsIdle())
+                if (robot.IsRobotReadyWork())
                 {
                     idleRobots.Add(robot);
                 }

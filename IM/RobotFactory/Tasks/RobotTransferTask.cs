@@ -57,16 +57,16 @@ namespace RobotFactory.Tasks
             Console.WriteLine($"{MRID} Begin Pick");
             RunPickMission(new Pick
             {
-                BoxID = goal.BoxID, // trx.kemlot_id.Trim(),
-                Goal = goal.Goal, // trx.eqp_from,
-                Port = goal.Port, // trx.port_from.ToInt(),
-                WaferCount = goal.WaferCount // trx.cur_sublot_wafcnt.ToInt(),
+                BoxID = goal.BoxID, 
+                Goal = goal.Goal, 
+                Port = goal.Port,
+                WaferCount = goal.WaferCount 
             }, report =>
             {
                 switch (report)
                 {
                     case TransportEnd:
-                        //AGV-MES 发送TXD27I(XS)
+                        //AGV->MES 发送TXD27I(XS)
                         AGVC2MES(new Txd27i
                         {
 
@@ -87,17 +87,17 @@ namespace RobotFactory.Tasks
             Console.WriteLine($"{MRID} Begin Drop");
             RunDropMission(new Drop
             {
-                BoxID = goal.BoxID, //trx.kemlot_id.Trim(),
-                Goal = goal.Goal, //trx.eqp_to,
-                Port = goal.Port, //trx.port_to.ToInt(),
-                WaferCount = goal.WaferCount //trx.cur_sublot_wafcnt.ToInt(),
+                BoxID = goal.BoxID,
+                Goal = goal.Goal,
+                Port = goal.Port, 
+                WaferCount = goal.WaferCount,
             },
                 report =>
                 {
                     switch (report)
                     {
                         case TransportEnd:
-                            //AGV-MES 发送TXD27I(XS)
+                            //AGV->MES 发送TXD27I(XS)
                             AGVC2MES(new Txd27i
                             {
 

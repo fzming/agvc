@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Protocol;
 using Protocol.Query;
 using RobotFactory;
-using RobotFactory.Tasks;
 using Serialize;
 
 namespace AgvcAgent.Api
@@ -15,18 +14,6 @@ namespace AgvcAgent.Api
     [Route("IMServer")]
     public class TestApi : ControllerBase
     {
-        [Route("index")]
-        public ActionResult<string> Index()
-        {
-            Console.WriteLine($"DateTime.Now={DateTime.Now}");
-            return "hello api";
-        }
-        [Route("indexTask")]
-        public Task<string> Index2()
-        {
-            Console.WriteLine($"DateTime.Now={DateTime.Now}");
-            return Task.FromResult("hello api from async task");
-        } 
         [Route("tx501i")]
         public string tx501i(string mrid)
         {
@@ -35,7 +22,7 @@ namespace AgvcAgent.Api
                 "TX501I                      001BL$WMS202                                        BL        N    A               LKXLJBT01 01        DJSLJBT01 01                            10105114601764                  ";
 
             var message = MessageParser.Parse(mqMessage);
-            AgvcCenter.Instance.TaskEngine.TransferMessage(message, mrid);
+            AgvcCenter.Instance.TaskEngine.AcceptMessage(message, mrid);
             return mqMessage;
         }
         /// <summary>
@@ -46,11 +33,10 @@ namespace AgvcAgent.Api
         [HttpGet, Route("AllwaysTrue")]
         public string AllwaysTrue([FromQuery] string json)
         {
-            Console.WriteLine(">>" + json);
+            //Console.WriteLine(">>" + json);
              
-            var obj2 = json?.DeserializeJsonToObject();
-            
-            var serializeJson = obj2 switch
+            var o = json?.DeserializeJsonToObject();
+            var serializeJson = o switch
             {
                 BaseReport report => AgvReporter.Instance.OnReport(report).SerializeJSONObject(),
                 BaseRequest request => request.GetResponse(true, "Allways True").SerializeJSONObject(),
