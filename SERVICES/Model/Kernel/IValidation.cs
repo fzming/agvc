@@ -1,4 +1,6 @@
-﻿namespace DtoModel.Kernel
+﻿using CoreData;
+
+namespace DtoModel.Kernel
 {
     /// <summary>
     /// 通用验证接口

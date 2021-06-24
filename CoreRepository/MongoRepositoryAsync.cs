@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using CoreData;
 using CoreRepository.Core;
 using CoreRepository.Core.Aggregate;
 using CoreRepository.Kernel;

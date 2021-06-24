@@ -24,25 +24,25 @@ namespace AgvcAgent
         {
             // services.Configure<TimedExecuteServiceSettings>(Configuration.GetSection("TCS"));
             // services.AddSingleton<IHostedService, TimedExecuteService>();
-            //  services.AddMvc(options => { options.EnableEndpointRouting = false; });//注册MVC服务，启用MVC应用程序模型，
             services.AddControllers(configure =>
             {
                 configure.EnableEndpointRouting = false;
             }).AddNewtonsoftJson(options => options.UseMemberCasing());
+            // services.AddControllers();
+            // services.AddSwaggerGen(c =>
+            // {
+            //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplication1", Version = "v1" });
+            // });
         }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
-            app.UseMvc(s =>
-            {
-                s.MapRoute("default", "{controller}/{action}/{id?}");
-            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                // app.UseSwagger();
+                // app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication1 v1"));
             }
-
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -52,6 +52,7 @@ namespace AgvcAgent
             {
                 endpoints.MapControllers();
             });
+         
             // app.Run(context =>
             // {
             //     return context.Response.WriteAsync("Hello world");

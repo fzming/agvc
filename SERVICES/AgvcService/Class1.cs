@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoreService
+namespace AgvcService
 {
     public class Class1
     {

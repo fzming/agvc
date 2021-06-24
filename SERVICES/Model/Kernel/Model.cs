@@ -1,4 +1,7 @@
-﻿namespace DtoModel.Kernel
+﻿using System.Linq;
+using CoreData;
+
+namespace DtoModel.Kernel
 {
     /// <summary>
     /// 元数据模型抽象基类
@@ -11,7 +14,7 @@
         /// <returns></returns>
         public virtual Result<bool> Validate()
         {
-            var r = ValidationHelper.Validate(this);
+            var r = ModelValidation.Validate(this);
             if (r.IsValid)
             {
                 return Result<bool>.Successed;

@@ -18,6 +18,8 @@
     <ProjectReference Include="..\AgvUtility\Utility.csproj" />
     <ProjectReference Include="..\IM\Protocol\Protocol.csproj" />
     <ProjectReference Include="..\IM\RobotFactory\RobotFactory.csproj" />
+    <ProjectReference Include="..\SERVICES\CoreService\CoreService.csproj" />
+    <ProjectReference Include="..\SERVICES\Model\DtoModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>
