@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using System;
 using System.IO;
+using AgvcRepository;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RobotFactory;
 using RobotFactory.Interfaces;
-using Utility;
 
 namespace AgvcAgent
 {
@@ -20,6 +17,8 @@ namespace AgvcAgent
             var webHost = CreateWebHostBuilder(args).Build();
             DependencyInjection.ServiceProvider = webHost.Services;
             var agvc = DependencyInjection.GetService<IAgvcCenter>();
+            var mrrepo = DependencyInjection.GetService<IMrRepository>();
+
             agvc.Run();
             webHost.Run();
             agvc.Stop();

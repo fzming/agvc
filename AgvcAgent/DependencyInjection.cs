@@ -1,39 +1,40 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-
-namespace Utility
+using Utility;
+namespace AgvcAgent
 {
     public static class DependencyInjection
     {
-         public static IServiceProvider ServiceProvider { get; set; }
-        public static void ConfigureServices(IServiceCollection services)
+        public static IServiceProvider ServiceProvider { get; set; }
+        public static void ConfigureServices(WebHostBuilderContext webHostBuilderContext, IServiceCollection services)
         {
-            // services.AddSingleton<IAgvcCenter, AgvcCenter>();
-            // services.AddSingleton<IRobotTaskEngine, RobotTaskEngine>();
-            // services.AddSingleton<IVirtualRobotManager, VirtualRobotManager>();
-            // services.AddSingleton<IAgvReporter, AgvReporter>();
-            // //AddTransient
-            // services.AddTransient<IRobotStatusWatcher, RobotStatusWatcher>();
-
             // ServiceProvider = services.BuildServiceProvider();
-
+            var configuration = webHostBuilderContext.Configuration;
+            // services.Configure<MongoConfig>(configuration.GetSection("Mongo"));
+      
+           // services.AddSingleton(typeof(IMongoRepository<>),typeof(MongoRepository<>));
             services.ScanAndInjectService("^RobotFactory|^AgvcRepository|^CoreRepository|^Utility|^Messages");
+           
+            //services.ScanAndInjectService("^CoreRepository");
+           // services.Add(new ServiceDescriptor(typeof(IMongoRepository<>), typeof(MongoRepository<>), ServiceLifetime.Singleton));
+         
+           //services.AddSingleton(typeof(IRepository<>),typeof(MongoRepository<>));
         }
 
 
-   
+
         /// <summary>
         /// ServiceCollection批量注入方法
         /// </summary>
         /// <param name="services"></param>
         /// <param name="matchAssemblies">要扫描的程序集名称,默认为[^Shop.Utils|^Shop.]多个使用|分隔</param>
         /// <returns></returns>
-        public static IServiceCollection ScanAndInjectService(this IServiceCollection services,string matchAssemblies= "^Shop.Utils|^Shop.")
+        public static IServiceCollection ScanAndInjectService(this IServiceCollection services, string matchAssemblies = "^Shop.Utils|^Shop.")
         {
             bool Match(string assemblyName)
             {
@@ -57,7 +58,7 @@ namespace Utility
                 .SelectMany(a => a.DefinedTypes)
                 .Select(type => type.AsType())
                 .Where(x => x != baseType && baseType.IsAssignableFrom(x)).ToList();
-            var implementTypes = types.Where(x => x.IsClass).ToList();
+            var implementTypes = types.Where(x => x.IsClass & !x.IsAbstract).ToList();
             var interfaceTypes = types.Where(x => x.IsInterface).ToList();
             foreach (var implementType in implementTypes)
             {
@@ -84,9 +85,9 @@ namespace Utility
             return services;
         }
 
-        public static T? GetService<T>() where T : class
+        public static T GetService<T>() where T : class
         {
-            return (T?)ServiceProvider.GetService(typeof(T));
+            return (T)ServiceProvider.GetService(typeof(T));
         }
     }
 }

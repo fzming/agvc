@@ -16,19 +16,14 @@ namespace CoreRepository
     /// repository implementation for mongo
     /// </summary>
     /// <typeparam name="T"></typeparam>
-
-    //[InheritedExport]
     public partial class MongoRepository<T> : DisposableRepository, IMongoRepository<T>
         where T : MongoEntity
     {
-        public MongoRepository(IMongoUnitOfWork unitOfWork)
-        {
-            UnitOfWork = unitOfWork;
-        }
 
-        public IMongoUnitOfWork UnitOfWork { get; set; }
         public dynamic DynamicCollection => Collection;
         #region MongoSpecific
+
+        public IMongoUnitOfWork UnitOfWork { get; set; }
 
         /// <summary>
         /// mongo collection

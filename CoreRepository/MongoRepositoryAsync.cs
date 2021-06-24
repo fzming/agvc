@@ -23,12 +23,13 @@ namespace CoreRepository
     /// 支持异步版本函数
     /// </summary>
     /// <typeparam name="T"></typeparam>
-   // [InheritedExport]
     public partial class MongoRepository<T> where T : MongoEntity
     {
         public AsyncLock Mutex { get; }
-        public MongoRepository()
+
+        protected MongoRepository(IMongoUnitOfWork unitOfWork)
         {
+            UnitOfWork = unitOfWork;
             Mutex = new AsyncLock();
         }
 

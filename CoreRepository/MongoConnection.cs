@@ -1,6 +1,5 @@
 using System;
 using MongoDB.Driver;
-using Utility.Config;
 
 namespace CoreRepository
 {
@@ -48,12 +47,10 @@ namespace CoreRepository
         /// <summary>
         /// Creates the mongo client.
         /// </summary>
-        /// <param name="configManager">Config manager.</param>
-        private void CreateMongoClient(IConfigManager configManager)
+        private void CreateMongoClient(string mongoUrl, string databaseName)
         {
             if (Client != null) return;
-            var config = configManager.GetConfig<MongoConfig>("Mongo");
-            var url = new MongoUrl(config.MongoUrl);
+            var url = new MongoUrl(mongoUrl);
             var clientSettings = MongoClientSettings.FromUrl(url);
 
             clientSettings.DirectConnection = true;
@@ -65,21 +62,25 @@ namespace CoreRepository
             
             // clientSettings.WriteConcern = WriteConcern.Acknowledged;
             Client = new MongoClient(clientSettings);
-            Database = Client.GetDatabase(config.DatabaseName);
+            Database = Client.GetDatabase(databaseName);
         }
+
         /// <summary>
         /// Makes the sure connected.
         /// </summary>
-        /// <param name="configManager">Config manager.</param>
-        public void MakeSureConnected(IConfigManager configManager)
+        /// <param name="mongoUrl"></param>
+        /// <param name="databaseName"></param>
+        public void MakeSureConnected(string mongoUrl,string databaseName)
         {
             if (Client != null) return;
             lock (Locker)
             {
-                CreateMongoClient(configManager);
+                CreateMongoClient(mongoUrl,databaseName);
             }
 
 
         }
+
+
     }
 }

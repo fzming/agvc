@@ -1,6 +1,6 @@
 ﻿namespace CoreRepository
 {
-    internal class MongoConfig
+    public class MongoConfig
     {
         public string MongoUrl { get; set; }
         /// <summary>

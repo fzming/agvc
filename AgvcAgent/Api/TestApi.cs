@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AgvcRepository;
 using AgvcRepository.Entitys;
+using CoreRepository;
 using Messages.Parser;
 using Microsoft.AspNetCore.Mvc;
 using Protocol;
@@ -22,9 +23,9 @@ namespace AgvcAgent.Api
         private IMessageParser MessageParser { get; }
         private IMrRepository MrRepository { get; }
 
-        public TestApi(IRobotTaskEngine TaskEngine,IAgvReporter agvReporter,IMessageParser messageParser,IMrRepository mrRepository)
+        public TestApi(IRobotTaskEngine taskEngine, IAgvReporter agvReporter,IMessageParser messageParser,IMrRepository mrRepository)
         {
-            this.TaskEngine = TaskEngine;
+            TaskEngine = taskEngine;
             AgvReporter = agvReporter;
             MessageParser = messageParser;
             MrRepository = mrRepository;
@@ -44,7 +45,7 @@ namespace AgvcAgent.Api
         [Route("dbtest")]
         public Task dbtest()
         {
-           return MrRepository.InsertAsync(new MrEntity
+           return MrRepository.CreateAsync(new MrEntity
             {
                 MrId = "MR01",
                 MrName = "MR-1"

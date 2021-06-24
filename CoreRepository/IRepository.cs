@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CoreRepository.Core.Aggregate;
-using Utility;
-
 namespace CoreRepository
 {
 
@@ -13,7 +11,7 @@ namespace CoreRepository
     /// </summary>
     /// <typeparam name="T">聚合实体</typeparam>
     //  [InheritedExport]
-    public interface IRepository<T> : IDisposable, ISingletonDependency where T : AggregateRoot
+    public interface IRepository<T> : IDisposable where T : AggregateRoot
     {
 
         #region CRUD

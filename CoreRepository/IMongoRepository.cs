@@ -12,7 +12,7 @@ namespace CoreRepository
     /// 针对Mongodb的仓储接口
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal interface IMongoRepository<T> : IRepository<T>,IAggregateRepository<T> where T : MongoEntity
+    public interface IMongoRepository<T> : IRepository<T>,IAggregateRepository<T> where T : MongoEntity
     {
         #region UnitOfWork
         IMongoUnitOfWork UnitOfWork{get; set; }

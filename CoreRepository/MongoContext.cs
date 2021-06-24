@@ -11,14 +11,12 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using Utility.Config;
-
+using Microsoft.Extensions.Configuration;
 namespace CoreRepository
 {
 
-    internal class MongoContext : IMongoContext
+    public class MongoContext : IMongoContext
     {
-        private IConfigManager ConfigManager { get; }
         private MongoConnection Connection { get; }
         private static readonly ConcurrentDictionary<Type, string> connectionNameDictionary;
         #region RegConventionRegistry
@@ -29,11 +27,14 @@ namespace CoreRepository
             RegConventionRegistry();
 
         }
-        public MongoContext(IConfigManager configManager)
+        public MongoContext(IConfiguration configuration )
         {
-            ConfigManager = configManager;
+            var section = configuration.GetSection("Mongo");
+            this.MongoConfig = section.Get<MongoConfig>();
             Connection = MongoConnection.Singleton();//单例数据库连接
         }
+
+        public MongoConfig MongoConfig { get; }
 
         static void RegConventionRegistry()
         {
@@ -51,15 +52,15 @@ namespace CoreRepository
             BsonSerializer.RegisterSerializer(typeof(decimal), new DecimalSerializer(BsonType.Decimal128));
             BsonSerializer.RegisterSerializer(typeof(decimal?), new NullableSerializer<decimal>(new DecimalSerializer(BsonType.Decimal128)));
             //https://kevsoft.net/2020/06/25/storing-guids-as-strings-in-mongodb-with-csharp.html
-            BsonSerializer.RegisterSerializer(typeof(Guid),new GuidSerializer(BsonType.String));
-            BsonSerializer.RegisterSerializer(typeof(Guid?),new GuidSerializer(BsonType.String));
+            BsonSerializer.RegisterSerializer(typeof(Guid), new GuidSerializer(BsonType.String));
+            BsonSerializer.RegisterSerializer(typeof(Guid?), new GuidSerializer(BsonType.String));
             //解决double查询问题
             //BsonSerializer.RegisterSerializer(typeof(double), new CustomDoubleSerializer());
             //BsonSerializer.RegisterSerializer(typeof(double?), new CustomDoubleSerializer());
             ConventionRegistry.Register("CustomElementsConvention", pack, t => true);
 
             //解决插入emoji表情字符的问题
-            BsonSerializer.RegisterSerializer(typeof(string),new IllegalityStringSerializer());
+            BsonSerializer.RegisterSerializer(typeof(string), new IllegalityStringSerializer());
             //            ConventionRegistry.Register(
             //                "IgnoreManyProperties",
             //                new ConventionPack { new IgnoreManyPropertiesConvention() },
@@ -203,8 +204,8 @@ namespace CoreRepository
 
         public IMongoCollection<T> GetCollection<T>() where T : AggregateRoot
         {
-            Connection.MakeSureConnected(ConfigManager);
-           
+            Connection.MakeSureConnected(MongoConfig.MongoUrl,MongoConfig.DatabaseName);
+
             return Connection.Database.GetCollection<T>(GetCollectionName<T>());
         }
     }
