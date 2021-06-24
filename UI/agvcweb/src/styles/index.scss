@@ -1,0 +1,508 @@
+@import "./mixin.scss";
+@import "./transition.scss";
+@import "./element-ui.scss";
+@import "./sidebar.scss";
+@import "./btn.scss";
+
+@font-face {
+  font-family: "Dinot";
+  src: url(https://stdl.qq.com/stdl/me_center/main/version_2/font/DINOT-Regular.ttf);
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: "Helvetica Neue", Helvetica, Arial, "PingFang SC",
+    "Hiragino Sans GB", "Heiti SC", "MicrosoftYaHei", "WenQuanYi Micro Hei",
+    sans-serif;
+  font-weight: 400;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dinot {
+  font-family: "Dinot" !important;
+}
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+#app {
+  height: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+.no-padding {
+  padding: 0 !important;
+}
+
+.padding-content {
+  padding: 4px 0;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+a {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+div:focus {
+  outline: none;
+}
+
+.fr {
+  float: right;
+}
+
+.fl {
+  float: left;
+}
+
+.pr-5 {
+  padding-right: 5px;
+}
+
+.pl-5 {
+  padding-left: 5px;
+}
+
+.block {
+  display: block;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.inlineBlock {
+  display: block;
+}
+
+.clearfix {
+  &::after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+aside {
+  background: #eef1f6;
+  padding: 8px 24px;
+  margin-bottom: 20px;
+  border-radius: 2px;
+  display: block;
+  line-height: 32px;
+  font-size: 16px;
+  color: #2c3e50;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  a {
+    color: #337ab7;
+    cursor: pointer;
+
+    &:hover {
+      color: rgb(32, 160, 255);
+    }
+  }
+}
+
+//main-container全局样式
+
+.components-container {
+  margin: 30px 50px;
+  position: relative;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.sub-navbar {
+  height: 50px;
+  line-height: 50px;
+  position: relative;
+  width: 100%;
+  text-align: right;
+  padding-right: 20px;
+  transition: 0.6s ease position;
+  background: linear-gradient(
+    90deg,
+    rgba(32, 182, 249, 1) 0%,
+    rgba(32, 182, 249, 1) 0%,
+    rgba(33, 120, 241, 1) 100%,
+    rgba(33, 120, 241, 1) 100%
+  );
+
+  .subtitle {
+    font-size: 20px;
+    color: #ffffff;
+  }
+
+  &.draft {
+    background: #d0d0d0;
+  }
+
+  &.deleted {
+    background: #d0d0d0;
+  }
+}
+
+.link-type,
+.link-type:focus {
+  color: #337ab7;
+  cursor: pointer;
+
+  &:hover {
+    color: rgb(32, 160, 255);
+  }
+}
+
+.filter-container {
+  padding-bottom: 10px;
+
+  .filter-item {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 10px;
+  }
+}
+
+//refine vue-multiselect plugin
+.multiselect {
+  line-height: 16px;
+}
+
+.multiselect--active {
+  z-index: 1000 !important;
+}
+
+section.buttons {
+  text-align: left;
+}
+
+.absolute {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  outline: none;
+}
+
+.flex,
+.flexbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+}
+
+.flex-start {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  max-width: 100%;
+}
+
+.flex-stretch {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  max-width: 100%;
+}
+
+.flex-v,
+.vflex {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  max-width: 100%;
+}
+
+.flex1 {
+  flex: 1;
+}
+
+.flex2 {
+  flex: 2;
+}
+
+.flex3 {
+  flex: 3;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@keyframes card-drop {
+  from {
+    transform: translate3d(0, -100%, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.ul {
+  list-style: none;
+  max-height: 420px;
+  overflow: hidden;
+  overflow-y: auto;
+
+  li {
+    &:hover {
+      cursor: pointer;
+      background-color: #ebebeb;
+    }
+
+    &.active {
+      background-color: #ebebeb;
+    }
+
+    p {
+      font-size: 12px;
+      color: #666666;
+      padding: 0;
+      margin: 0;
+
+      &.header {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.mapContainer {
+  display: flex;
+  position: relative;
+}
+
+.height10 {
+  height: 10px;
+}
+
+.empty {
+  text-align: center;
+  font-size: 18px;
+
+  p {
+    padding-bottom: 30px;
+  }
+}
+
+i[disabled="disabled"] {
+  filter: grayscale(100%);
+}
+
+.button {
+  color: #ffffff;
+  border-radius: 0.08rem;
+  background-color: #4182ff;
+  height: 1.2rem;
+  font-size: 0.42rem;
+  line-height: 1.2rem;
+  margin: 0 0.3rem 0.3rem;
+  text-align: center;
+}
+
+// 对AMap地图样式进行控制
+.amap-logo {
+  right: 0 !important;
+  left: auto !important;
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.amap-info-close {
+  right: 5px !important;
+}
+
+.amap-copyright {
+  right: -70px !important;
+  left: auto !important;
+  width: 0;
+  height: 0;
+}
+
+.amap-marker-label {
+  border: none;
+  background-color: transparent;
+}
+
+.amap-info-content {
+  border-radius: 7px;
+}
+
+.data-empty {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  color: #888888;
+  font-size: 14px;
+}
+
+.--empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #888888;
+  font-size: 16px;
+  line-height: 200px;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  // -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.times {
+  .el-timeline {
+    padding-left: 10px !important;
+    font-size: 12px;
+  }
+
+  .el-timeline-item {
+    padding-bottom: 0 !important;
+  }
+
+  .el-timeline-item__timestamp.is-bottom {
+    margin: 4px 0;
+  }
+}
+
+.el-range-editor--mini .el-range-separator,
+.el-range-editor--medium .el-range-separator,
+.el-range-editor--small .el-range-separator {
+  padding: 0 !important;
+}
+
+//取消Autocomplete下拉框宽度限制
+.el-autocomplete-suggestion {
+  min-width: 200px;
+  max-width: 400px;
+  width: auto !important;
+}
+.NotificationZindex {
+  z-index: 9999 !important;
+}
+
+.FinanciaManagementTopRight {
+  .dropDownBox {
+    margin-left: 10px;
+    .el-button--text {
+      padding: 8px !important;
+      box-shadow: 0px 0px 0px 1px rgba($iconButtonBorder, 1);
+      border-radius: 0px;
+      border: none;
+      font-size: 12px;
+      color: rgba($iconButtonColor, 1);
+    }
+  }
+  .buttonBox {
+    vertical-align: top;
+    width: 50px;
+    height: 30px;
+    padding: 6px !important;
+    border-radius: 0px;
+    color: white;
+    margin-left: 10px;
+    background-color: $primary-color;
+    border: none !important;
+    &.charge {
+      color: white;
+      background-color: $yellow;
+      font-size: 15px;
+    }
+    &.search {
+      color: white;
+      background-color: $yellow;
+      font-size: 15px;
+    }
+    &.refresh {
+      background-color: white;
+      color: $primary-color !important;
+      box-shadow: 0px 0px 0px 1px rgba($primary-color, 1);
+      font-size: 15px;
+    }
+    &.save {
+      color: white;
+      background-color: $success-color;
+    }
+    &.is-disabled {
+      color: rgba($iconButtonColor, 1) !important;
+      box-shadow: 0px 0px 0px 1px rgba($iconButtonBorder, 1);
+    }
+  }
+}
+
+.mobile-main{
+   background: #eef1f6;
+   section.wrapper{
+      margin-top: 20px;
+      padding-bottom: 20px;
+   }
+}

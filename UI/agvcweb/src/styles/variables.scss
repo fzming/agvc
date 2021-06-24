@@ -1,0 +1,50 @@
+// base color
+$blue: #324157;
+$light-blue: #409eff;
+$light-blue-fade: rgba($light-blue, 0.2);
+$light-blue-fade2: rgba($light-blue, 0.4);
+$light-blue-fade3: rgba($light-blue, 0.6);
+$red: #c03639;
+$pink: #e65d6e;
+$green: #30b08f;
+$tiffany: #4ab7bd;
+$yellow: #fec171;
+$panGreen: #30b08f;
+$primary-color: #1890ff;
+$success-color: rgb(19, 206, 102);
+$gray-border: #d8dce5;
+$shadow02: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
+// * 或 # ，IE7、IE11 支持。
+// \9 ，IE8、IE9、IE11 支持。
+// \0 ，IE8、IE9 支持。
+// *、#、\9、\0 这几个写法除了IE外其他浏览器均不支持。
+$iehack: \9\0;
+$blue: #0080ff;
+// sidebar
+$menuText: white;
+$menuActiveText: #fec171;
+$subMenuActiveText: #fec171; // https://github.com/ElemeFE/element/issues/12951
+
+$menuBg: linear-gradient(to bottom, #409eff 50%, #0080ff);
+$menuHover: rgba(white, 0.1);
+$subMenuBg: #0080ff;
+$subMenuHover: rgba(white, 0.1);
+
+$sideBarWidth: 190px;
+$hideSideBarWidth: 54px;
+
+$iconButtonColor: #606266;
+$iconButtonBorder: #dcdfe6;
+
+// the :export directive is the magic sauce for webpack
+// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
+:export {
+  menutext: $menuText;
+  menuactivetext: $menuActiveText;
+  submenuactivetext: $subMenuActiveText;
+  menubg: $menuBg;
+  menuhover: $menuHover;
+  submenubg: $subMenuBg;
+  submenuhover: $subMenuHover;
+  sidebarwidth: $sideBarWidth;
+}

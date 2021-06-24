@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="renderer" content="webkit" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <!-- 禁止缓存 -->
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <link rel="icon" type="image/gif" href="<%= BASE_URL %>animated_favicon1.gif" />
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1820244_uug6qqxooee.css">
+    <title><%= webpackConfig.name %></title>
+    <% if(process.env.NODE_ENV == "production"){%>
+    <!-- CDN加速(BUILD时打开) -->
+    <script src="http://image.yy5156.com/cdn/vue/2.6.12/vue.runtime.min.js"></script>
+    <script src="http://image.yy5156.com/cdn/vuex/3.6.0/vuex.min.js"></script>
+    <script src="http://image.yy5156.com/cdn/vue-router/3.4.9/vue-router.min.js"></script>
+    <script src="http://image.yy5156.com/cdn/axios/0.21.1/axios.min.js"></script>
+    <script src="http://image.yy5156.com/cdn/lodash.js/4.17.20/lodash.min.js"></script>
+    <!--引入Signalr支持-->
+    <script src="http://image.yy5156.com/cdn/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+      document.domain ="e6erp.com";
+    </script>
+    <%}%>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

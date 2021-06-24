@@ -1,0 +1,211 @@
+.window-container {
+  //解决子窗口使用transform后字体发虚的BUG
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  // user-select: none;
+  //=================================
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+
+  &.modal {
+    pointer-events: none;
+
+    &::before {
+      background: rgba(#000000, 0.3);
+    }
+  }
+
+  &::before {
+    content: " ";
+    background: rgba(#000000, 0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    user-select: none;
+  }
+}
+
+.win {
+  background: url("~@/assets/images/sp-bg.jpg") left top no-repeat;
+  background-color: white;
+  background-size: 60%;
+  min-width: 200px;
+  position: absolute;
+  box-shadow: rgba(0, 0, 0, 0.36) 0 5px 40px !important;
+  // backface-visibility: hidden;
+  // transition: all 0.3s;
+  // border-radius: 5px;
+  border-top: 2px solid $primary-color;
+  overflow: hidden;
+  //ie 8-11 hack,使用transform相对位置偏移后，字体会发虚，IE会存在此问题，暂时无法解决
+  top: 50% $iehack;
+  left: 50% $iehack;
+  transform: translate(-50%, -50%) $iehack;
+
+  &[disabled="disabled"] {
+    pointer-events: none;
+    border-top: 2px solid rgba(#000000, 0.2);
+
+    &::before {
+      content: " ";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 200;
+      background: rgba(#000000, 0.2);
+      // filter: blur(30px);
+      user-select: none;
+    }
+
+    .close {
+      background: #cccccc;
+      color: #999999;
+    }
+  }
+
+  button.ivu-btn-long {
+    &.ivu-btn-primary {
+      box-shadow: 0 5px 5px rgba($primary-color, 0.25);
+    }
+
+    &[disabled="disabled"] {
+      box-shadow: none;
+    }
+  }
+
+  .inner-body {
+    padding: 20px 28px;
+    padding-top: 0;
+    min-width: 400px;
+    user-select: auto;
+  }
+
+  .table-tab {
+    .ivu-tabs-bar {
+      margin-bottom: 0;
+    }
+  }
+
+  .title {
+    padding: 10px 28px;
+    font-size: 18px;
+    font-weight: normal;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    cursor: move;
+    color: $primary-color;
+  }
+
+  .close {
+    cursor: pointer;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: $primary-color;
+    background: $light-blue-fade;
+    border-radius: 3px;
+    margin-right: -10px;
+    transition: all 0.3s;
+
+    &:hover {
+      color: #ffffff;
+      background: $primary-color;
+    }
+  }
+}
+
+.scrollY {
+  overflow: hidden;
+  overflow-y: auto;
+  // max-height: 60vh;
+}
+
+.background {
+  background: rgba(0, 0, 0, 0.15);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.window-enter-active,
+.window-leave-active {
+  transition: all 0.25s ease-in-out;
+  opacity: 1;
+  transform: translateY(0%);
+}
+
+.window-enter,
+.window-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.panel-enter-active,
+.panel-leave-active {
+  transition: all 0.25s ease-in-out;
+  opacity: 1;
+  transform: translateY(0%);
+}
+
+.panel-enter,
+.panel-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+@media print {
+  .win {
+    box-shadow: none;
+    border: none;
+    padding-top: 20px;
+
+    .title {
+      display: none;
+    }
+  }
+}
+
+// .confirm {
+//   text-align: center;
+//   padding-top: 20px;
+
+//   p {
+//     padding: 10px;
+//   }
+
+//   .text {
+//     font-size: 14px;
+//   }
+
+//   .des {
+//     font-size: 12px;
+//     color: #999999;
+//     padding-top: 0;
+//     padding-bottom: 10px;
+//     border-bottom: 1px solid #eaeaea;
+//     margin-bottom: 10px;
+//   }
+
+//   .buttons {
+//     button {
+//       margin: 0 5px;
+//     }
+//   }
+// }

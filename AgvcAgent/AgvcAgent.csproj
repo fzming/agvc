@@ -6,10 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Api\Filters\GlobalFilters\WebApiActionFilter.cs" />
+    <Compile Remove="Api\Filters\GlobalFilters\WebApiExceptionFilter.cs" />
+    <Compile Remove="Api\OAuth\OpenAuthorizationServerProvider.cs" />
+    <Compile Remove="Api\OAuth\OpenRefreshTokenProvider.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.7" />
   </ItemGroup>
 
@@ -26,6 +34,10 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Api\OAuth\" />
   </ItemGroup>
 
 </Project>

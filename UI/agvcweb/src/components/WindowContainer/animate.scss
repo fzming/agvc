@@ -1,0 +1,147 @@
+// .fade-scale-enter-active,.fade-scale-leave-active{}
+// .fade-scale-enter,.fade-scale-leave-to{}
+@keyframes swal2-show {
+  0% {
+    -webkit-transform: scale(0.7);
+    transform: scale(0.7);
+  }
+  45% {
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+  80% {
+    -webkit-transform: scale(0.95);
+    transform: scale(0.95);
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes swal2-hide {
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(0.5);
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+
+//saw2
+.swal2-enter-active,
+.swal2-leave-active {
+  animation: 0.3s swal2-show;
+}
+.swal2-enter,
+.swal2-leave-to {
+  animation: 0.3s swal2-hide;
+}
+
+//渐隐并放大动画
+.fadeScale-enter-active,
+.fadeScale-leave-active {
+  transition: all 0.3s;
+  transform: scale(1);
+  opacity: 1;
+}
+.fadeScale-enter,
+.fadeScale-leave-to {
+  transform: scale(0.7);
+  opacity: 0;
+}
+//Slide from the right
+.slideRight-enter-active,
+.slideRight-leave-active {
+  transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
+  transform: translateX(0);
+  opacity: 1;
+}
+.slideRight-enter,
+.slideRight-leave-to {
+  transform: translateX(20%);
+  opacity: 0;
+}
+// Slide from the bottom
+.slideBottom-enter-active,
+.slideBottom-leave-active {
+  transition: all 0.3s;
+  transform: translateY(0);
+  opacity: 1;
+}
+.slideBottom-enter,
+.slideBottom-leave-to {
+  transform: translateY(20%);
+  opacity: 0;
+}
+//Newspaper
+.Newspaper-enter-active,
+.Newspaper-leave-active {
+  transition: all 0.5s;
+  transform: scale(1) rotate(0deg);
+  opacity: 1;
+}
+.Newspaper-enter,
+.Newspaper-leave-to {
+  transform: scale(0) rotate(720deg);
+  opacity: 0;
+}
+//fall
+.fall-enter-active,
+.fall-leave-active {
+  transition: all 0.3s ease-in;
+  transform: translateZ(0) rotateX(0deg);
+  opacity: 1;
+}
+.fall-enter,
+.fall-leave-to {
+  transform: translateZ(600px) rotateX(20deg);
+  opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1300px;
+}
+//sidefall
+.sidefall-enter-active,
+.sidefall-leave-active {
+  transition: all 0.3s ease-in;
+  transform: translate(0%) translateZ(0) rotate(0deg);
+  opacity: 1;
+}
+.sidefall-enter,
+.sidefall-leave-to {
+  transform: translate(30%) translateZ(600px) rotate(10deg);
+  opacity: 0;
+  transform-style: preserve-3d;
+  perspective: 1300px;
+}
+
+//slide and stick to top
+.slidetick-enter-active,
+.slidetick-leave-active {
+  transition: all 0.3s;
+  transform: translateY(0%);
+  border-radius: 0 0 3px 3px;
+  opacity: 1;
+}
+.slidetick-enter,
+.slidetick-leave-to {
+  transform: translateY(-200%);
+  opacity: 0;
+}
+//Superscaled
+
+.Superscaled-enter-active,
+.Superscaled-leave-active {
+  transition: all 0.3s;
+  transform: scale(1);
+  opacity: 1;
+}
+.Superscaled-enter,
+.Superscaled-leave-to {
+  transform: scale(2);
+  opacity: 0;
+}
