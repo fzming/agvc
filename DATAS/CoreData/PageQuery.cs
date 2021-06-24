@@ -1,6 +1,6 @@
 ﻿using Utility.Mapper;
 
-namespace CoreRepository.Core.Aggregate
+namespace CoreData
 {
     public interface IPageQuery
     {

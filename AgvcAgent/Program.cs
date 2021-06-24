@@ -10,15 +10,11 @@ namespace AgvcAgent
 {
     class Program
     {
-
-
         static void Main(string[] args)
         {
             var webHost = CreateWebHostBuilder(args).Build();
             DependencyInjection.ServiceProvider = webHost.Services;
             var agvc = DependencyInjection.GetService<IAgvcCenter>();
-            var mrrepo = DependencyInjection.GetService<IMrRepository>();
-
             agvc.Run();
             webHost.Run();
             agvc.Stop();

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CoreRepository.Core.Aggregate
+namespace CoreData
 {
     public class Pager
     {

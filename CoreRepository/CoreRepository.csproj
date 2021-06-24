@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AgvUtility\Utility.csproj" />
+    <ProjectReference Include="..\DATAS\CoreData\CoreData.csproj" />
   </ItemGroup>
 
 </Project>

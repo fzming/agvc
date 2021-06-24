@@ -15,20 +15,18 @@ namespace AgvcAgent.Api
 {
 
     [ApiController]
-    [Route("IMServer")]
-    public class TestApi : ControllerBase
+    [Route("agvc")]
+    public class AgvcApi : ControllerBase
     {
         private IRobotTaskEngine TaskEngine { get; }
         private IAgvReporter AgvReporter { get; }
         private IMessageParser MessageParser { get; }
-        private IMrRepository MrRepository { get; }
 
-        public TestApi(IRobotTaskEngine taskEngine, IAgvReporter agvReporter,IMessageParser messageParser,IMrRepository mrRepository)
+        public AgvcApi(IRobotTaskEngine taskEngine, IAgvReporter agvReporter,IMessageParser messageParser)
         {
             TaskEngine = taskEngine;
             AgvReporter = agvReporter;
             MessageParser = messageParser;
-            MrRepository = mrRepository;
         }
 
         [Route("tx501i")]
@@ -42,23 +40,14 @@ namespace AgvcAgent.Api
             TaskEngine.AcceptMessage(message, mrid);
             return mqMessage;
         }
-        [Route("dbtest")]
-        public Task dbtest()
-        {
-           return MrRepository.CreateAsync(new MrEntity
-            {
-                MrId = "MR01",
-                MrName = "MR-1"
-            });
-
-        }
+        
         /// <summary>
-        /// 測試用，同意 iM 所有請求及回報。呼叫方式：http://localhost:5001/IMServer/AllwaysTrue?json= 
+        /// 同意 iM 所有請求及回報。呼叫方式：http://localhost:5001/agvc/request?json= 
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        [HttpGet, Route("AllwaysTrue")]
-        public string AllwaysTrue([FromQuery] string json)
+        [HttpGet, Route("request")]
+        public string ImRequest([FromQuery] string json)
         {
             //Console.WriteLine(">>" + json);
              
