@@ -3,8 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CoreRepository.Core.Attributes;
-using DtoModel.Kernel;
+using CoreData.Core.Attributes;
+using CoreData.Models;
 
 namespace CoreService
 {

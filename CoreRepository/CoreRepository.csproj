@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Core\MongoEntityExtension.cs" />
     <Compile Remove="IUnitOfWork.cs" />
   </ItemGroup>
 

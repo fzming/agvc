@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RobotFactory.Tasks
+namespace AgvcWorkFactory.Tasks
 {
     public interface ITask
     {

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
+using AgvcWorkFactory.Interfaces;
 using Messages.Transfers;
 using Messages.Transfers.Core;
 using Protocol;
 using Protocol.Mission;
 using Protocol.Report;
-using RobotFactory.Interfaces;
 using Utility;
 
-namespace RobotFactory.Tasks
+namespace AgvcWorkFactory.Tasks
 {
     public abstract class AbstractRobotTask : IRobotTask
     {

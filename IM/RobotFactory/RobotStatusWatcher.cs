@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using RobotFactory.Interfaces;
+using AgvcWorkFactory.Interfaces;
 
-namespace RobotFactory
+namespace AgvcWorkFactory
 {
     /// <summary>
     /// MR状态监控

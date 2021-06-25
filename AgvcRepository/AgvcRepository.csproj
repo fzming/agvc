@@ -10,10 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoreRepository\CoreRepository.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Entitys\" />
+    <ProjectReference Include="..\DATAS\AgvcEntitys\AgvcEntitys.csproj" />
   </ItemGroup>
 
 </Project>

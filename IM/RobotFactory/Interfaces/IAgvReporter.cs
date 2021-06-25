@@ -2,7 +2,7 @@
 using Protocol.Report;
 using Utility;
 
-namespace RobotFactory.Interfaces
+namespace AgvcWorkFactory.Interfaces
 {
     public interface IAgvReporter : ISingletonDependency
     {

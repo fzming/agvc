@@ -18,7 +18,7 @@ namespace AgvcAgent
             // services.Configure<MongoConfig>(configuration.GetSection("Mongo"));
       
            // services.AddSingleton(typeof(IMongoRepository<>),typeof(MongoRepository<>));
-            services.ScanAndInjectService("^RobotFactory|^Utility|^Messages");
+            services.ScanAndInjectService("^AgvcWorkFactory|^Utility|^Messages");
             services.ScanAndInjectService("^CoreService|^AgvcService");
             services.ScanAndInjectService("^AgvcRepository|^CoreRepository");
             // services.Add(new ServiceDescriptor(typeof(IMongoRepository<>), typeof(MongoRepository<>), ServiceLifetime.Singleton));

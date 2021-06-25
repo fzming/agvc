@@ -1,7 +1,5 @@
 ﻿using System.Threading.Tasks;
-
-using AgvcRepository.Entitys;
-
+using AgvcEntitys.Agv;
 using CoreRepository;
 
 using Utility;

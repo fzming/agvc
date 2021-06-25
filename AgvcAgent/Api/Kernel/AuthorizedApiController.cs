@@ -1,6 +1,6 @@
 ﻿
+using AgvcService.Users.Models;
 using CoreData;
-using DtoModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

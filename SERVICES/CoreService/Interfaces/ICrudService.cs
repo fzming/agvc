@@ -2,8 +2,9 @@
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CoreData;
-using CoreRepository.Core.Aggregate;
-using DtoModel.Kernel;
+using CoreData.Core.Aggregate;
+using CoreData.Models;
+
 namespace CoreService.Interfaces
 {
 

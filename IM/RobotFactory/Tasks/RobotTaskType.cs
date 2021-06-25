@@ -1,4 +1,4 @@
-﻿namespace RobotFactory.Tasks
+﻿namespace AgvcWorkFactory.Tasks
 {
     public enum RobotTaskType
     {

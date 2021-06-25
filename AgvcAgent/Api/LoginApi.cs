@@ -19,10 +19,10 @@ namespace AgvcAgent.Api
             return "DateTime.Now：" + DateTime.Now;
         }
 
-        private IUserService UserService { get; }
+        private ILoginService UserService { get; }
         private ITokenBuilder TokenBuilder { get; }
 
-        public LoginApi(IUserService userService, ITokenBuilder tokenBuilder)
+        public LoginApi(ILoginService userService, ITokenBuilder tokenBuilder)
         {
             UserService = userService;
             TokenBuilder = tokenBuilder;

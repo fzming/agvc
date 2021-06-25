@@ -7,8 +7,7 @@ using System.Linq.Expressions;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using CoreData;
-using CoreRepository.Core;
-using CoreRepository.Core.Aggregate;
+using CoreData.Core;
 using CoreRepository.Kernel;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -16,7 +15,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Nito.AsyncEx;
 using Polly;
-using Utility;
+using Utility.Extensions;
 
 namespace CoreRepository
 {
@@ -27,7 +26,6 @@ namespace CoreRepository
     public partial class MongoRepository<T> where T : MongoEntity
     {
         public AsyncLock Mutex { get; }
-
         protected MongoRepository(IMongoUnitOfWork unitOfWork)
         {
             UnitOfWork = unitOfWork;

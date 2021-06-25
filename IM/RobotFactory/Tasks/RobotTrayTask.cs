@@ -1,4 +1,4 @@
-﻿namespace RobotFactory.Tasks
+﻿namespace AgvcWorkFactory.Tasks
 {
     /// <summary>
     /// 晶棒搬运任务

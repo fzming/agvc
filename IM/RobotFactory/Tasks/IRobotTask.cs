@@ -1,7 +1,7 @@
-﻿using Messages.Transfers.Core;
-using RobotFactory.Interfaces;
+﻿using AgvcWorkFactory.Interfaces;
+using Messages.Transfers.Core;
 
-namespace RobotFactory.Tasks
+namespace AgvcWorkFactory.Tasks
 {
     public interface IRobotTask : ITask
     {

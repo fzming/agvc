@@ -1,6 +1,6 @@
 ﻿using Messages.Transfers.Core;
 
-namespace RobotFactory.Tasks
+namespace AgvcWorkFactory.Tasks
 {
     public class TaskGoal
     {

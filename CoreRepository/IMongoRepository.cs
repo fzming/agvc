@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using CoreRepository.Core;
-using CoreRepository.Core.Aggregate;
+using CoreData.Core;
+using CoreData.Core.Aggregate;
 using MongoDB.Driver;
 
 namespace CoreRepository

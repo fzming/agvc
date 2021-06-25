@@ -1,8 +1,8 @@
 ﻿using System.Linq;
+using AgvcWorkFactory.Interfaces;
 using RobotDefine;
-using RobotFactory.Interfaces;
 
-namespace RobotFactory
+namespace AgvcWorkFactory
 {
     public class AgvcCenter : IAgvcCenter
     {

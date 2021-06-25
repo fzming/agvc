@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+using AgvcWorkFactory.Interfaces;
 using Protocol;
 using Protocol.Report;
 
-using RobotDefine;
-using RobotFactory.Interfaces;
-
-namespace RobotFactory
+namespace AgvcWorkFactory
 {
     /// <summary>
     /// AGV设备回调监控

@@ -2,7 +2,7 @@
 using System.Threading;
 using Protocol;
 
-namespace RobotFactory
+namespace AgvcWorkFactory
 {
     public class AgvReport
     {

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-
+using AgvcWorkFactory.Tasks;
 using RobotDefine;
 
-using RobotFactory.Tasks;
-
-namespace RobotFactory
+namespace AgvcWorkFactory
 {
     /// <summary>
     /// 虚拟机器人

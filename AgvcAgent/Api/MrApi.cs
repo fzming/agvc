@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AgvcAgent.Api.Kernel;
+using AgvcEntitys.Agv;
 using AgvcRepository;
-using AgvcRepository.Entitys;
 using Microsoft.AspNetCore.Mvc;
 namespace AgvcAgent.Api
 {

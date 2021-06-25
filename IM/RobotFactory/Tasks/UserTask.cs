@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RobotFactory.Tasks
+namespace AgvcWorkFactory.Tasks
 {
     /// <summary>
     /// 用户自定义任务

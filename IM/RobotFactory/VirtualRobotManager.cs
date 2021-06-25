@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AgvcWorkFactory.Interfaces;
 using RobotDefine;
-using RobotFactory.Interfaces;
 using Utility;
 
-namespace RobotFactory
+namespace AgvcWorkFactory
 {
     public class VirtualRobotManager : IVirtualRobotManager
     {

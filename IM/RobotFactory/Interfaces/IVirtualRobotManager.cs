@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using RobotDefine;
 using Utility;
 
-namespace RobotFactory.Interfaces
+namespace AgvcWorkFactory.Interfaces
 {
     public interface IVirtualRobotManager : ISingletonDependency
     {

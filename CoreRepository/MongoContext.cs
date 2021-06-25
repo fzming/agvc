@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Reflection;
+using CoreData.Core;
+using CoreData.Core.Aggregate;
+using CoreData.Core.Attributes;
 using CoreRepository.Converters;
-using CoreRepository.Core;
-using CoreRepository.Core.Aggregate;
-using CoreRepository.Core.Attributes;
 using CoreRepository.MapConventions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using CoreData;
-using CoreRepository.Core.Aggregate;
+using CoreData.Core.Aggregate;
+using CoreData.Models;
 using CoreService.Interfaces;
-using DtoModel.Kernel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgvcAgent.Api.Kernel

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Sockets;
-using CoreRepository.Core;
+using CoreData.Core;
 using CoreRepository.Kernel;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;

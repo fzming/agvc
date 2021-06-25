@@ -1,7 +1,7 @@
 ﻿using System;
 using RobotDefine;
 
-namespace RobotFactory
+namespace AgvcWorkFactory
 {
     public class MrStatusEventArg : EventArgs
     {

@@ -1,4 +1,4 @@
-﻿using CoreRepository.Core;
+﻿using CoreData.Core;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.IdGenerators;

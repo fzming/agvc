@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RobotFactory.Tasks
+namespace AgvcWorkFactory.Tasks
 {
     public class TaskTypeAttribute : Attribute
     {

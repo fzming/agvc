@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RobotFactory
+namespace AgvcWorkFactory
 {
     public delegate void MrStatusReceivedEventHandler(object sender, MrStatusEventArg e);
     public delegate void MrStatusErrorEventHandler(object sender, MrStatusErrorArg e);

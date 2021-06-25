@@ -1,4 +1,4 @@
-﻿using Utility.Mapper;
+﻿using Utility.Extensions;
 
 namespace CoreData
 {

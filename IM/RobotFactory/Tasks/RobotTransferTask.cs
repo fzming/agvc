@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using Messages.Transfers;
 using Messages.Transfers.Core;
 using Protocol.Mission;
 using Protocol.Report;
 using Utility;
+using Utility.Extensions;
 
-namespace RobotFactory.Tasks
+namespace AgvcWorkFactory.Tasks
 {
     /// <summary>
     /// Robot搬运指令(STK->EQP，EQP->STK,EQP->EQP,STK->STK)

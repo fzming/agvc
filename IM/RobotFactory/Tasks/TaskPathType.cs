@@ -1,4 +1,4 @@
-﻿namespace RobotFactory.Tasks
+﻿namespace AgvcWorkFactory.Tasks
 {
     /// <summary>
     /// 步骤实际Path类型，以及实际执行任务实例类型

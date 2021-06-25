@@ -2,14 +2,12 @@
 using System.Threading.Tasks;
 using AgvcAgent.Api.Filters.GlobalFilters;
 using AgvcRepository;
-using AgvcRepository.Entitys;
+using AgvcWorkFactory.Interfaces;
 using CoreRepository;
 using Messages.Parser;
 using Microsoft.AspNetCore.Mvc;
 using Protocol;
 using Protocol.Query;
-using RobotFactory;
-using RobotFactory.Interfaces;
 using Serialize;
 
 namespace AgvcAgent.Api

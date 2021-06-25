@@ -1,6 +1,6 @@
 ﻿using Utility;
 
-namespace RobotFactory.Interfaces
+namespace AgvcWorkFactory.Interfaces
 {
     public interface IAgvcCenter:ISingletonDependency
     {
