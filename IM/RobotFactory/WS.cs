@@ -10,8 +10,14 @@ using MRStatus = RobotDefine.MRStatus;
 
 namespace AgvcWorkFactory
 {
+    /// <summary>
+    /// IM WebService调用工具类
+    /// </summary>
     public class WS
     {
+        /// <summary>
+        /// IM URI地址
+        /// </summary>
         private const string header = "http://localhost:1025/IMServer/Dispatch?json=";
         /// <summary>
         /// 執行Mission,Query,Interrupt

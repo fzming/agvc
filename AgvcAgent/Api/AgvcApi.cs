@@ -19,9 +19,9 @@ namespace AgvcAgent.Api
     {
         private IRobotTaskEngine TaskEngine { get; }
         private IAgvReporter AgvReporter { get; }
-        private IMessageParser MessageParser { get; }
+        private IMessageSerializer MessageParser { get; }
 
-        public AgvcApi(IRobotTaskEngine taskEngine, IAgvReporter agvReporter,IMessageParser messageParser)
+        public AgvcApi(IRobotTaskEngine taskEngine, IAgvReporter agvReporter,IMessageSerializer messageParser)
         {
             TaskEngine = taskEngine;
             AgvReporter = agvReporter;
@@ -45,7 +45,7 @@ namespace AgvcAgent.Api
             var mqMessage =
                 "TX501I                      001BL$WMS202                                        BL        N    A               LKXLJBT01 01        DJSLJBT01 01                            10105114601764                  ";
 
-            var message = MessageParser.Parse(mqMessage);
+            var message = MessageParser.Deserialize(mqMessage);
             TaskEngine.AcceptMessage(message, mrid);
             return mqMessage;
         }

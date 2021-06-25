@@ -1,4 +1,6 @@
-﻿namespace AgvcWorkFactory.Tasks
+﻿using Messages.Transfers.Core;
+
+namespace AgvcWorkFactory.Tasks
 {
     /// <summary>
     /// 晶棒搬运任务
@@ -6,6 +8,10 @@
     [TaskType(RobotTaskType.Tray)]
     public class RobotTrayTask : AbstractRobotTask
     {
+        public override void ExecuteFromToRules()
+        {
+            base.ExecuteFromToRules();
+        }
         #region Overrides of AbstractRobotTask
 
         /// <summary>
@@ -20,6 +26,11 @@
         /// </summary>
         protected override void OnRunToTask(TaskGoal goal, int index)
         {
+        }
+
+        protected override void OnTrxMessageAdded(IMessage message)
+        {
+            base.OnTrxMessageAdded(message);
         }
 
         #endregion

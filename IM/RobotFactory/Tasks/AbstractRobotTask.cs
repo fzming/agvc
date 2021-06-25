@@ -12,6 +12,9 @@ using Utility;
 
 namespace AgvcWorkFactory.Tasks
 {
+    /// <summary>
+    /// 机器人任务抽象基类
+    /// </summary>
     public abstract class AbstractRobotTask : IRobotTask
     {
         /// <summary>
@@ -41,7 +44,10 @@ namespace AgvcWorkFactory.Tasks
         }
 
         #region Agv Reporter
-
+        /// <summary>
+        /// 设置AgvReporter
+        /// </summary>
+        /// <param name="agvReporter"></param>
         public void SetAgvReporter(IAgvReporter agvReporter)
         {
             this._agvReporter = agvReporter;
@@ -52,8 +58,12 @@ namespace AgvcWorkFactory.Tasks
         #endregion
 
         #region OptionalReportTimeouts
-
+        /// <summary>
+        /// 用于超时时间配置
+        /// </summary>
+        [Obsolete("已废弃")]
         private static Dictionary<string, double> _rpts;
+        [Obsolete("已废弃")]
         private static Dictionary<string, double> OptionalReportTimeouts
         {
             get
@@ -80,10 +90,14 @@ namespace AgvcWorkFactory.Tasks
         }
 
         #endregion
+        /// <summary>
+        /// 当MES TX501 请求消息被设置时.需要具体任务实体自行处理,
+        /// </summary>
+        /// <param name="message"></param>
         protected virtual void OnTrxMessageAdded(IMessage message) { }
 
         /// <summary>
-        /// Froms
+        /// Froms 
         /// </summary>
         public List<TaskGoal> FromGoals { get; set; } = new List<TaskGoal>();
 
@@ -99,7 +113,10 @@ namespace AgvcWorkFactory.Tasks
         /// 實際任務单次執行步驟(To)
         /// </summary>
         protected abstract void OnRunToTask(TaskGoal goal, int index);
-
+        /// <summary>
+        /// 开始执行
+        /// </summary>
+        /// <param name="virtualRobot"></param>
         public void Run(VirtualRobot virtualRobot)
         {
             this.MRID = virtualRobot.MRStatus.MRID;
@@ -139,6 +156,9 @@ namespace AgvcWorkFactory.Tasks
                 this.OnRunToTask(toGoal, index);
             }
         }
+        /// <summary>
+        /// 当前任务执行的机器人对象
+        /// </summary>
         private VirtualRobot VirtualRobot { get; set; }
         /// <summary>
         /// 等待IM報告
@@ -168,7 +188,8 @@ namespace AgvcWorkFactory.Tasks
                 while (reportTask.Report == null && !agvError)
                 {
                     VirtualRobot.State = $"等待AGV信号：{reportKey}中";
-                    waitHandle.WaitOne(60 * 1000);//等待60s
+                    waitHandle.WaitOne(60 * 1000);//等待60s[可配置]
+                    //======================================================================
                     //_waitHandle.WaitOne();
                     //挂起綫程等待，直到有任务上报或者轮询AGV为故障状态。
                     //=======================================================================
@@ -234,17 +255,18 @@ namespace AgvcWorkFactory.Tasks
         /// <param name="message"></param>
         protected void AGVC2MES(IMessage message)
         {
-
+            //todo:由于尚未对接MES 的IBM MQ,
+            //暂时不写
         }
 
         #region 执行标准指令组
         /// <summary>
-        /// 执行Pick操作
+        /// 执行标准Pick操作
         /// </summary>
         /// <param name="pick"></param>
         protected void RunPickMission(Pick pick, Action<BaseReport> reportAction = null)
         {
-            //1.MrStatus
+            //1.MrStatus 任务执行前已经获取了状态,这里不需要重新获取
             //VirtualRobot.RequestUpdateStatusAsync(); 
             //2.Pick
             SendMission(pick);
@@ -269,7 +291,7 @@ namespace AgvcWorkFactory.Tasks
         }
 
         /// <summary>
-        /// 执行Drop操作
+        /// 执行标准Drop操作
         /// </summary>
         /// <param name="drop"></param>
         /// <param name="reportAction"></param>

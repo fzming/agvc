@@ -178,14 +178,16 @@ namespace AgvcWorkFactory
             {
                 return CheckBattery();//仅检查充电是否可以完毕
             }
-            return !Working&&CheckBattery() && IsIdle();
+            return !Working&&CheckBattery() && (IsIdle()|| IsInitialize());
         }
         /// <summary>
         /// 检查电池电量
+        /// 当电池电量低时将自动命令MR去充电,同时根据充电前的电量百分比,决定了MR何时苏醒再次接收工作,
+        /// 注意:机器人处于充电状态下将无法接收任务引擎的随机任务指派,除非在安排任务时指示本MR执行,任务会加入到MR的待处理队列.等就绪时:优先执行.
         /// </summary>
         private bool CheckBattery()
         {
-            if (MRStatus.Battery < 30) //电量不足
+            if (MRStatus.Battery < 30) //电量不足[可配置]
             {
                 Console.WriteLine($"[CheckBattery]{MRStatus.MRID} Battery:{MRStatus.Battery}");
                 //命令MR去充电
@@ -202,7 +204,7 @@ namespace AgvcWorkFactory
             }
             if (Docking) 
             { 
-                //当前正在充电中,且30%<电量<70%,若充电前电量小于30.不允许继续分派任务
+                //当前正在充电中,且30%(充电前)<电量<70%,若充电前电量小于30%.不允许继续分派任务[可配置]
                 if (this.BeforeDockBattery < 30 && MRStatus.Battery < 70)
                 {
                     Console.WriteLine($"充电中（保养策略）充电前：{this.BeforeDockBattery} 当前电量：{MRStatus.Battery}");
@@ -217,7 +219,9 @@ namespace AgvcWorkFactory
 
 
         #endregion
-
+        /// <summary>
+        /// 请求异步更新MR状态
+        /// </summary>
         public void RequestUpdateStatusAsync()
         {
             Console.WriteLine($"[{MRStatus.MRID} Request RequestUpdateStatusAsync]");
@@ -226,10 +230,17 @@ namespace AgvcWorkFactory
                 MRID = MRStatus.MRID
             });
         }
+        /// <summary>
+        /// 请求同步更新MR状态
+        /// </summary>
         public void RequestUpdateStatusSync()
         {
             OnMRStatusChange(WS.GetMRStatus(MRStatus.MRID));
         }
+        /// <summary>
+        /// 设置MR状态
+        /// </summary>
+        /// <param name="working"></param>
         public void SetWorkingStatus(bool working)
         {
             this.Working = working;
@@ -257,7 +268,10 @@ namespace AgvcWorkFactory
         {
             return MRStatus.IOperatorStatus == IOperatorStatus.Idle && MRStatus.MissionStatus == MissionStatus.Standby;
         }
-
+        /// <summary>
+        /// 是否处于初始化状态.MR重启后,一直会处于此状态.
+        /// </summary>
+        /// <returns></returns>
         public bool IsInitialize()
         {
             return (MRStatus.IOperatorStatus == IOperatorStatus.Initialize &&

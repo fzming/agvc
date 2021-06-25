@@ -17,7 +17,11 @@ namespace AgvcWorkFactory
     /// </summary>
     public sealed class RobotTaskEngine : IRobotTaskEngine
     {
-        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+    /// <summary>
+    ///  构造函数
+    /// </summary>
+    /// <param name="robotManager">机器人管理器</param>
+    /// <param name="agvReporter">Agv设备状态上报监控对象</param>
         public RobotTaskEngine(IVirtualRobotManager robotManager, IAgvReporter agvReporter)
         {
             RobotManager = robotManager;
@@ -32,9 +36,6 @@ namespace AgvcWorkFactory
         private Thread _watchThread;
         private readonly object _locker = new object();
         private readonly AutoResetEvent _waitHandle = new AutoResetEvent(false);
-
-
-
         private static IEnumerable<Type> TaskTypes
         {
             get
@@ -81,7 +82,7 @@ namespace AgvcWorkFactory
         }
 
         /// <summary>
-        /// Accept 用户任务指令
+        /// Accept 用户任务指令,一般情况下:用户指令由WebApi调用传输
         /// </summary>
         public void AcceptUserTask(ITask userTask)
         {
@@ -93,21 +94,28 @@ namespace AgvcWorkFactory
             }
 
         }
-
+        /// <summary>
+        /// 获取当前任务的路径类型
+        /// </summary>
+        /// <param name="userTask"></param>
+        /// <returns></returns>
         private TaskPathType GetTaskPathType(ITask userTask)
         {
             //从UserTask分析
             return TaskPathType.StockToEQP;
         }
-
+        /// <summary>
+        /// 将任务增加到待分配队列
+        /// </summary>
+        /// <param name="robotTask"></param>
         private void AddTask(IRobotTask robotTask)
         {
-            //将任务加入到队列
+            //锁:防止TaskQueque出列时,同时又有新的任务加入到队列造成冲突
             lock (_locker)
             {
                 TaskQueue.Enqueue(robotTask);
                 Console.WriteLine($"New Task:{TaskQueue.Count} ID:{robotTask.Id}");
-                _waitHandle.Set(); // Signal to the thread there is data to process
+                _waitHandle.Set(); // 指示任务分配线程取消阻塞状态,开始执行分配操作,
             }
 
         }
@@ -124,7 +132,9 @@ namespace AgvcWorkFactory
         #endregion
 
         #region 任务分配线程
-
+        /// <summary>
+        /// 启动线程工作
+        /// </summary>
         public void Start()
         {
             Console.WriteLine("[RobotTaskEngine->Start]");
@@ -132,6 +142,9 @@ namespace AgvcWorkFactory
             _watchThread = new Thread(QueueWatchThread) { IsBackground = true };
             _watchThread.Start();
         }
+        /// <summary>
+        /// 停止线程工作
+        /// </summary>
         public void Stop()
         {
             try
@@ -140,7 +153,7 @@ namespace AgvcWorkFactory
                 _cancelTokenSource.Cancel(false);
                 _watchThread.Join();
                 _watchThread = null;
-                _waitHandle.Close();
+                _waitHandle.Close();//销毁原子信号锁
                 Console.WriteLine("[RobotTaskEngine->Stopped]");
             }
             catch
@@ -148,7 +161,9 @@ namespace AgvcWorkFactory
                 // ignored
             }
         }
-
+        /// <summary>
+        /// 任务分配实际工作线程
+        /// </summary>
         private void QueueWatchThread()
         {
             while (!_cancelTokenSource.IsCancellationRequested)
@@ -195,6 +210,11 @@ namespace AgvcWorkFactory
         #endregion
 
         #region 创建RobotTask
+        /// <summary>
+        /// 根据路径类型创建一个对应的机器人任务
+        /// </summary>
+        /// <param name="pathType"></param>
+        /// <returns></returns>
         private IRobotTask CreateRobotTask(TaskPathType pathType)
         {
             var taskType = pathType.GetAttribute<TaskTypeAttribute>().TaskType;

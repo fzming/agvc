@@ -10,13 +10,37 @@ namespace AgvcWorkFactory
     /// </summary>
     public class RobotStatusWatcher : IDisposable, IRobotStatusWatcher
     {
+        /// <summary>
+        /// 当接收到MR状态改变事件
+        /// </summary>
         public event MrStatusReceivedEventHandler MrStatusReceived;
+        /// <summary>
+        /// 当MR状态无法成功获取事件
+        /// </summary>
         public event MrStatusErrorEventHandler MrStatusError;
+        /// <summary>
+        /// 监控MR队列
+        /// </summary>
         private Queue<string> queue = new Queue<string>();
+        /// <summary>
+        /// 线程取消句柄
+        /// </summary>
         private CancellationTokenSource _cancelTokenSource;
+        /// <summary>
+        /// 监控线程
+        /// </summary>
         private Thread _watchThread;
+        /// <summary>
+        /// 同步锁
+        /// </summary>
         private object syncRoot = new object();
+        /// <summary>
+        /// 原子信号量
+        /// </summary>
         private AutoResetEvent _waitHandle = new AutoResetEvent(false);
+        /// <summary>
+        /// 停止线程操作
+        /// </summary>
         public void Stop()
         {
             try
@@ -31,6 +55,10 @@ namespace AgvcWorkFactory
                 // ignored
             }
         }
+        /// <summary>
+        /// 将MR加入到工作队列
+        /// </summary>
+        /// <param name="MRID"></param>
         public void Watch(string MRID)
         {
             lock (syncRoot)
@@ -47,7 +75,9 @@ namespace AgvcWorkFactory
             }
 
         }
-
+        /// <summary>
+        /// 状态更新执行线程
+        /// </summary>
         private void QueueWatchThread()
         {
             while (!_cancelTokenSource.IsCancellationRequested)

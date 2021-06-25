@@ -7,10 +7,13 @@ using Utility;
 
 namespace AgvcWorkFactory
 {
+    /// <summary>
+    /// 虚拟机器人管理器
+    /// </summary>
     public class VirtualRobotManager : IVirtualRobotManager
     {
         private readonly IRobotStatusWatcher _statusWatcher;
-        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+  
         public VirtualRobotManager(IRobotStatusWatcher statusWatcher)
         {
             this._statusWatcher = statusWatcher;
@@ -24,14 +27,23 @@ namespace AgvcWorkFactory
             var robot = FindRobot(e.MrStatus.MRID);
             robot?.OnMRStatusChange(e.MrStatus);
         }
-
+        /// <summary>
+        /// 当前虚拟机器人列表
+        /// </summary>
         private List<VirtualRobot> VirtualRobots { get; set; } = new List<VirtualRobot>();
-
+        /// <summary>
+        /// 根据MRID查找指定机器人
+        /// </summary>
+        /// <param name="MRID"></param>
+        /// <returns></returns>
         public VirtualRobot FindRobot(string MRID)
         {
             return VirtualRobots.FirstOrDefault(p => p?.MRStatus.MRID == MRID);
         }
-
+        /// <summary>
+        /// 查找空闲机器人
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<VirtualRobot> FindIdleRobots()
         {
             var idleRobots = new List<VirtualRobot>();
@@ -42,10 +54,6 @@ namespace AgvcWorkFactory
                 if (robot.IsRobotReadyWork())
                 {
                     idleRobots.Add(robot);
-                }
-                else
-                {
-                    TryRefreshMRStatus(robot.MRStatus.MRID);
                 }
             });
             Console.WriteLine($"--------------------------------------------------");
@@ -85,7 +93,10 @@ namespace AgvcWorkFactory
             if (robot != null) robot.MRStatus = mrStatus;
             return mrStatus;
         }
-
+        /// <summary>
+        /// 调用IM读取所有在线MR列表
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<string> ReadMrListFromIm()
         {
             var response = AsyncHelper.RunSync(() => WS.DispatchAsync<Protocol.Query.MRList.Response>(new Protocol.Query.MRList()));
@@ -99,7 +110,11 @@ namespace AgvcWorkFactory
         {
             _statusWatcher.Watch(MRID);
         }
-
+        /// <summary>
+        /// 添加机器人
+        /// 注意:MRID必须唯一
+        /// </summary>
+        /// <param name="virtualRobot"></param>
         public void AddVirtualRobot(VirtualRobot virtualRobot)
         {
             if (FindRobot(virtualRobot.MRStatus.MRID) == null)
@@ -111,7 +126,10 @@ namespace AgvcWorkFactory
                 VirtualRobots.Add(virtualRobot);
             }
         }
-
+        /// <summary>
+        /// 获取当前的机器人列表
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<VirtualRobot> GetAllVirtualRobots()
         {
             return VirtualRobots;
