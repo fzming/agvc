@@ -30,6 +30,10 @@ namespace CoreData
             return Fail(exception.Message);
         }
 
+        public static Result<T2> From<T2>(T2 d) where T2 : class
+        {
+            return d != null ? Result<T2>.Ok(d) : Result<T2>.Failed;
+        }
         public static Result<T> Fail(string error="")
         {
             return new()

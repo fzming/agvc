@@ -12,8 +12,7 @@ namespace AgvcRepository.System
     /// <summary>
     /// 菜单仓储实现
     /// </summary>
-    [Export(typeof(IMenuRepository))]
-    internal class MenuRepository : MongoRepository<Menu>, IMenuRepository
+    public class MenuRepository : MongoRepository<Menu>, IMenuRepository
     {
         public async Task<bool> BatchUpdateMenusMetaAsync(List<MenuRoleUpdateSet> roleUpdateSets)
         {
@@ -60,6 +59,10 @@ namespace AgvcRepository.System
             return new UpdateOneModel<Menu>(Filter.Eq(x => x.Id, menuRoleUpdate.MenuId),
                 update.CurrentDate(i => i.ModifiedOn)
             );
+        }
+
+        protected MenuRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        {
         }
     }
 }

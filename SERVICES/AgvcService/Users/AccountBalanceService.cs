@@ -9,7 +9,6 @@ using AgvcService.Users.Models;
 using CoreData;
 using CoreService;
 using Utility.Extensions;
-using Utility.Mapper;
 
 namespace AgvcService.Users
 {
@@ -20,12 +19,12 @@ namespace AgvcService.Users
     {
 
         private IAccountBalanceRepository AccountBalanceRepository { get; }
-        private ISignalrService SignalrService { get; }
+      //  private ISignalrService SignalrService { get; }
 
-        public AccountBalanceService(IAccountBalanceRepository accountBalanceRepository, ISignalrService signalrService)
+        public AccountBalanceService(IAccountBalanceRepository accountBalanceRepository)
         {
             AccountBalanceRepository = accountBalanceRepository;
-            SignalrService = signalrService;
+           // SignalrService = signalrService;
 
         }
 
@@ -68,20 +67,20 @@ namespace AgvcService.Users
                         incomeSourceType, incomeUniqueKey, expireTime);
                 if (!success) return false;
                 var beanTotal = await GetBalanceTotalAsync(userid, BalanceType.Bean);
-                try
-                {
-                    //发送余额充值成功消息
-                    await SignalrService.SendMessageAsync(userid,
-                        new BalanceIncomeMessage
-                        {
-                            Bean = balanceValue,
-                            BeanTotal = beanTotal
-                        });
-                }
-                catch
-                {
-                    // ignored
-                }
+                // try
+                // {
+                //     //发送余额充值成功消息
+                //     await SignalrService.SendMessageAsync(userid,
+                //         new BalanceIncomeMessage
+                //         {
+                //             Bean = balanceValue,
+                //             BeanTotal = beanTotal
+                //         });
+                // }
+                // catch
+                // {
+                //     // ignored
+                // }
 
 
                 return true;

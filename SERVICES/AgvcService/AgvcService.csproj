@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\AgvcRepository\AgvcRepository.csproj" />
     <ProjectReference Include="..\..\AgvUtility\Utility.csproj" />
+    <ProjectReference Include="..\..\Cache.IRedis\Cache.IRedis.csproj" />
     <ProjectReference Include="..\CoreService\CoreService.csproj" />
   </ItemGroup>
 

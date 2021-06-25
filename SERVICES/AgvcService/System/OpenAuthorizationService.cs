@@ -13,31 +13,28 @@ using Utility.Extensions;
 
 namespace AgvcService.System
 {
-    [Export(typeof(IOpenAuthorizationService))]
-    internal class OpenAuthorizationService : AbstractService, IOpenAuthorizationService
+    public class OpenAuthorizationService : AbstractService, IOpenAuthorizationService
 
     {
         #region IOC
 
         private IAccountService AccountService { get; }
         private IPassportProtectService PassportProtectService { get; }
-        private ICaptchaService CaptchaService { get; }
+        // private ICaptchaService CaptchaService { get; }
         private IAuthorityService AuthorityService { get; }
         private ISystemUserService SystemUserService { get; }
         // private IAppUserService AppUserService { get; }
         // private IWxAppService WxAppService { get; }
-
-        [ImportingConstructor]
         public OpenAuthorizationService(
             IAccountService accountService,
             IPassportProtectService passportProtectService,
-            ICaptchaService captchaService,
+         //   ICaptchaService captchaService,
             IAuthorityService authorityService,
             ISystemUserService systemUserService)
         {
             AccountService = accountService;
             PassportProtectService = passportProtectService;
-            CaptchaService = captchaService;
+          //  CaptchaService = captchaService;
             AuthorityService = authorityService;
             SystemUserService = systemUserService;
             // AppUserService = appUserService;
@@ -116,12 +113,12 @@ namespace AgvcService.System
 
         public async Task<Result<Account>> SysUserLoginAsync(SystemUserLoginModel systemUserLoginModel)
         {
-            if (await CheckSafetyValidationAsync(systemUserLoginModel.VaptchaToken,
+            /*if (await CheckSafetyValidationAsync(systemUserLoginModel.VaptchaToken,
                 systemUserLoginModel.LoginId,
                 systemUserLoginModel.LoginType))
             {
                 return Result<Account>.Fail("NeedSafetyValidation");
-            }
+            }*/
 
             var rs = await SystemUserService.LoginAsync(systemUserLoginModel);
             await SetFailureCountAsync(systemUserLoginModel.LoginId, systemUserLoginModel.LoginType, rs.Success);
@@ -140,7 +137,7 @@ namespace AgvcService.System
         }
 
         #endregion
-        private async Task<bool> CheckSafetyValidationAsync(string vaptchaToken, string contextUserName, string scope)
+        /*private async Task<bool> CheckSafetyValidationAsync(string vaptchaToken, string contextUserName, string scope)
         {
             if (vaptchaToken.IsNotNullOrEmpty())
             {
@@ -149,8 +146,8 @@ namespace AgvcService.System
             }
             var failureCount = await PassportProtectService.GetLoginFailedCountAsync(contextUserName, scope);
             return failureCount >= 3;//超过3次出现拼图
-        }
-        private async Task<bool> VaptchaValidateAsync(string vaptchaToken)
+        }*/
+        /*private async Task<bool> VaptchaValidateAsync(string vaptchaToken)
         {
             if (vaptchaToken.IsNotNullOrEmpty())
             {
@@ -177,6 +174,6 @@ namespace AgvcService.System
             }
 
             return false;
-        }
+        }*/
     }
 }

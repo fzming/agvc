@@ -1,20 +1,21 @@
-﻿using System.Linq;
+﻿
 using System.Threading.Tasks;
 using AgvcCoreData.Users;
 using AgvcEntitys.Users;
 using AgvcRepository.Users.Interfaces;
 using CoreData;
-using CoreRepository;
 using MongoDB.Driver;
 using Utility.Extensions;
+using CoreRepository;
+using MongoDB.Driver.Linq;
+using System.Linq;
 
 namespace AgvcRepository.Users
 {
     /// <summary>
     /// 用户收件箱仓储实现
     /// </summary>
-    [Export(typeof(IUserLetterBoxRepository))]
-    internal class UserLetterBoxRepository:MongoRepository<UserLetterBox>,IUserLetterBoxRepository
+    public class UserLetterBoxRepository:MongoRepository<UserLetterBox>,IUserLetterBoxRepository
     {
         public Task<PageResult<UserLetterBox>> AdvanceQueryUserLetterBoxAsync(string clientId, LetterBoxPageQuery condition)
         {
@@ -57,6 +58,10 @@ namespace AgvcRepository.Users
            var rs = await Collection.UpdateManyAsync(p => p.UserId == clientId && p.Read == false,
                 Updater.Set(p => p.Read, true));
            return rs.IsAcknowledged;
+        }
+
+        protected UserLetterBoxRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        {
         }
     }
 }

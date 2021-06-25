@@ -1,8 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Fasterflect;
+using Utility.Extensions;
 
 namespace CoreData.Core
 {
+    public static class EntityExtension
+    {
+        public static IEnumerable<T> AutoMapIgnoreId<T, TPrimaryKey>(this IEnumerable<T> source)
+            where T : PrimaryAggregateEntity<TPrimaryKey>
+        {
+
+            return source.MapTo<T, T>(
+                map =>
+                    map.ForMember(d => d.Id,
+                        opt => opt.Ignore()));
+        }
+
+        public static T AutoMapIgnoreId<T, TPrimaryKey>(this T source) where T : PrimaryAggregateEntity<TPrimaryKey>, new()
+        {
+            return source.MapTo(new T(),
+                map => map.ForMember(d => d.Id,
+                    opt => opt.Ignore()));
+        }
+    }
+
     public static class MongoEntityExtension
     {
         /// <summary>

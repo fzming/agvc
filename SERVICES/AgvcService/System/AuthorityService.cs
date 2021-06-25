@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AgvcEntitys.System.Authority;
 using AgvcRepository.System.Interfaces.Authority;
 using AgvcService.System.Models;
+using Cache.IRedis.Interfaces;
 using CoreService;
 using Utility.Extensions;
 
@@ -13,8 +14,8 @@ namespace AgvcService.System
     /// <summary>
     ///  权限控制服务
     /// </summary>
-    [Export(typeof(IAuthorityService))]
-    internal class AuthorityService : AbstractService, IAuthorityService
+     
+    public class AuthorityService : AbstractService, IAuthorityService
     {
         #region 注入
         /// <summary>
@@ -27,7 +28,6 @@ namespace AgvcService.System
         private IRedisHashCache RedisHashCache { get; }
 
 
-        [ImportingConstructor]
         public AuthorityService(IRoleRepository roleRepository,
             IAuthorityCodeRepository authorityCodeRepository,
             IUserAuthorityRepository userAuthorityRepository,

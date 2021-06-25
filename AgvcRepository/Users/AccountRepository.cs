@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AgvcCoreData.Users;
 using AgvcEntitys.Users;
@@ -6,13 +7,16 @@ using AgvcRepository.Users.Interfaces;
 using CoreData;
 using CoreRepository;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using Utility.Extensions;
 
 namespace AgvcRepository.Users
 {
-    [Export(typeof(IAccountRepository))]
-    internal class AccountRepository : MongoRepository<Account>, IAccountRepository
+    public class AccountRepository : MongoRepository<Account>, IAccountRepository
     {
+        protected AccountRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
         public Task<PageResult<Account>> AdvQueryAccountUsersAsync(AccountUserPageQuery userPageQuery, string orgId)
         {
             #region Build Query
@@ -78,5 +82,7 @@ namespace AgvcRepository.Users
             var rs = await this.Collection.UpdateManyAsync(Filter.In(x => x.Id, userIds), update);
             return rs.ModifiedCount > 0;
         }
+
+        
     }
 }

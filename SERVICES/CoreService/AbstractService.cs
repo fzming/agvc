@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Nito.AsyncEx;
 
 namespace CoreService
 {
@@ -7,8 +8,6 @@ namespace CoreService
     /// </summary>
     public abstract class AbstractService 
     {
-        // public readonly AsyncLock _mutex = new();
-        //
-        // protected AuthorizedUser AuthorizedUser => new();
+        public readonly AsyncLock _mutex = new();
     }
 }

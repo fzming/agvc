@@ -4,9 +4,10 @@ using CoreRepository;
 
 namespace AgvcRepository.Users
 {
-    [Export(typeof(IUserFormIdRepository))]
-    internal class UserFormIdRepository : MongoRepository<UserFormId>, IUserFormIdRepository
+    public class UserFormIdRepository : MongoRepository<UserFormId>, IUserFormIdRepository
     {
-        
+        protected UserFormIdRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
     }
 }

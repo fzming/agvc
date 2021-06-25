@@ -57,8 +57,6 @@ namespace AgvcEntitys.Users
         /// </summary>
         public string DepartmentId { get; set; }
 
-        public ActReferrer Referrer { get; set; }
-
         #endregion
     }
 }

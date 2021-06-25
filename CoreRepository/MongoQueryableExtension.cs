@@ -77,7 +77,7 @@ namespace CoreRepository
         /// <returns></returns>
         public static dynamic ToDynamic(this BsonDocument doc)
         {
-            var json = BsonExtensionMethods.ToJson(doc);
+            var json = doc.ToJson();
             dynamic obj = JToken.Parse(json);
             return obj;
         }
@@ -143,14 +143,14 @@ namespace CoreRepository
             where TSource : class
             where TPager : PageQuery, new()
         {
-            paging ??= new TPager();
+            if (paging == null) paging = new TPager();
             return query.ToPageListAsync(paging.PageIndex, paging.PageSize, orderByKeySelector, desc);
         }
         public static Task<PageResult<TSource>> ToPageListAsync<TSource, TPager>(this IMongoQueryable<TSource> query, TPager paging)
             where TSource : class
             where TPager : PageQuery, new()
         {
-            paging ??= new TPager();
+            if (paging == null) paging = new TPager();
             return query.ToPageListAsync(paging.PageIndex, paging.PageSize);
         }
         /// <summary>
@@ -197,7 +197,9 @@ namespace CoreRepository
                     pageSize,
                     totalTask.Result);
             }
-
+#if DEBUG
+            Trace.WriteLine(query.ToString());
+#endif
             //非分页返回
             var datas = await query.ToListAsync().ConfigureAwait(false);
             return new PageResult<TSource>(
@@ -222,7 +224,7 @@ namespace CoreRepository
         {
             if (pageIndex == 0 || pageSize == 0)
             {
-                var cursor = await collection.FindAsync(filter,new FindOptions<TSource>
+                var cursor = await collection.FindAsync(filter, new FindOptions<TSource>
                 {
                     Sort = sortDefinition
                 });

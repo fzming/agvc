@@ -29,11 +29,28 @@ namespace AgvcAgent
                 {
                     options.Limits.MaxRequestBodySize = 20000000;
                 })
-                .ConfigureLogging(logging =>
+                .ConfigureLogging((hostingContext, logging) =>
                 {
-                    //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-5.0
-                    logging.ClearProviders();
-                    //logging.AddConsole();
+                   // var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                    logging.ClearProviders();//去掉默认添加的日志提供程序
+                    // IMPORTANT: This needs to be added *before* configuration is loaded, this lets
+                    // the defaults be overridden by the configuration.
+                    // if (isWindows)
+                    // {
+                    //     // Default the EventLogLoggerProvider to warning or above
+                    //     logging.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.Warning);
+                    // }
+
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.AddConsole();
+                    logging.AddDebug();
+                  //  logging.AddEventSourceLogger();
+
+                    // if (isWindows)
+                    // {
+                    //     // Add the EventLogLoggerProvider on windows machines
+                    //     //logging.AddEventLog();
+                    // }
                 })
                 .UseStartup<Startup>();
     }

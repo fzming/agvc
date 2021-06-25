@@ -14,17 +14,16 @@ using MongoDB.Driver.Linq;
 
 namespace AgvcRepository.Users
 {
-    [Export(typeof(IDiscussMessageRepository))]
-    internal class DiscussMessageRepository : MongoRepository<DiscussMessage>, IDiscussMessageRepository
+    public class DiscussMessageRepository : MongoRepository<DiscussMessage>, IDiscussMessageRepository
     {
         #region IOC
 
+
         private IAccountRepository AccountRepository { get; }
         private ISystemUserRepository SystemUserRepository { get; }
-
-        [ImportingConstructor]
-        public DiscussMessageRepository(IAccountRepository accountRepository,ISystemUserRepository systemUserRepository)
+        public DiscussMessageRepository(IMongoUnitOfWork unitOfWork,IAccountRepository accountRepository,ISystemUserRepository systemUserRepository) : base(unitOfWork)
         {
+            
             AccountRepository = accountRepository;
             SystemUserRepository = systemUserRepository;
         }

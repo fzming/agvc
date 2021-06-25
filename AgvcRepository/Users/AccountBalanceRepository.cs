@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AgvcCoreData.Users;
 using AgvcEntitys.Users;
 using AgvcRepository.Users.Interfaces;
+using AgvcService.Users.Models;
 using CoreData;
 using CoreRepository;
 using MongoDB.Driver;
@@ -11,13 +13,11 @@ using MongoDB.Driver.Linq;
 
 namespace AgvcRepository.Users
 {
-    [Export(typeof(IAccountBalanceRepository))]
-    internal class AccountBalanceRepository : MongoRepository<AccountBalance>, IAccountBalanceRepository
+    public class AccountBalanceRepository : MongoRepository<AccountBalance>, IAccountBalanceRepository
     {
         private IAccountRepository AccountRepository { get; }
 
-        [ImportingConstructor]
-        public AccountBalanceRepository(IAccountRepository accountRepository)
+        protected AccountBalanceRepository(IMongoUnitOfWork unitOfWork, IAccountRepository accountRepository) : base(unitOfWork)
         {
             AccountRepository = accountRepository;
         }
@@ -126,7 +126,7 @@ namespace AgvcRepository.Users
             return true;
 
         }
-
+      
         public async Task<IEnumerable<UserBalanceStatisticModel>> UserBalanceStatisticAsync()
         {
             var accountCollection = AccountRepository.DynamicCollection as IMongoCollection<Account>;

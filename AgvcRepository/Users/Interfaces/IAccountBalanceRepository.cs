@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AgvcCoreData.Users;
 using AgvcEntitys.Users;
+using AgvcService.Users.Models;
 using CoreData;
 using CoreRepository;
 
