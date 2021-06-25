@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AgvcAgent.Api.Filters.GlobalFilters;
 using AgvcRepository;
 using AgvcRepository.Entitys;
 using CoreRepository;
@@ -29,6 +30,16 @@ namespace AgvcAgent.Api
             MessageParser = messageParser;
         }
 
+        [Route("test1"),IgnoreResultModel]
+        public string test()
+        {
+            return "Abc";
+        }
+        [Route("test2")]
+        public string test2()
+        {
+            return "Abc";
+        }
         [Route("tx501i")]
         public string tx501i(string mrid)
         {
@@ -46,7 +57,7 @@ namespace AgvcAgent.Api
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        [HttpGet, Route("request")]
+        [HttpGet, Route("request"),IgnoreResultModel]
         public string ImRequest([FromQuery] string json)
         {
             //Console.WriteLine(">>" + json);

@@ -6,8 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Api\Filters\GlobalFilters\WebApiActionFilter.cs" />
-    <Compile Remove="Api\Filters\GlobalFilters\WebApiExceptionFilter.cs" />
     <Compile Remove="Api\OAuth\OpenAuthorizationServerProvider.cs" />
     <Compile Remove="Api\OAuth\OpenRefreshTokenProvider.cs" />
   </ItemGroup>
@@ -26,6 +24,7 @@
     <ProjectReference Include="..\AgvUtility\Utility.csproj" />
     <ProjectReference Include="..\IM\Protocol\Protocol.csproj" />
     <ProjectReference Include="..\IM\RobotFactory\RobotFactory.csproj" />
+    <ProjectReference Include="..\SERVICES\AgvcService\AgvcService.csproj" />
     <ProjectReference Include="..\SERVICES\CoreService\CoreService.csproj" />
     <ProjectReference Include="..\SERVICES\Model\DtoModel.csproj" />
   </ItemGroup>

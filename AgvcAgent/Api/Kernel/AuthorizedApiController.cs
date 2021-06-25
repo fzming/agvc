@@ -1,6 +1,7 @@
 ﻿
 using CoreData;
 using DtoModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgvcAgent.Api.Kernel
@@ -9,7 +10,8 @@ namespace AgvcAgent.Api.Kernel
     /// 符合OAuth2.0授权的身份验证基类
     /// 注意：[AllowAnonymous] 将跳过身份授权
     /// </summary>
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
+    [ApiController]
     public class AuthorizedApiController : ControllerBase
     {
 

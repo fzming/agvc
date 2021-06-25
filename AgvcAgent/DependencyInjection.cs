@@ -18,10 +18,10 @@ namespace AgvcAgent
             // services.Configure<MongoConfig>(configuration.GetSection("Mongo"));
       
            // services.AddSingleton(typeof(IMongoRepository<>),typeof(MongoRepository<>));
-            services.ScanAndInjectService("^RobotFactory|^AgvcRepository|^CoreRepository|^Utility|^Messages");
-           
-            //services.ScanAndInjectService("^CoreRepository");
-           // services.Add(new ServiceDescriptor(typeof(IMongoRepository<>), typeof(MongoRepository<>), ServiceLifetime.Singleton));
+            services.ScanAndInjectService("^RobotFactory|^Utility|^Messages");
+            services.ScanAndInjectService("^CoreService|^AgvcService");
+            services.ScanAndInjectService("^AgvcRepository|^CoreRepository");
+            // services.Add(new ServiceDescriptor(typeof(IMongoRepository<>), typeof(MongoRepository<>), ServiceLifetime.Singleton));
          
            //services.AddSingleton(typeof(IRepository<>),typeof(MongoRepository<>));
         }

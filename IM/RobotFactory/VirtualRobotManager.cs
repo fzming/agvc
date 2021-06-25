@@ -10,12 +10,12 @@ namespace RobotFactory
 {
     public class VirtualRobotManager : IVirtualRobotManager
     {
-        private IRobotStatusWatcher statusWatcher;
+        private readonly IRobotStatusWatcher _statusWatcher;
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
         public VirtualRobotManager(IRobotStatusWatcher statusWatcher)
         {
-            this.statusWatcher = statusWatcher;
-            this.statusWatcher.MrStatusReceived += StatusWatcher_MrStatusReceived1;
+            this._statusWatcher = statusWatcher;
+            this._statusWatcher.MrStatusReceived += StatusWatcher_MrStatusReceived1;
         }
 
         private void StatusWatcher_MrStatusReceived1(object sender, MrStatusEventArg e)
@@ -94,11 +94,11 @@ namespace RobotFactory
             return response?.MRIDs ?? Enumerable.Empty<string>();
         }
         /// <summary>
-        /// 尝试机器状态数据
+        /// 尝试机器状态数据(异步)
         /// </summary>
         public void TryRefreshMRStatus(string MRID)
         {
-            statusWatcher.Watch(MRID);
+            _statusWatcher.Watch(MRID);
         }
 
         public void AddVirtualRobot(VirtualRobot virtualRobot)

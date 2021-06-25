@@ -5,10 +5,13 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+
 using Messages.Transfers;
 using Messages.Transfers.Core;
+
 using RobotFactory.Interfaces;
 using RobotFactory.Tasks;
+
 using Utility;
 
 namespace RobotFactory
@@ -19,7 +22,7 @@ namespace RobotFactory
     public sealed class RobotTaskEngine : IRobotTaskEngine
     {
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        public RobotTaskEngine(IVirtualRobotManager robotManager,IAgvReporter agvReporter)
+        public RobotTaskEngine(IVirtualRobotManager robotManager, IAgvReporter agvReporter)
         {
             RobotManager = robotManager;
             AgvReporter = agvReporter;
@@ -34,7 +37,7 @@ namespace RobotFactory
         private readonly object _locker = new object();
         private readonly AutoResetEvent _waitHandle = new AutoResetEvent(false);
 
-  
+
 
         private static IEnumerable<Type> TaskTypes
         {
@@ -177,7 +180,7 @@ namespace RobotFactory
                         }
                     }
                 }
-                if (TaskQueue.Count > 0)
+                if (RobotManager.GetAllVirtualRobots().Any() && TaskQueue.Count > 0)
                 {
                     // Console.WriteLine("当前任务剩余：" + TaskQueue.Count);
                     Thread.Sleep(1000); // 当有任务时：每隔1秒检查空闲机器人

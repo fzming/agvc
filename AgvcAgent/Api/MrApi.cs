@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
+using AgvcAgent.Api.Kernel;
 using AgvcRepository;
 using AgvcRepository.Entitys;
 using Microsoft.AspNetCore.Mvc;
-
 namespace AgvcAgent.Api
 {
     [ApiController]
     [Route("mr")]
-    public class MrApi:ControllerBase
+    public class MrApi : AuthorizedApiController
     {
         private IMrRepository MrRepository { get; }
 
