@@ -31,4 +31,8 @@
     <ProjectReference Include="..\CoreService\CoreService.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="System\Message\Senders\" />
+  </ItemGroup>
+
 </Project>

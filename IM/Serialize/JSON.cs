@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace Serialize
 {
@@ -11,7 +11,7 @@ namespace Serialize
             object obj2;
             try
             {
-                JsonType type = json.DeserializeJsonToObject<JsonType>();
+                var type = json.DeserializeJsonToObject<JsonType>();
                 obj2 = json.DeserializeJsonToObject(type.Type);
             }
             catch (FileNotFoundException)
@@ -22,15 +22,16 @@ namespace Serialize
             {
                 obj2 = null;
             }
+
             return obj2;
         }
 
-        public static T DeserializeJsonToObject<T>(this string json) where T: class
+        public static T DeserializeJsonToObject<T>(this string json) where T : class
         {
             T local;
             try
             {
-                StringReader reader = new StringReader(json);
+                var reader = new StringReader(json);
                 local = new JsonSerializer().Deserialize(new JsonTextReader(reader), typeof(T)) as T;
             }
             catch (FileNotFoundException)
@@ -39,8 +40,9 @@ namespace Serialize
             }
             catch (Exception)
             {
-                local = default(T);
+                local = default;
             }
+
             return local;
         }
 
@@ -49,7 +51,7 @@ namespace Serialize
             object obj2;
             try
             {
-                StringReader reader = new StringReader(json);
+                var reader = new StringReader(json);
                 obj2 = new JsonSerializer().Deserialize(new JsonTextReader(reader), type);
             }
             catch (FileNotFoundException)
@@ -60,15 +62,16 @@ namespace Serialize
             {
                 obj2 = null;
             }
+
             return obj2;
         }
 
-        public static T DeserializeJsonToObject<T>(this string json, T anonymous) where T: class
+        public static T DeserializeJsonToObject<T>(this string json, T anonymous) where T : class
         {
             T local;
             try
             {
-                StringReader reader = new StringReader(json);
+                var reader = new StringReader(json);
                 local = new JsonSerializer().Deserialize(new JsonTextReader(reader), typeof(T)) as T;
             }
             catch (FileNotFoundException)
@@ -77,8 +80,9 @@ namespace Serialize
             }
             catch (Exception)
             {
-                local = default(T);
+                local = default;
             }
+
             return local;
         }
 
@@ -93,10 +97,7 @@ namespace Serialize
             {
                 throw new Exception("请先安装 Newtonsoft.Json");
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
             return str;
         }
 
@@ -115,19 +116,12 @@ namespace Serialize
             {
                 throw new Exception("请先安装 Newtonsoft.Json");
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
             return str;
         }
 
         public abstract class AutoJsonable : IAutoJsonable
         {
-            protected AutoJsonable()
-            {
-            }
-
             public Type Type => GetType();
         }
 
@@ -136,7 +130,6 @@ namespace Serialize
             Type Type { get; }
         }
 
-       
 
         private class JsonType : IAutoJsonable
         {
@@ -144,4 +137,3 @@ namespace Serialize
         }
     }
 }
-

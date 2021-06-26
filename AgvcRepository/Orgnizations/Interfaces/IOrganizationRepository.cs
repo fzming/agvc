@@ -7,7 +7,7 @@ using CoreRepository;
 namespace AgvcRepository.Orgnizations.Interfaces
 {
     /// <summary>
-    /// 机构仓储接口
+    ///     机构仓储接口
     /// </summary>
     public interface IOrganizationRepository : IRepository<Organization>
     {

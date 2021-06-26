@@ -10,11 +10,12 @@ namespace AgvcService.Users
 {
     internal class UserLetterBoxService : AbstractService, IUserLetterBoxService
     {
-        private IUserLetterBoxRepository Repository { get; }
         public UserLetterBoxService(IUserLetterBoxRepository repository)
         {
             Repository = repository;
         }
+
+        private IUserLetterBoxRepository Repository { get; }
 
         public async Task<bool> SendUserLetterBoxAsync(string clientId, LetterBox letter, bool read = false)
         {
@@ -30,7 +31,6 @@ namespace AgvcService.Users
             {
                 return false;
             }
-
         }
 
         public Task<PageResult<UserLetterBox>> QueryUserLetterBoxAsync(string clientId, LetterBoxPageQuery query)

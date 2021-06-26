@@ -7,7 +7,7 @@ using Utility.Extensions;
 namespace Utility.Helpers
 {
     /// <summary>
-    /// 随机数字或字符生成工具类
+    ///     随机数字或字符生成工具类
     /// </summary>
     public static class RandomizeHelper
     {
@@ -15,7 +15,7 @@ namespace Utility.Helpers
 
 
         /// <summary>
-        /// 生成随机数字字符串
+        ///     生成随机数字字符串
         /// </summary>
         /// <param name="codeCount">待生成的位数</param>
         /// <returns>生成的数字字符串</returns>
@@ -24,11 +24,11 @@ namespace Utility.Helpers
             var str = string.Empty;
             var num2 = DateTime.Now.Ticks + _rep;
             _rep++;
-            var random = new Random(((int)(((ulong)num2) & 0xffffffffL)) | ((int)(num2 >> _rep)));
+            var random = new Random((int) ((ulong) num2 & 0xffffffffL) | (int) (num2 >> _rep));
             for (var i = 0; i < codeCount; i++)
             {
                 var num = random.Next();
-                str = str + ((char)(0x30 + ((ushort)(num % 10))));
+                str = str + (char) (0x30 + (ushort) (num % 10));
             }
 
             return str;
@@ -36,7 +36,7 @@ namespace Utility.Helpers
 
 
         /// <summary>
-        /// 生成随机字母字符串(数字字母混和)
+        ///     生成随机字母字符串(数字字母混和)
         /// </summary>
         /// <param name="codeCount">待生成的位数</param>
         /// <returns>生成的字母字符串</returns>
@@ -45,20 +45,16 @@ namespace Utility.Helpers
             var str = string.Empty;
             var num2 = DateTime.Now.Ticks + _rep;
             _rep++;
-            var random = new Random(((int)(((ulong)num2) & 0xffffffffL)) | ((int)(num2 >> _rep)));
+            var random = new Random((int) ((ulong) num2 & 0xffffffffL) | (int) (num2 >> _rep));
 
             for (var i = 0; i < codeCount; i++)
             {
                 char ch;
                 var num = random.Next();
-                if ((num % 2) == 0)
-                {
-                    ch = (char)(0x30 + ((ushort)(num % 10)));
-                }
+                if (num % 2 == 0)
+                    ch = (char) (0x30 + (ushort) (num % 10));
                 else
-                {
-                    ch = (char)(0x41 + ((ushort)(num % 0x1a)));
-                }
+                    ch = (char) (0x41 + (ushort) (num % 0x1a));
 
                 str += ch;
             }
@@ -73,14 +69,14 @@ namespace Utility.Helpers
             var r = new Random(iSeed);
             return r;
         }
+
         /// <summary>
-        /// 生成纯字母随机数
+        ///     生成纯字母随机数
         /// </summary>
         /// <param name="codeCount">待生成的位数</param>
         /// <returns></returns>
         public static string GenerateWords(int codeCount)
         {
-
             char[] pattern =
             {
                 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
@@ -88,7 +84,7 @@ namespace Utility.Helpers
             };
             var result = "";
             var n = pattern.Length;
-            var random = new Random(~unchecked((int)DateTime.Now.Ticks));
+            var random = new Random(~unchecked((int) DateTime.Now.Ticks));
             for (var i = 0; i < codeCount; i++)
             {
                 var rnd = random.Next(0, n);
@@ -96,7 +92,6 @@ namespace Utility.Helpers
             }
 
             return result;
-
         }
 
         public static string GenerateSecurityKey()
@@ -115,21 +110,19 @@ namespace Utility.Helpers
             var timestamps = timestamp.ToCharArray().Select(p => p.ToString()).ToList();
             timestamps.Reverse();
 
-            foreach (var s in timestamps.Where(s => !string.IsNullOrWhiteSpace(s)))
-            {
-                queue.Enqueue(int.Parse(s));
-            }
+            foreach (var s in timestamps.Where(s => !string.IsNullOrWhiteSpace(s))) queue.Enqueue(int.Parse(s));
 
             var endprex = CreateGuidRandom().Next(1, 10);
 
             while (queue.Any())
             {
                 var n = CreateGuidRandom().Next(1, 26); //20
-                var word = ((char)(n + charCodeA)).ToString(); //20+65 U
-                var ts = ((char)(queue.Dequeue() + charCodeA)).ToString(); // ? + 65
+                var word = ((char) (n + charCodeA)).ToString(); //20+65 U
+                var ts = ((char) (queue.Dequeue() + charCodeA)).ToString(); // ? + 65
                 var ns = n + endprex; //20+9
                 words.Append(ns + "" + word + "" + ts); //29 U ?
             }
+
             return words.ToString() + endprex;
         }
     }

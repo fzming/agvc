@@ -5,7 +5,6 @@ namespace CoreRepository.Converters
 {
     public class CustomDoubleSerializer : IBsonSerializer
     {
- 
         /// <summary>Deserializes a value.</summary>
         /// <param name="context">The deserialization context.</param>
         /// <param name="args">The deserialization args.</param>
@@ -24,7 +23,7 @@ namespace CoreRepository.Converters
         public void Serialize(BsonSerializationContext context, BsonSerializationArgs args, object value)
         {
             var bsonWriter = context.Writer;
-            var rep = (decimal)((double)value);
+            var rep = (decimal) (double) value;
             bsonWriter.WriteDecimal128(rep);
         }
 

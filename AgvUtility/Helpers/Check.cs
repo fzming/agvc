@@ -27,35 +27,35 @@ namespace Utility.Helpers
                 throw new ArgumentException(parameterName + " can not be null!", parameterName);
             if (value.Length > maxLength)
                 throw new ArgumentException(
-                    $"{parameterName} length must be equal to or lower than { maxLength}!", parameterName);
+                    $"{parameterName} length must be equal to or lower than {maxLength}!", parameterName);
             if (minLength > 0 && value.Length < minLength)
                 throw new ArgumentException(
-                    $"{parameterName} length must be equal to or bigger than { minLength}!", parameterName);
+                    $"{parameterName} length must be equal to or bigger than {minLength}!", parameterName);
             return value;
         }
 
         public static string NotNullOrWhiteSpace(
-          string value,
-          string parameterName,
-          int maxLength = 2147483647,
-          int minLength = 0)
+            string value,
+            string parameterName,
+            int maxLength = 2147483647,
+            int minLength = 0)
         {
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException(parameterName + " can not be null, empty or white space!", parameterName);
             if (value.Length > maxLength)
                 throw new ArgumentException(
-                    $"{parameterName } length must be equal to or lower than {maxLength }!", parameterName);
+                    $"{parameterName} length must be equal to or lower than {maxLength}!", parameterName);
             if (minLength > 0 && value.Length < minLength)
                 throw new ArgumentException(
-                    $"{parameterName } length must be equal to or bigger than {minLength }!", parameterName);
+                    $"{parameterName} length must be equal to or bigger than {minLength}!", parameterName);
             return value;
         }
 
         public static string NotNullOrEmpty(
-          string value,
-          string parameterName,
-          int maxLength = 2147483647,
-          int minLength = 0)
+            string value,
+            string parameterName,
+            int maxLength = 2147483647,
+            int minLength = 0)
         {
             if (string.IsNullOrEmpty(value))
                 throw new ArgumentException(parameterName + " can not be null or empty!", parameterName);
@@ -64,18 +64,20 @@ namespace Utility.Helpers
                     $"{parameterName} length must be equal to or lower than {maxLength}!", parameterName);
             if (minLength > 0 && value.Length < minLength)
                 throw new ArgumentException(
-                    $"{ parameterName} length must be equal to or bigger than { minLength}!", parameterName);
+                    $"{parameterName} length must be equal to or bigger than {minLength}!", parameterName);
             return value;
         }
+
         public static bool IsNullOrEmpty<T>(this ICollection<T> source)
         {
             if (source != null)
                 return source.Count <= 0;
             return true;
         }
+
         public static ICollection<T> NotNullOrEmpty<T>(
-          ICollection<T> value,
-          string parameterName)
+            ICollection<T> value,
+            string parameterName)
         {
             if (value.IsNullOrEmpty())
                 throw new ArgumentException(parameterName + " can not be null or empty!", parameterName);
@@ -90,11 +92,12 @@ namespace Utility.Helpers
                     throw new ArgumentException(parameterName + " can not be null or empty!", parameterName);
                 if (value.Length < minLength)
                     throw new ArgumentException(
-                        $"{(object)parameterName} length must be equal to or bigger than {(object)minLength}!", parameterName);
+                        $"{parameterName} length must be equal to or bigger than {minLength}!", parameterName);
             }
+
             if (value != null && value.Length > maxLength)
                 throw new ArgumentException(
-                    $"{(object)parameterName} length must be equal to or lower than {(object)maxLength}!", parameterName);
+                    $"{parameterName} length must be equal to or lower than {maxLength}!", parameterName);
             return value;
         }
     }

@@ -2,15 +2,12 @@
 using AgvcEntitys.Agv;
 using CoreRepository;
 
-using Utility;
-
 namespace AgvcRepository
 {
     public class MrRepository : MongoRepository<MrEntity>, IMrRepository
     {
         public MrRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
-
         }
 
         #region Implementation of IMrRepository
@@ -27,5 +24,4 @@ namespace AgvcRepository
     {
         Task CreateAsync(MrEntity mrEntity);
     }
-
 }

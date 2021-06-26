@@ -1,9 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using AgvcAgent.Api.Filters.GlobalFilters;
-using AgvcRepository;
+﻿using AgvcAgent.Api.Filters.GlobalFilters;
 using AgvcWorkFactory.Interfaces;
-using CoreRepository;
 using Messages.Serializer;
 using Microsoft.AspNetCore.Mvc;
 using Protocol;
@@ -12,32 +8,34 @@ using Serialize;
 
 namespace AgvcAgent.Api
 {
-
     [ApiController]
     [Route("agvc")]
     public class AgvcApi : ControllerBase
     {
-        private IRobotTaskEngine TaskEngine { get; }
-        private IAgvReporter AgvReporter { get; }
-        private IMessageSerializer MessageParser { get; }
-
-        public AgvcApi(IRobotTaskEngine taskEngine, IAgvReporter agvReporter,IMessageSerializer messageParser)
+        public AgvcApi(IRobotTaskEngine taskEngine, IAgvReporter agvReporter, IMessageSerializer messageParser)
         {
             TaskEngine = taskEngine;
             AgvReporter = agvReporter;
             MessageParser = messageParser;
         }
 
-        [Route("test1"),IgnoreResultModel]
+        private IRobotTaskEngine TaskEngine { get; }
+        private IAgvReporter AgvReporter { get; }
+        private IMessageSerializer MessageParser { get; }
+
+        [Route("test1")]
+        [IgnoreResultModel]
         public string test()
         {
             return "Abc";
         }
+
         [Route("test2")]
         public string test2()
         {
             return "Abc";
         }
+
         [Route("tx501i")]
         public string tx501i(string mrid)
         {
@@ -49,17 +47,19 @@ namespace AgvcAgent.Api
             TaskEngine.AcceptMessage(message, mrid);
             return mqMessage;
         }
-        
+
         /// <summary>
-        /// 同意 iM 所有請求及回報。呼叫方式：http://localhost:5001/agvc/request?json= 
+        ///     同意 iM 所有請求及回報。呼叫方式：http://localhost:5001/agvc/request?json=
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        [HttpGet, Route("request"),IgnoreResultModel]
+        [HttpGet]
+        [Route("request")]
+        [IgnoreResultModel]
         public string ImRequest([FromQuery] string json)
         {
             //Console.WriteLine(">>" + json);
-             
+
             var o = json?.DeserializeJsonToObject();
             var serializeJson = o switch
             {
@@ -68,10 +68,8 @@ namespace AgvcAgent.Api
                 Echo echo => echo.GetResponse().SerializeJSONObject(),
                 _ => string.Empty
             };
-           // Console.WriteLine("<< " + str);
+            // Console.WriteLine("<< " + str);
             return serializeJson;
         }
-
-
     }
 }

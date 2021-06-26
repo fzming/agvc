@@ -2,8 +2,7 @@
 
 namespace Messages.Transfers
 {
-    public class Txa01o:OutputMessageBase
+    public class Txa01o : OutputMessageBase
     {
-        
     }
 }

@@ -3,7 +3,7 @@
 namespace CoreRepository
 {
     /// <summary>
-    /// Mongo工作单元
+    ///     Mongo工作单元
     /// </summary>
     public interface IMongoUnitOfWork : ISingletonDependency
     {

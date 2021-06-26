@@ -6,14 +6,15 @@ using Utility;
 namespace Cache.IRedis.Interfaces
 {
     /// <summary>
-    /// Redis String 缓存接口
-    /// String——字符串
+    ///     Redis String 缓存接口
+    ///     String——字符串
     /// </summary>
     public interface IRedisStringCache : ISingletonDependency
     {
         #region 同步执行
+
         /// <summary>
-        /// 单个保存
+        ///     单个保存
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">值</param>
@@ -23,7 +24,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 保存多个key value
+        ///     保存多个key value
         /// </summary>
         /// <param name="keyValues">键值对</param>
         /// <returns></returns>
@@ -31,7 +32,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 保存一个对象
+        ///     保存一个对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -39,17 +40,17 @@ namespace Cache.IRedis.Interfaces
         /// <param name="exp"></param>
         /// <returns></returns>
         bool StringSet<T>(string key, T obj, TimeSpan? exp = default);
-        
+
 
         /// <summary>
-        /// 获取单个
+        ///     获取单个
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         string StringGet(string key);
 
         /// <summary>
-        /// 获取单个对象
+        ///     获取单个对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -58,7 +59,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 为数字增长val
+        ///     为数字增长val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">可以为负数</param>
@@ -66,7 +67,7 @@ namespace Cache.IRedis.Interfaces
         double StringIncrement(string key, double val = 1);
 
         /// <summary>
-        /// 为数字减少val
+        ///     为数字减少val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">可以为负数</param>
@@ -76,8 +77,9 @@ namespace Cache.IRedis.Interfaces
         #endregion
 
         #region 异步执行
+
         /// <summary>
-        /// 异步保存单个
+        ///     异步保存单个
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -86,7 +88,7 @@ namespace Cache.IRedis.Interfaces
         Task<bool> StringSetAsync(string key, string val, TimeSpan? exp = default);
 
         /// <summary>
-        /// 异步保存多个key value
+        ///     异步保存多个key value
         /// </summary>
         /// <param name="keyValues">键值对</param>
         /// <returns></returns>
@@ -94,7 +96,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 异步保存一个对象
+        ///     异步保存一个对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -102,10 +104,10 @@ namespace Cache.IRedis.Interfaces
         /// <param name="exp"></param>
         /// <returns></returns>
         Task<bool> StringSetAsync<T>(string key, T obj, TimeSpan? exp = default);
-        
+
 
         /// <summary>
-        /// 异步获取单个
+        ///     异步获取单个
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -113,7 +115,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 异步获取单个
+        ///     异步获取单个
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -121,7 +123,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 异步为数字增长val
+        ///     异步为数字增长val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">可以为负数</param>
@@ -129,7 +131,7 @@ namespace Cache.IRedis.Interfaces
         Task<double> StringIncrementAsync(string key, double val = 1);
 
         /// <summary>
-        /// 为数字减少val
+        ///     为数字减少val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">可以为负数</param>

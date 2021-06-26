@@ -12,7 +12,7 @@ using Utility.Extensions;
 namespace AgvcAgent.Api.System
 {
     /// <summary>
-    /// 权限接口 
+    ///     权限接口
     /// </summary>
     [Route("api/sys/auth")]
     public class AuthorityController : AuthorizedApiController
@@ -22,7 +22,9 @@ namespace AgvcAgent.Api.System
         private IAuthorityService AuthorityService { get; }
         private IAccountService AccountService { get; }
         private ISystemUserService SystemUserService { get; }
-        public AuthorityController(IAuthorityService authorityService, IAccountService accountService, ISystemUserService systemUserService)
+
+        public AuthorityController(IAuthorityService authorityService, IAccountService accountService,
+            ISystemUserService systemUserService)
         {
             AuthorityService = authorityService;
             AccountService = accountService;
@@ -32,8 +34,9 @@ namespace AgvcAgent.Api.System
         #endregion
 
         #region 角色管理
+
         /// <summary>
-        /// 获取所有角色
+        ///     获取所有角色
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -42,8 +45,9 @@ namespace AgvcAgent.Api.System
         {
             return await AuthorityService.QueryRolesAsync(OrgId);
         }
+
         /// <summary>
-        /// 创建角色
+        ///     创建角色
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -53,8 +57,9 @@ namespace AgvcAgent.Api.System
         {
             return await AuthorityService.CreateRoleAsync(model, OrgId);
         }
+
         /// <summary>
-        /// 更新角色
+        ///     更新角色
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -64,8 +69,9 @@ namespace AgvcAgent.Api.System
         {
             return await AuthorityService.UpdateRoleAsync(model);
         }
+
         /// <summary>
-        /// 删除角色
+        ///     删除角色
         /// </summary>
         /// <param name="roleId"></param>
         /// <returns></returns>
@@ -77,16 +83,14 @@ namespace AgvcAgent.Api.System
             var systemUsersTask = SystemUserService.QueryRoleAccountsAsync(OrgId, roleId);
             await Task.WhenAll(accountUsersTask, systemUsersTask);
             if (accountUsersTask.Result.AnyNullable() || systemUsersTask.Result.AnyNullable())
-            {
                 throw new Exception("当前角色下包含用户，不能直接删除");
-            }
             return await AuthorityService.DeleteRoleAsync(roleId);
         }
-
 
         #endregion
 
         #region 用户权限
+
         public class UpdateUserAuthorityModel
         {
             public string[] Authorizes { get; set; }
@@ -95,8 +99,9 @@ namespace AgvcAgent.Api.System
 
             public string UserId { get; set; }
         }
+
         /// <summary>
-        /// 更新用户权限
+        ///     更新用户权限
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -106,8 +111,9 @@ namespace AgvcAgent.Api.System
         {
             return AuthorityService.SyncUserAuthoritysAsync(model.Authorizes, model.RoleId, model.UserId);
         }
+
         /// <summary>
-        /// 用户指令权限
+        ///     用户指令权限
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -116,10 +122,13 @@ namespace AgvcAgent.Api.System
         {
             return await AuthorityService.QueryUserAuthorityCodesAsync(AuthorizedUser.RoleId, ClientId);
         }
+
         #endregion
+
         #region 指令管理
+
         /// <summary>
-        /// 获取指令列表
+        ///     获取指令列表
         /// </summary>
         /// <param name="menuId"></param>
         /// <returns></returns>
@@ -129,8 +138,9 @@ namespace AgvcAgent.Api.System
         {
             return await AuthorityService.QueryCodesAsync(menuId);
         }
+
         /// <summary>
-        /// 创建指令
+        ///     创建指令
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -140,12 +150,14 @@ namespace AgvcAgent.Api.System
         {
             return await AuthorityService.CreateCodeAsync(model);
         }
+
         [HttpPost]
         [Route("code/update")]
         public async Task<bool> UpdateCodeAsync([FromBody] UpdateCodeModel model)
         {
             return await AuthorityService.UpdateCodeAsync(model);
         }
+
         [HttpDelete]
         [Route("code/delete/{codeId}")]
         public async Task<bool> DeleteCodeAsync(string codeId)
@@ -153,8 +165,6 @@ namespace AgvcAgent.Api.System
             return await AuthorityService.DeleteCodeAsync(codeId);
         }
 
-
         #endregion
-
     }
 }

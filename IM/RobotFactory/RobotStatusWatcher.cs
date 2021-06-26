@@ -6,40 +6,78 @@ using AgvcWorkFactory.Interfaces;
 namespace AgvcWorkFactory
 {
     /// <summary>
-    /// MR状态监控
+    ///     MR状态监控
     /// </summary>
     public class RobotStatusWatcher : IDisposable, IRobotStatusWatcher
     {
         /// <summary>
-        /// 当接收到MR状态改变事件
-        /// </summary>
-        public event MrStatusReceivedEventHandler MrStatusReceived;
-        /// <summary>
-        /// 当MR状态无法成功获取事件
-        /// </summary>
-        public event MrStatusErrorEventHandler MrStatusError;
-        /// <summary>
-        /// 监控MR队列
-        /// </summary>
-        private Queue<string> queue = new Queue<string>();
-        /// <summary>
-        /// 线程取消句柄
+        ///     线程取消句柄
         /// </summary>
         private CancellationTokenSource _cancelTokenSource;
+
         /// <summary>
-        /// 监控线程
+        ///     原子信号量
+        /// </summary>
+        private readonly AutoResetEvent _waitHandle = new(false);
+
+        /// <summary>
+        ///     监控线程
         /// </summary>
         private Thread _watchThread;
+
         /// <summary>
-        /// 同步锁
+        ///     监控MR队列
         /// </summary>
-        private object syncRoot = new object();
+        private readonly Queue<string> queue = new();
+
         /// <summary>
-        /// 原子信号量
+        ///     同步锁
         /// </summary>
-        private AutoResetEvent _waitHandle = new AutoResetEvent(false);
+        private readonly object syncRoot = new();
+
+        #region IDisposable
+
+        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        public void Dispose()
+        {
+            Stop();
+        }
+
+        #endregion
+
         /// <summary>
-        /// 停止线程操作
+        ///     当接收到MR状态改变事件
+        /// </summary>
+        public event MrStatusReceivedEventHandler MrStatusReceived;
+
+        /// <summary>
+        ///     当MR状态无法成功获取事件
+        /// </summary>
+        public event MrStatusErrorEventHandler MrStatusError;
+
+        /// <summary>
+        ///     将MR加入到工作队列
+        /// </summary>
+        /// <param name="MRID"></param>
+        public void Watch(string MRID)
+        {
+            lock (syncRoot)
+            {
+                if (queue.Contains(MRID)) return;
+                if (_watchThread == null)
+                {
+                    _cancelTokenSource = new CancellationTokenSource();
+                    _watchThread = new Thread(QueueWatchThread) {IsBackground = true};
+                    _watchThread.Start();
+                }
+
+                queue.Enqueue(MRID);
+                _waitHandle.Set(); //发送信号
+            }
+        }
+
+        /// <summary>
+        ///     停止线程操作
         /// </summary>
         public void Stop()
         {
@@ -55,28 +93,9 @@ namespace AgvcWorkFactory
                 // ignored
             }
         }
-        /// <summary>
-        /// 将MR加入到工作队列
-        /// </summary>
-        /// <param name="MRID"></param>
-        public void Watch(string MRID)
-        {
-            lock (syncRoot)
-            {
-                if (queue.Contains(MRID)) return;
-                if (_watchThread == null)
-                {
-                    _cancelTokenSource = new CancellationTokenSource();
-                    _watchThread = new Thread(QueueWatchThread) { IsBackground = true };
-                    _watchThread.Start();
-                }
-                queue.Enqueue(MRID);
-                _waitHandle.Set(); //发送信号
-            }
 
-        }
         /// <summary>
-        /// 状态更新执行线程
+        ///     状态更新执行线程
         /// </summary>
         private void QueueWatchThread()
         {
@@ -92,45 +111,24 @@ namespace AgvcWorkFactory
                         // Console.WriteLine($"[StatusWatcher->调用IM WS 更新MR({mrid})状态]");
                         var mrStatus = WS.GetMRStatus(mrid);
                         if (mrStatus != null)
-                        {
                             MrStatusReceived?.Invoke(this, new MrStatusEventArg
                             {
                                 MrStatus = mrStatus
                             });
-                        }
                         else
-                        {
                             MrStatusError?.Invoke(this, new MrStatusErrorArg
                             {
                                 MRID = mrid,
                                 Error = "GetMRStatus Network Error"
                             });
-                        }
-
                     }
                 }
 
                 if (!string.IsNullOrEmpty(mrid))
-                {
-                    Thread.Sleep(millisecondsTimeout: 100); //继续执行下一个队列项
-
-                }
+                    Thread.Sleep(100); //继续执行下一个队列项
                 else //队列中没有数据
-                {
-                    this._waitHandle.WaitOne(); //阻塞线程
-                }
-
+                    _waitHandle.WaitOne(); //阻塞线程
             }
         }
-
-        #region IDisposable
-
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {
-            this.Stop();
-        }
-
-        #endregion
     }
 }

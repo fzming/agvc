@@ -9,6 +9,5 @@ namespace Cache.IRedis.Interfaces
         public ConnectionMultiplexer ConnectionMultiplexer { get; set; }
         RedisConfig RedisConfig { get; set; }
         IServer Server { get; }
-    
     }
 }

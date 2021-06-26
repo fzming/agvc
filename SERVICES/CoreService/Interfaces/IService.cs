@@ -1,13 +1,11 @@
-﻿using System;
-using Utility;
+﻿using Utility;
 
 namespace CoreService.Interfaces
 {
     /// <summary>
-    /// 系统服务总接口
+    ///     系统服务总接口
     /// </summary>
     public interface IService : ISingletonDependency
     {
-
     }
 }

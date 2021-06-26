@@ -4,10 +4,10 @@ using Utility;
 namespace Cache.IRedis.Interfaces
 {
     /// <summary>
-    /// Redis SET 缓存接口
+    ///     Redis SET 缓存接口
     /// </summary>
     /// <remarks>
-    /// Set：元素无顺序，不能重复（去重）
+    ///     Set：元素无顺序，不能重复（去重）
     /// </remarks>
     public interface IRedisSetCache : ISingletonDependency
     {
@@ -23,10 +23,11 @@ namespace Cache.IRedis.Interfaces
 //            2.利用唯一性，可以统计访问网站的所有独立 IP
 //            3.好友推荐的时候，根据 tag 求交集，大于某个 threshold 就可以推荐
          */
+
         #region 同步执行
 
         /// <summary>
-        /// 向key的添加value值 ，如果有重复数据会只保留一个
+        ///     向key的添加value值 ，如果有重复数据会只保留一个
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -36,13 +37,14 @@ namespace Cache.IRedis.Interfaces
         bool SetAdd(string key, string[] values);
 
         /// <summary>
-        /// 查询key值中所有value值
+        ///     查询key值中所有value值
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         string[] SetMembers(string key);
+
         /// <summary>
-        /// 获取长度
+        ///     获取长度
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -50,7 +52,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 是否存在
+        ///     是否存在
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -59,7 +61,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 移除
+        ///     移除
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -71,17 +73,19 @@ namespace Cache.IRedis.Interfaces
         #region 异步执行
 
         /// <summary>
-        /// 向key的添加value值 ，如果有重复数据会只保留一个
+        ///     向key的添加value值 ，如果有重复数据会只保留一个
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
         /// <returns></returns>
         Task<bool> SetAddAsync(string key, string val);
+
         Task<bool> SetAddAsync(string key, string[] values);
 
         Task<string[]> SetMembersAsync(string key);
+
         /// <summary>
-        /// 获取长度
+        ///     获取长度
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -89,7 +93,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 是否存在
+        ///     是否存在
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -98,7 +102,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 移除
+        ///     移除
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>

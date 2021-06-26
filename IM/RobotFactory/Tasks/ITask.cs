@@ -5,20 +5,22 @@ namespace AgvcWorkFactory.Tasks
     public interface ITask
     {
         /// <summary>
-        ///  任务ID
+        ///     任务ID
         /// </summary>
         string Id { get; }
+
         /// <summary>
-        /// MRID
+        ///     MRID
         /// </summary>
         public string MRID { get; set; }
 
         /// <summary>
-        /// Froms
+        ///     Froms
         /// </summary>
         List<TaskGoal> FromGoals { get; set; }
+
         /// <summary>
-        /// Tos
+        ///     Tos
         /// </summary>
         List<TaskGoal> ToGoals { get; set; }
     }

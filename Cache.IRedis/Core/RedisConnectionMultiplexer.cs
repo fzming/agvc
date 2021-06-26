@@ -1,46 +1,43 @@
 ﻿using System;
 using Cache.IRedis.Interfaces;
-using StackExchange.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using StackExchange.Redis;
 
 namespace Cache.IRedis.Core
 {
     /// <summary>
-    /// Redis连接池
-    /// ConnectionMultiplexer对象是StackExchange.Redis最中枢的对象。
-    /// 这个类的实例需要被整个应用程序域共享和重用的
-    /// 所以不需要在每个操作中不停的创建该对象的实例，一般都是使用单例来创建和存放这个对象
+    ///     Redis连接池
+    ///     ConnectionMultiplexer对象是StackExchange.Redis最中枢的对象。
+    ///     这个类的实例需要被整个应用程序域共享和重用的
+    ///     所以不需要在每个操作中不停的创建该对象的实例，一般都是使用单例来创建和存放这个对象
     /// </summary>
-
     public class RedisConnectionMultiplexer : IRedisConnectionMultiplexer
     {
+        private static readonly object locker = new();
+        private readonly ILogger<RedisConnectionMultiplexer> Logger;
+
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        public RedisConnectionMultiplexer(IConfiguration configuration, ILogger logger)
+        public RedisConnectionMultiplexer(IConfiguration configuration, ILogger<RedisConnectionMultiplexer> logger)
         {
             Configuration = configuration;
             Logger = logger;
             var section = configuration.GetSection("Redis");
-            this.RedisConfig = section.Get<RedisConfig>();
+            RedisConfig = section.Get<RedisConfig>();
             Init();
         }
 
         private IConfiguration Configuration { get; }
-        private ILogger Logger { get; set; }
-
-        private static readonly object locker = new object();
-        public ConnectionMultiplexer ConnectionMultiplexer { get; set; }
-
-        public  RedisConfig RedisConfig { get; set; }
 
         private Lazy<IServer> LazyServer { get; set; }
+        public ConnectionMultiplexer ConnectionMultiplexer { get; set; }
+
+        public RedisConfig RedisConfig { get; set; }
         public IServer Server => LazyServer.Value;
-      
+
 
         private void Init()
         {
-
             /*
              *配置选项 https://blog.csdn.net/wulex/article/details/78394725
             ConfigurationOptions 包含大量的配置选项，一些常用的配置如下：
@@ -71,9 +68,9 @@ namespace Cache.IRedis.Core
                 AbortOnConnectFail = false,
                 //KeepAlive = 180,
                 //链接点
-                EndPoints = { RedisConfig.RedisServer },
+                EndPoints = {RedisConfig.RedisServer},
                 Password = RedisConfig.RedisPassword,
-                DefaultDatabase = RedisConfig.RedisDefaultDatabase,
+                DefaultDatabase = RedisConfig.RedisDefaultDatabase
                 //  PreserveAsyncOrder = false
             };
             LazyServer = new Lazy<IServer>(() =>
@@ -82,11 +79,10 @@ namespace Cache.IRedis.Core
                 return ConnectionMultiplexer.GetServer(endpoints[0]);
             });
             ConnectionMultiplexer = GetConnectionMultiplexer(option);
-
         }
 
         /// <summary>
-        /// 创建Redis链接
+        ///     创建Redis链接
         /// </summary>
         /// <param name="options">连接配置</param>
         /// <returns></returns>
@@ -95,12 +91,14 @@ namespace Cache.IRedis.Core
             var connect = ConnectionMultiplexer.Connect(options);
 
             #region 注册事件
+
             connect.ConnectionFailed += MuxerConnectionFailed;
             connect.ConnectionRestored += MuxerConnectionRestored;
             connect.ErrorMessage += MuxerErrorMessage;
             connect.ConfigurationChanged += MuxerConfigurationChanged;
             connect.HashSlotMoved += MuxerHashSlotMoved;
             connect.InternalError += MuxerInternalError;
+
             #endregion
 
             Logger.LogDebug("ConnectionMultiplexer.Connect", options);
@@ -108,8 +106,9 @@ namespace Cache.IRedis.Core
         }
 
         #region Redis事件
+
         /// <summary>
-        /// 内部异常
+        ///     内部异常
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -119,7 +118,7 @@ namespace Cache.IRedis.Core
         }
 
         /// <summary>
-        /// 集群更改
+        ///     集群更改
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -129,7 +128,7 @@ namespace Cache.IRedis.Core
         }
 
         /// <summary>
-        /// 配置更改事件
+        ///     配置更改事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -139,7 +138,7 @@ namespace Cache.IRedis.Core
         }
 
         /// <summary>
-        /// 错误事件
+        ///     错误事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -149,7 +148,7 @@ namespace Cache.IRedis.Core
         }
 
         /// <summary>
-        /// 重连错误事件
+        ///     重连错误事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -159,16 +158,16 @@ namespace Cache.IRedis.Core
         }
 
         /// <summary>
-        /// 连接失败事件
+        ///     连接失败事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void MuxerConnectionFailed(object sender, ConnectionFailedEventArgs e)
         {
-            Logger.LogError("连接异常" + e.EndPoint + "，类型为" + e.FailureType + (e.Exception == null ? "" : ("，异常信息是" + e.Exception.Message)));
+            Logger.LogError("连接异常" + e.EndPoint + "，类型为" + e.FailureType +
+                            (e.Exception == null ? "" : "，异常信息是" + e.Exception.Message));
         }
+
         #endregion
-
-
     }
 }

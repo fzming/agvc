@@ -10,17 +10,17 @@ namespace AgvcWorkFactory.Interfaces
         IEnumerable<VirtualRobot> FindIdleRobots();
 
         /// <summary>
-        /// 尝试刷新所有机器状态
+        ///     尝试刷新所有机器状态
         /// </summary>
         void TryRefreshMRStatus();
 
         /// <summary>
-        /// 尝试机器状态数据
+        ///     尝试机器状态数据
         /// </summary>
         void TryRefreshMRStatus(string MRID);
 
         /// <summary>
-        /// 立即獲取MR狀態
+        ///     立即獲取MR狀態
         /// </summary>
         /// <param name="MRID"></param>
         /// <returns></returns>

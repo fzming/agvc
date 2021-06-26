@@ -2,8 +2,7 @@
 
 namespace AgvcCoreData.System
 {
-    public class SystemUserPageQuery:PageQuery
+    public class SystemUserPageQuery : PageQuery
     {
-        
     }
 }

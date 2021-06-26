@@ -7,51 +7,28 @@ using Microsoft.Extensions.Configuration;
 namespace AgvcService.System
 {
     /// <summary>
-    /// 账号保护服务实现
+    ///     账号保护服务实现
     /// </summary>
-    public class PassportProtectService:AbstractService,IPassportProtectService
+    public class PassportProtectService : AbstractService, IPassportProtectService
     {
-        private  CaptchaCredential _captchaCredential;
+        private CaptchaCredential _captchaCredential;
 
-        #region IOC
-
-        private IRedisHashCache RedisHashCache { get; }
-        private IConfiguration Configuration { get; }
-
-        private CaptchaCredential CaptchaCredential
-        {
-            get
-            {
-                return _captchaCredential ??= Configuration.GetSection("TCaptcha").Get<CaptchaCredential>();
-            }
-        }
-        public PassportProtectService(IRedisHashCache redisHashCache, IConfiguration configuration)
-        {
-            RedisHashCache = redisHashCache;
-            Configuration = configuration;
-        }
-
-        #endregion
-        
         public Task<int> GetLoginFailedCountAsync(string clientId, string scope)
         {
-          return  RedisHashCache.HashGetAsync<int>(scope, clientId);
+            return RedisHashCache.HashGetAsync<int>(scope, clientId);
         }
 
         public async Task<double> IncreaseLoginFailedAsync(string clientId, string scope)
         {
             var failures = await RedisHashCache.HashGetAsync<int>(scope, clientId);
-            if (failures==0)
+            if (failures == 0)
             {
-                failures ++;
+                failures++;
                 await RedisHashCache.HashSetAsync(scope, clientId, failures);
                 return failures;
             }
-            else
-            {
-                return await RedisHashCache.HashIncrementAsync(scope, clientId);
-            }
-          
+
+            return await RedisHashCache.HashIncrementAsync(scope, clientId);
         }
 
         public Task<bool> ClearLoginFailedAsync(string clientId, string scope)
@@ -60,7 +37,7 @@ namespace AgvcService.System
         }
 
         /// <summary>
-        /// 腾讯云核查验证码票据结果
+        ///     腾讯云核查验证码票据结果
         /// </summary>
         /// <param name="captchaRequest"></param>
         /// <returns></returns>
@@ -100,5 +77,23 @@ namespace AgvcService.System
             //  */
             // return resp.CaptchaCode == 1;
         }
+
+        #region IOC
+
+        private IRedisHashCache RedisHashCache { get; }
+        private IConfiguration Configuration { get; }
+
+        private CaptchaCredential CaptchaCredential
+        {
+            get { return _captchaCredential ??= Configuration.GetSection("TCaptcha").Get<CaptchaCredential>(); }
+        }
+
+        public PassportProtectService(IRedisHashCache redisHashCache, IConfiguration configuration)
+        {
+            RedisHashCache = redisHashCache;
+            Configuration = configuration;
+        }
+
+        #endregion
     }
 }

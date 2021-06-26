@@ -12,7 +12,6 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Newtonsoft.Json.Linq;
-using Utility;
 using Utility.Helpers;
 
 namespace CoreRepository
@@ -24,11 +23,11 @@ namespace CoreRepository
         {
             return values.Select(p => p.ToString().ParseObject()).ToArray();
         }
+
         public static object ParseObject(this string value)
         {
             try
             {
-
                 var json = $"{{value:{value}}}";
 
                 var jObject = JObject.Parse(json);
@@ -69,10 +68,10 @@ namespace CoreRepository
             }
 
             return value;
-
         }
+
         /// <summary>
-        /// https://mikaelkoskinen.net/post/mongodb-aggregation-framework-examples-in-c
+        ///     https://mikaelkoskinen.net/post/mongodb-aggregation-framework-examples-in-c
         /// </summary>
         /// <param name="doc"></param>
         /// <returns></returns>
@@ -82,6 +81,7 @@ namespace CoreRepository
             dynamic obj = JToken.Parse(json);
             return obj;
         }
+
         public static BsonDocument RenderToBsonDocument<T>(this FilterDefinition<T> filter)
         {
             var serializerRegistry = BsonSerializer.SerializerRegistry;
@@ -90,7 +90,7 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// 分页查询(同步)
+        ///     分页查询(同步)
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TKey"></typeparam>
@@ -104,15 +104,12 @@ namespace CoreRepository
             int pageIndex, int pageSize,
             Expression<Func<TSource, TKey>> orderByKeySelector, bool desc = false) where TSource : AggregateRoot
         {
-
             if (orderByKeySelector != null)
-            {
                 query = desc ? query.OrderByDescending(orderByKeySelector) : query.OrderBy(orderByKeySelector);
-            }
 
             return query.ToPageList(pageIndex, pageSize);
-
         }
+
         public static PageResult<TSource> ToPageList<TSource>(this IMongoQueryable<TSource> query,
             int pageIndex, int pageSize) where TSource : AggregateRoot
         {
@@ -123,7 +120,7 @@ namespace CoreRepository
                 var total = pageIndex == 1 ? AsyncHelper.RunSync(() => query.CountAsync()) : 0;
 
                 datas = query.Skip((pageIndex - 1) * pageSize)
-                        .Take(pageSize).ToList();
+                    .Take(pageSize).ToList();
 
                 return new PageResult<TSource>(
                     datas,
@@ -139,7 +136,8 @@ namespace CoreRepository
                 datas.Count);
         }
 
-        public static Task<PageResult<TSource>> ToPageListAsync<TSource, TKey, TPager>(this IMongoQueryable<TSource> query, TPager paging,
+        public static Task<PageResult<TSource>> ToPageListAsync<TSource, TKey, TPager>(
+            this IMongoQueryable<TSource> query, TPager paging,
             Expression<Func<TSource, TKey>> orderByKeySelector, bool desc = false)
             where TSource : class
             where TPager : PageQuery, new()
@@ -147,15 +145,18 @@ namespace CoreRepository
             if (paging == null) paging = new TPager();
             return query.ToPageListAsync(paging.PageIndex, paging.PageSize, orderByKeySelector, desc);
         }
-        public static Task<PageResult<TSource>> ToPageListAsync<TSource, TPager>(this IMongoQueryable<TSource> query, TPager paging)
+
+        public static Task<PageResult<TSource>> ToPageListAsync<TSource, TPager>(this IMongoQueryable<TSource> query,
+            TPager paging)
             where TSource : class
             where TPager : PageQuery, new()
         {
             if (paging == null) paging = new TPager();
             return query.ToPageListAsync(paging.PageIndex, paging.PageSize);
         }
+
         /// <summary>
-        /// 分页查询(异步)
+        ///     分页查询(异步)
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TKey"></typeparam>
@@ -165,20 +166,18 @@ namespace CoreRepository
         /// <param name="orderByKeySelector">排序字段</param>
         /// <param name="desc">排序DESC OR ASC</param>
         /// <returns></returns>
-        public static Task<PageResult<TSource>> ToPageListAsync<TSource, TKey>(this IMongoQueryable<TSource> query, int pageIndex, int pageSize,
+        public static Task<PageResult<TSource>> ToPageListAsync<TSource, TKey>(this IMongoQueryable<TSource> query,
+            int pageIndex, int pageSize,
             Expression<Func<TSource, TKey>> orderByKeySelector, bool desc = false) where TSource : class
         {
-
             if (orderByKeySelector != null)
-            {
                 query = desc ? query.OrderByDescending(orderByKeySelector) : query.OrderBy(orderByKeySelector);
-            }
 
             return query.ToPageListAsync(pageIndex, pageSize);
-
-
         }
-        public static async Task<PageResult<TSource>> ToPageListAsync<TSource>(this IMongoQueryable<TSource> query, int pageIndex, int pageSize) where TSource : class
+
+        public static async Task<PageResult<TSource>> ToPageListAsync<TSource>(this IMongoQueryable<TSource> query,
+            int pageIndex, int pageSize) where TSource : class
         {
             //分页返回
             if (pageSize > 0 && pageIndex > 0)
@@ -192,7 +191,7 @@ namespace CoreRepository
 #endif
                 var dataTask = dataQuery.ToListAsync();
 
-                await Task.WhenAll(totalTask, dataTask).ConfigureAwait(false);//多个线程同时运行
+                await Task.WhenAll(totalTask, dataTask).ConfigureAwait(false); //多个线程同时运行
                 return new PageResult<TSource>(
                     dataTask.Result,
                     pageSize,
@@ -208,6 +207,7 @@ namespace CoreRepository
                 pageSize,
                 datas.Count);
         }
+
         /*This can then be called with the following:
          *var results = await collection.AggregateByPage(
             Builders<Person>.Filter.Empty,
@@ -249,14 +249,14 @@ namespace CoreRepository
                 {
                     PipelineStageDefinitionBuilder.Sort(sortDefinition),
                     PipelineStageDefinitionBuilder.Skip<TSource>((pageIndex - 1) * pageSize),
-                    PipelineStageDefinitionBuilder.Limit<TSource>(pageSize),
+                    PipelineStageDefinitionBuilder.Limit<TSource>(pageSize)
                 }));
 
 
             var aggregation = await collection.Aggregate(new AggregateOptions
-            {
-                AllowDiskUse = true
-            })
+                {
+                    AllowDiskUse = true
+                })
                 .Match(filter)
                 .Facet(countFacet, dataFacet)
                 .ToListAsync();
@@ -276,8 +276,7 @@ namespace CoreRepository
             return new PageResult<TSource>(
                 data,
                 pageSize,
-                (int)count);
-
+                (int) count);
         }
     }
 }

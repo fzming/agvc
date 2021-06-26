@@ -8,12 +8,6 @@ namespace Utility.Attributes
         AttributeTargets.Property)]
     public class RectAttribute : Attribute
     {
-        public int X { get; }
-        public int Y { get; }
-        public int Width { get; }
-        public int Height { get; }
-
-
         public RectAttribute(int x, int y, int width, int height)
         {
             X = x;
@@ -21,6 +15,11 @@ namespace Utility.Attributes
             Width = width;
             Height = height;
         }
+
+        public int X { get; }
+        public int Y { get; }
+        public int Width { get; }
+        public int Height { get; }
 
         public Rectangle Rectangle => new(X, Y, Width, Height);
     }

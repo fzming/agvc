@@ -13,20 +13,19 @@ using Utility.Extensions;
 namespace AgvcService.Users
 {
     /// <summary>
-    /// 账户余额服务
+    ///     账户余额服务
     /// </summary>
     public class AccountBalanceService : AbstractService, IAccountBalanceService
     {
-
-        private IAccountBalanceRepository AccountBalanceRepository { get; }
-      //  private ISignalrService SignalrService { get; }
+        //  private ISignalrService SignalrService { get; }
 
         public AccountBalanceService(IAccountBalanceRepository accountBalanceRepository)
         {
             AccountBalanceRepository = accountBalanceRepository;
-           // SignalrService = signalrService;
-
+            // SignalrService = signalrService;
         }
+
+        private IAccountBalanceRepository AccountBalanceRepository { get; }
 
         public Task<double> GetBalanceTotalAsync(string userid, BalanceType balanceType)
         {
@@ -53,15 +52,10 @@ namespace AgvcService.Users
             string incomeUniqueKey = "",
             DateTime? expireTime = null)
         {
-
             using (await _mutex.LockAsync())
             {
-
                 //防止重复充值
-                if (incomeUniqueKey.IsNotNullOrEmpty() && IsIncomeKeyExits(userid, incomeUniqueKey))
-                {
-                    return false;
-                }
+                if (incomeUniqueKey.IsNotNullOrEmpty() && IsIncomeKeyExits(userid, incomeUniqueKey)) return false;
                 var success =
                     await AccountBalanceRepository.IncomeBalanceAsync(userid, balanceValue, balanceType,
                         incomeSourceType, incomeUniqueKey, expireTime);
@@ -85,21 +79,14 @@ namespace AgvcService.Users
 
                 return true;
             }
-
-        }
-
-        private bool IsIncomeKeyExits(string userid, string key)
-        {
-            return AccountBalanceRepository.Any(p => p.UserId == userid && p.IncomeUniqueKey == key);
         }
 
         public async Task<bool> ExpenseBalanceAsync(string userid, double balanceValue, BalanceType balanceType)
         {
-
             using (await _mutex.LockAsync())
             {
                 // 需预先进行余额判断
-                var balanceTotal = await this.GetBalanceTotalAsync(userid, balanceType);
+                var balanceTotal = await GetBalanceTotalAsync(userid, balanceType);
                 if (balanceTotal >= balanceValue && balanceTotal > 0)
                 {
                     //需要对现有的临时收入进行消除处理
@@ -107,32 +94,46 @@ namespace AgvcService.Users
 
                     return await AccountBalanceRepository.ExpenseBalanceAsync(userid, balanceValue, balanceType);
                 }
-
             }
 
             return false;
-
         }
 
-        private async Task SetTemporaryIncomeBalanceAsync(string userid, double balanceValue, BalanceType balanceType, DateTime expireTime)
+        public Task<PageResult<AccountBalance>> QueryBalanceLogsAsync(string clientId, BalanceType balanceType,
+            BalanceLogQuery query)
         {
-            if (balanceValue <= 0)
-            {
-                return;
-            }
+            return AccountBalanceRepository.AdvanceQueryAsync(clientId, balanceType, query.paymentType, query.btm,
+                query.etm,
+                query.PageSize, query.PageIndex);
+        }
+
+        public Task<IEnumerable<AccountBalance>> QueryIncomeSourceAsync(string clientId, BalanceType balanceType,
+            IncomeSourceType incomeSourceType)
+        {
+            return AccountBalanceRepository.FindAsync(p =>
+                p.UserId == clientId && p.BalanceType == balanceType && p.PaymentType == BalancePaymentType.Income &&
+                p.IncomeSource == incomeSourceType);
+        }
+
+        private bool IsIncomeKeyExits(string userid, string key)
+        {
+            return AccountBalanceRepository.Any(p => p.UserId == userid && p.IncomeUniqueKey == key);
+        }
+
+        private async Task SetTemporaryIncomeBalanceAsync(string userid, double balanceValue, BalanceType balanceType,
+            DateTime expireTime)
+        {
+            if (balanceValue <= 0) return;
             //目前尚未过期的临时收入
             var temporaryIncomes = (await AccountBalanceRepository.FindAsync(p => p.UserId == userid
                 && p.BalanceType == balanceType &&
                 p.PaymentType == BalancePaymentType.Income
                 && p.ExpireTime != null &&
                 p.ExpireTime > expireTime)).OrderBy(p => p.BalanceValue).ToList();
-            var temporaryTotal = temporaryIncomes.Sum(p => p.BalanceValue);//未过期的总额
-            if (temporaryTotal == 0)
-            {
-                return;
-            }
+            var temporaryTotal = temporaryIncomes.Sum(p => p.BalanceValue); //未过期的总额
+            if (temporaryTotal == 0) return;
             var clears = new Dictionary<string, double>();
-            var splits = new Dictionary<AccountBalance, double>();//待拆分的费用
+            var splits = new Dictionary<AccountBalance, double>(); //待拆分的费用
 
             if (balanceValue >= temporaryTotal) //将有效的临时收入提升为正式收入
             {
@@ -140,13 +141,10 @@ namespace AgvcService.Users
             }
             else
             {
-                var value = balanceValue;//待提升余额
+                var value = balanceValue; //待提升余额
                 foreach (var temporary in temporaryIncomes)
                 {
-                    if (value == 0)
-                    {
-                        break; //跳出循环
-                    }
+                    if (value == 0) break; //跳出循环
                     if (value >= temporary.BalanceValue)
                     {
                         value -= temporary.BalanceValue;
@@ -161,10 +159,7 @@ namespace AgvcService.Users
                 }
             }
 
-            if (clears.Any())
-            {
-                await AccountBalanceRepository.ClearIncomeExpiresTimeAsync(clears.Select(p => p.Key));
-            }
+            if (clears.Any()) await AccountBalanceRepository.ClearIncomeExpiresTimeAsync(clears.Select(p => p.Key));
 
             if (splits.Any()) //拆分原始收入
             {
@@ -181,21 +176,6 @@ namespace AgvcService.Users
                 //增加补充的收入
                 await AccountBalanceRepository.InsertAsync(spNewIncome);
             }
-        }
-
-        public Task<PageResult<AccountBalance>> QueryBalanceLogsAsync(string clientId, BalanceType balanceType, BalanceLogQuery query)
-        {
-            return AccountBalanceRepository.AdvanceQueryAsync(clientId, balanceType, query.paymentType, query.btm, query.etm,
-                query.PageSize, query.PageIndex);
-
-        }
-
-        public Task<IEnumerable<AccountBalance>> QueryIncomeSourceAsync(string clientId, BalanceType balanceType,
-            IncomeSourceType incomeSourceType)
-        {
-            return AccountBalanceRepository.FindAsync(p =>
-                p.UserId == clientId && p.BalanceType == balanceType && p.PaymentType == BalancePaymentType.Income &&
-                p.IncomeSource == incomeSourceType);
         }
     }
 }

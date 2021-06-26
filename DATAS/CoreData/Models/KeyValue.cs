@@ -6,7 +6,8 @@
         public string Value { get; set; }
         public string Type { get; set; }
     }
-    public class EnumKeyValue<T,TEnum>
+
+    public class EnumKeyValue<T, TEnum>
     {
         public string Key { get; set; }
         public T Value { get; set; }

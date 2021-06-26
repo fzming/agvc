@@ -5,15 +5,17 @@ using CoreRepository;
 
 namespace AgvcRepository.System
 {
-    public class OrganizationFeatureValueRepository : MongoRepository<OrganizationFeatureValue>, IOrganizationFeatureValueRepository
+    public class OrganizationFeatureValueRepository : MongoRepository<OrganizationFeatureValue>,
+        IOrganizationFeatureValueRepository
     {
+        public OrganizationFeatureValueRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
+
         public async Task<bool> SetFeatureValueAsync(OrganizationFeatureValue ofv)
         {
             var exValue = await FindValueAsync(ofv.OrgId, ofv.SysFeatureId);
-            if (exValue != null)
-            {
-                return await UpdateAsync(exValue.Id, p => p.Value, ofv.Value);
-            }
+            if (exValue != null) return await UpdateAsync(exValue.Id, p => p.Value, ofv.Value);
 
             await InsertAsync(ofv);
             return true;
@@ -22,10 +24,6 @@ namespace AgvcRepository.System
         private Task<OrganizationFeatureValue> FindValueAsync(string orgId, string sysFeatureId)
         {
             return FirstAsync(p => p.OrgId == orgId && p.SysFeatureId == sysFeatureId);
-        }
-
-        public OrganizationFeatureValueRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
-        {
         }
     }
 }

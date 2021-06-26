@@ -3,15 +3,16 @@ using System.Threading.Tasks;
 using Utility;
 
 namespace Cache.IRedis.Interfaces
-{    /// <summary>
-     /// Redis SortedSet缓存接口
-     /// </summary>
+{
+    /// <summary>
+    ///     Redis SortedSet缓存接口
+    /// </summary>
     public interface IRedisSortedSetCache : ISingletonDependency
     {
-
         #region 同步执行
+
         /// <summary>
-        /// 无序添加
+        ///     无序添加
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -22,7 +23,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 删除
+        ///     删除
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -32,7 +33,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 获取全部
+        ///     获取全部
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -40,7 +41,7 @@ namespace Cache.IRedis.Interfaces
         List<T> SortedSetRangeByRank<T>(string key);
 
         /// <summary>
-        ///  获取集合中的数量
+        ///     获取集合中的数量
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -49,8 +50,9 @@ namespace Cache.IRedis.Interfaces
         #endregion
 
         #region 异步执行
+
         /// <summary>
-        /// 异步无序添加
+        ///     异步无序添加
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -61,7 +63,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 删除
+        ///     删除
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -71,7 +73,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 获取全部
+        ///     获取全部
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -80,7 +82,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        ///  获取集合中的数量
+        ///     获取集合中的数量
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>

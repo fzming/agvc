@@ -9,15 +9,20 @@ using StackExchange.Redis;
 namespace Cache.IRedis
 {
     /// <summary>
-    /// Redis String缓存
+    ///     Redis String缓存
     /// </summary>
     public class RedisStringCache : RedisCaching, IRedisStringCache
     {
+        public RedisStringCache(IRedisConnectionMultiplexer redisRedisConnectionMultiplexer) : base(
+            redisRedisConnectionMultiplexer)
+        {
+        }
 
 
         #region 同步执行
+
         /// <summary>
-        /// 单个保存
+        ///     单个保存
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">值</param>
@@ -30,19 +35,20 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 保存多个key value
+        ///     保存多个key value
         /// </summary>
         /// <param name="keyValues">键值对</param>
         /// <returns></returns>
         public bool StringSet<T>(Dictionary<string, T> keyValues)
         {
             var keyValuePairs = keyValues
-                .Select(k => new KeyValuePair<RedisKey, RedisValue>(AddPrefixKey(k.Key), ConvertJson(k.Value))).ToArray();
+                .Select(k => new KeyValuePair<RedisKey, RedisValue>(AddPrefixKey(k.Key), ConvertJson(k.Value)))
+                .ToArray();
             return DoSync(db => db.StringSet(keyValuePairs));
         }
 
         /// <summary>
-        /// 保存一个对象
+        ///     保存一个对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -57,7 +63,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 获取单个
+        ///     获取单个
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -66,8 +72,9 @@ namespace Cache.IRedis
             key = AddPrefixKey(key);
             return DoSync(db => db.StringGet(key));
         }
+
         /// <summary>
-        /// 获取单个对象
+        ///     获取单个对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -80,7 +87,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 为数字增长val
+        ///     为数字增长val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">可以为负数</param>
@@ -90,8 +97,9 @@ namespace Cache.IRedis
             key = AddPrefixKey(key);
             return DoSync(db => db.StringIncrement(key, val));
         }
+
         /// <summary>
-        /// 为数字减少val
+        ///     为数字减少val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">可以为负数</param>
@@ -101,11 +109,13 @@ namespace Cache.IRedis
             key = AddPrefixKey(key);
             return DoSync(db => db.StringDecrement(key, val));
         }
+
         #endregion
 
         #region 异步执行
+
         /// <summary>
-        /// 异步保存单个
+        ///     异步保存单个
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -114,48 +124,50 @@ namespace Cache.IRedis
         public Task<bool> StringSetAsync(string key, string val, TimeSpan? exp = default)
         {
             key = AddPrefixKey(key);
-            return  DoAsync(db => db.StringSetAsync(key, val, exp));
+            return DoAsync(db => db.StringSetAsync(key, val, exp));
         }
 
         /// <summary>
-        /// 异步保存多个key value
+        ///     异步保存多个key value
         /// </summary>
         /// <param name="keyValues">键值对</param>
         /// <returns></returns>
         public Task<bool> StringSetAsync<T>(Dictionary<string, T> keyValues)
         {
-            var keyValuePairs = keyValues.Select(k => new KeyValuePair<RedisKey, RedisValue>(AddPrefixKey(k.Key), ConvertJson(k.Value))).ToArray();
-            return  DoAsync(db => db.StringSetAsync(keyValuePairs));
+            var keyValuePairs = keyValues
+                .Select(k => new KeyValuePair<RedisKey, RedisValue>(AddPrefixKey(k.Key), ConvertJson(k.Value)))
+                .ToArray();
+            return DoAsync(db => db.StringSetAsync(keyValuePairs));
         }
 
         /// <summary>
-        /// 异步保存一个对象
+        ///     异步保存一个对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="obj"></param>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public  Task<bool> StringSetAsync<T>(string key, T obj, TimeSpan? exp = default)
+        public Task<bool> StringSetAsync<T>(string key, T obj, TimeSpan? exp = default)
         {
             key = AddPrefixKey(key);
             var json = ConvertJson(obj);
-            return  DoAsync(db => db.StringSetAsync(key, json, exp));
+            return DoAsync(db => db.StringSetAsync(key, json, exp));
         }
 
         /// <summary>
-        /// 异步获取单个
+        ///     异步获取单个
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public  async Task<string> StringGetAsync(string key)
+        public async Task<string> StringGetAsync(string key)
         {
             key = AddPrefixKey(key);
-            return  await  DoAsync(db => db.StringGetAsync(key));
+            return await DoAsync(db => db.StringGetAsync(key));
         }
 
         /// <summary>
-        /// 异步获取单个
+        ///     异步获取单个
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -167,7 +179,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步为数字增长val
+        ///     异步为数字增长val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">可以为负数</param>
@@ -177,8 +189,9 @@ namespace Cache.IRedis
             key = AddPrefixKey(key);
             return DoAsync(db => db.StringIncrementAsync(key, val));
         }
+
         /// <summary>
-        /// 为数字减少val
+        ///     为数字减少val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">可以为负数</param>
@@ -188,10 +201,7 @@ namespace Cache.IRedis
             key = AddPrefixKey(key);
             return DoAsync(db => db.StringDecrementAsync(key, val));
         }
-        #endregion
 
-        public RedisStringCache(IRedisConnectionMultiplexer redisRedisConnectionMultiplexer) : base(redisRedisConnectionMultiplexer)
-        {
-        }
+        #endregion
     }
 }

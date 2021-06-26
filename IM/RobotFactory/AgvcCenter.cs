@@ -5,7 +5,7 @@ using RobotDefine;
 namespace AgvcWorkFactory
 {
     /// <summary>
-    /// Agvc中控
+    ///     Agvc中控
     /// </summary>
     public class AgvcCenter : IAgvcCenter
     {
@@ -15,21 +15,22 @@ namespace AgvcWorkFactory
             TaskEngine = taskEngine;
             VirtualRobotManager = virtualRobotManager;
         }
+
         /// <summary>
-        /// 任务引擎
+        ///     任务引擎
         /// </summary>
         private IRobotTaskEngine TaskEngine { get; }
+
         /// <summary>
-        /// 机器人管理器
+        ///     机器人管理器
         /// </summary>
         private IVirtualRobotManager VirtualRobotManager { get; }
 
         /// <summary>
-        /// 启动入口
+        ///     启动入口
         /// </summary>
         public void Run()
         {
-
             var mrList = VirtualRobotManager.ReadMrListFromIm();
             if (mrList.Any())
             {
@@ -48,8 +49,9 @@ namespace AgvcWorkFactory
 
             TaskEngine.Start(); //启动工作引擎
         }
+
         /// <summary>
-        /// 停止
+        ///     停止
         /// </summary>
         public void Stop()
         {

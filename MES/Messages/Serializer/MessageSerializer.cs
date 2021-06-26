@@ -7,20 +7,57 @@ using Utility.Extensions;
 
 namespace Messages.Serializer
 {
-    public  class MessageSerializer : IMessageSerializer
+    public class MessageSerializer : IMessageSerializer
     {
         private static Dictionary<string, MessageMap> _p;
 
-        static Dictionary<string, MessageMap> MessagePropsCache
+        private static Dictionary<string, MessageMap> MessagePropsCache
         {
-            get
-            {
-                return _p ??= ReflectionMessageMap();
-            }
+            get { return _p ??= ReflectionMessageMap(); }
         }
 
         /// <summary>
-        /// 反射获取所有Command类型映射
+        ///     反序列化来自MES消息
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public IMessage Deserialize(string message)
+        {
+            var header = message.Substring(0, 6).ToUpper();
+            if (MessagePropsCache.TryGetValue(header, out var commandMap))
+            {
+                //开始解析Command
+                var instance = Activator.CreateInstance(commandMap.Type) as IMessage;
+                var i = 0;
+                foreach (var commandProperty in commandMap.CommandProperties)
+                {
+                    var value = message.Substring(i, commandProperty.Length);
+                    commandProperty.PropertyInfo.SetValue(instance, value);
+                    i += commandProperty.Length;
+                }
+
+                return instance;
+            }
+
+            throw new Exception($"message from head ({header}) can't convert to command");
+        }
+
+        /// <summary>
+        ///     序列化消息 用于回传MES
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public string Serialize(IMessage message)
+        {
+            var header = message.trx_id.ToUpper();
+            if (MessagePropsCache.TryGetValue(header, out var commandMap))
+                return commandMap.CommandProperties
+                    .Select(x => x.PropertyInfo.GetValue(message).ToString().PadRight(x.Length)).JoinToString("");
+            return string.Empty;
+        }
+
+        /// <summary>
+        ///     反射获取所有Command类型映射
         /// </summary>
         private static Dictionary<string, MessageMap> ReflectionMessageMap()
         {
@@ -37,7 +74,7 @@ namespace Messages.Serializer
                     Order = p.GetCustomAttribute<DeserializationAttribute>()?.Order ?? 0,
                     Length = p.GetCustomAttribute<DeserializationAttribute>()?.Length ?? 0
                 }).OrderBy(o => o.Order).ToList();
-                dics.Add(key, new MessageMap()
+                dics.Add(key, new MessageMap
                 {
                     Type = type,
                     CommandProperties = propertys
@@ -45,47 +82,6 @@ namespace Messages.Serializer
             }
 
             return dics;
-        }
-        /// <summary>
-        /// 反序列化来自MES消息
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public IMessage Deserialize(string message)
-        {
-            var header = message.Substring(0, 6).ToUpper();
-            if (MessagePropsCache.TryGetValue(header, out var commandMap))
-            {
-                //开始解析Command
-                var instance = Activator.CreateInstance(commandMap.Type) as IMessage;
-                var i = 0;
-                foreach (var commandProperty in commandMap.CommandProperties)
-                {
-
-                    var value = message.Substring(i, commandProperty.Length);
-                    commandProperty.PropertyInfo.SetValue(instance, value);
-                    i += commandProperty.Length;
-
-                }
-
-                return instance;
-            }
-
-            throw new Exception($"message from head ({header}) can't convert to command");
-        }
-        /// <summary>
-        /// 序列化消息 用于回传MES
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public string Serialize(IMessage message)
-        {
-            var header = message.trx_id.ToUpper();
-            if (MessagePropsCache.TryGetValue(header, out var commandMap))
-            {
-                return commandMap.CommandProperties.Select(x => x.PropertyInfo.GetValue(message).ToString().PadRight(x.Length)).JoinToString("");
-            }
-            return string.Empty;
         }
     }
 }

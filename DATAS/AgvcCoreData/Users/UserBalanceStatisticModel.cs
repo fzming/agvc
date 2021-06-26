@@ -6,8 +6,9 @@ namespace AgvcService.Users.Models
     {
         public string Id { get; set; }
         public string Nick { get; set; }
+
         /// <summary>
-        /// 总额
+        ///     总额
         /// </summary>
         public double Total { get; set; }
 

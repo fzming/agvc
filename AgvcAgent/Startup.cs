@@ -1,36 +1,30 @@
-﻿
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using AgvcAgent.Api.Filters.GlobalFilters;
+﻿using AgvcAgent.Api.Filters.GlobalFilters;
 using CoreService.JwtToken;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 
 namespace AgvcAgent
 {
     public class Startup
     {
-        private IConfiguration Configuration { get; }
-
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
+        private IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             // services.Configure<TimedExecuteServiceSettings>(Configuration.GetSection("TCS"));
             // services.AddSingleton<IHostedService, TimedExecuteService>();
             services.AddControllers(configure =>
-            { 
+            {
                 configure.Filters.Add(typeof(ApiActionFilter));
                 configure.Filters.Add(typeof(ApiExceptionFilter));
                 configure.RespectBrowserAcceptHeader = true;
@@ -45,7 +39,7 @@ namespace AgvcAgent
             #region JWT CONFIG
 
             services.Configure<JwtTokenOptions>(Configuration.GetSection("JwtTokenOptions"));
-            JwtTokenOptions tokenOptions = Configuration.GetSection("JwtTokenOptions").Get<JwtTokenOptions>();
+            var tokenOptions = Configuration.GetSection("JwtTokenOptions").Get<JwtTokenOptions>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 //开启Bearer服务认证
@@ -58,17 +52,14 @@ namespace AgvcAgent
                 });
 
             #endregion
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-                // app.UseSwagger();
-                // app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication1 v1"));
-            }
+            // app.UseSwagger();
+            // app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication1 v1"));
 
 
             app.UseRouting();
@@ -79,10 +70,7 @@ namespace AgvcAgent
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
             // app.Run(context =>
             // {

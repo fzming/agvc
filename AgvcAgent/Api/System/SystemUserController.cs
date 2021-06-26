@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AgvcAgent.Api.Kernel;
@@ -14,7 +13,7 @@ using Utility.Extensions;
 namespace AgvcAgent.Api.System
 {
     /// <summary>
-    /// 系统用户服务接口
+    ///     系统用户服务接口
     /// </summary>
     [Route("api/sys/user")]
     public class SystemUserController : AuthorizedApiController
@@ -25,7 +24,7 @@ namespace AgvcAgent.Api.System
         private IAuthorityService AuthorityService { get; }
 
         /// <summary>
-        /// 构造函数
+        ///     构造函数
         /// </summary>
         /// <param name="systemUserService"></param>
         /// <param name="authorityService"></param>
@@ -39,8 +38,9 @@ namespace AgvcAgent.Api.System
         #endregion
 
         #region 系统用户管理
+
         /// <summary>
-        /// 查询所有系统用户
+        ///     查询所有系统用户
         /// </summary>
         /// <param name="userPageQuery"></param>
         /// <returns></returns>
@@ -48,14 +48,14 @@ namespace AgvcAgent.Api.System
         [Route("query")]
         public async Task<PageResult<SystemUserDto>> QuerySystemUsersAsync([FromBody] SystemUserPageQuery userPageQuery)
         {
-            var pageResult = await  SystemUserService.QuerySystemUsersAsync(userPageQuery);
+            var pageResult = await SystemUserService.QuerySystemUsersAsync(userPageQuery);
             var users = pageResult.Datas.ToListEx();
             var datas = new List<SystemUserDto>();
             if (users.Any())
             {
                 datas = users.MapTo<SystemUser, SystemUserDto>();
                 var allRoles = (await AuthorityService.QueryAllRolesAsync()).ToListEx();
-                
+
                 datas.ForEach(d =>
                 {
                     var role = allRoles.SingleOrDefault(p => p.Id == d.RoleId);
@@ -63,7 +63,6 @@ namespace AgvcAgent.Api.System
                     d.RoleLevel = role.Level;
                     d.RoleName = role.Name;
                 });
-
             }
 
             return new PageResult<SystemUserDto>
@@ -73,8 +72,9 @@ namespace AgvcAgent.Api.System
                 Total = pageResult.Total
             };
         }
+
         /// <summary>
-        /// 创建系统用户
+        ///     创建系统用户
         /// </summary>
         /// <param name="userCreateModel">创建系统用户模型</param>
         /// <returns></returns>
@@ -82,10 +82,11 @@ namespace AgvcAgent.Api.System
         [Route("create")]
         public Task<Result<SystemUser>> CreateSystemUserAsync([FromBody] SystemUserCreateModel userCreateModel)
         {
-            return SystemUserService.CreateSystemUserAsync(userCreateModel,OrgId);
+            return SystemUserService.CreateSystemUserAsync(userCreateModel, OrgId);
         }
+
         /// <summary>
-        /// 更新系统用户
+        ///     更新系统用户
         /// </summary>
         /// <param name="userUpdateModel">更新系统用户模型</param>
         /// <returns></returns>
@@ -93,7 +94,6 @@ namespace AgvcAgent.Api.System
         [Route("update")]
         public async Task<Result<SystemUser>> UpdateSystemUserAsync([FromBody] SystemUserUpdateModel userUpdateModel)
         {
-           
             var us = await SystemUserService.UpdateSystemUserAsync(userUpdateModel);
             if (us.Success)
             {
@@ -106,8 +106,9 @@ namespace AgvcAgent.Api.System
 
             return us;
         }
+
         /// <summary>
-        /// 删除系统用户
+        ///     删除系统用户
         /// </summary>
         /// <param name="userid">用户ID</param>
         /// <returns></returns>
@@ -116,12 +117,12 @@ namespace AgvcAgent.Api.System
         public async Task<bool> DeleteSystemUserAsync(string userid)
         {
             //await SignalrService.KickOffUserAsync(userid, "您的账户已被删除");
-         
+
             return await SystemUserService.DeleteSystemUserAsync(userid);
         }
 
         /// <summary>
-        /// 获取管理用户资料档案
+        ///     获取管理用户资料档案
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -130,8 +131,9 @@ namespace AgvcAgent.Api.System
         {
             return SystemUserService.GetUserProfileAsync(ClientId);
         }
+
         /// <summary>
-        /// 更新用户资料档案
+        ///     更新用户资料档案
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -139,11 +141,11 @@ namespace AgvcAgent.Api.System
         [Route("update-profile")]
         public Task<bool> UpdateUserProfileAsync([FromBody] UpdateProfileModel model)
         {
-
-            return SystemUserService.UpdateUserProfileAsync(ClientId,model);
+            return SystemUserService.UpdateUserProfileAsync(ClientId, model);
         }
+
         /// <summary>
-        /// 修改密码
+        ///     修改密码
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -151,12 +153,9 @@ namespace AgvcAgent.Api.System
         [Route("change-password")]
         public Task<bool> ChangeUserPasswordAsync([FromBody] ChangePasswordModel model)
         {
-
-            return SystemUserService.ChangeUserPasswordAsync(ClientId,model);
+            return SystemUserService.ChangeUserPasswordAsync(ClientId, model);
         }
+
         #endregion
-
     }
-
-   
 }

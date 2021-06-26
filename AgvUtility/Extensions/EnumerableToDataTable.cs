@@ -12,14 +12,12 @@ namespace Utility.Extensions
 
             foreach (var pi in piT)
             {
-
-                var propertyType = pi.PropertyType.IsGenericType ? pi.PropertyType.GetGenericArguments()[0] : pi.PropertyType;
+                var propertyType = pi.PropertyType.IsGenericType
+                    ? pi.PropertyType.GetGenericArguments()[0]
+                    : pi.PropertyType;
                 var dc = new DataColumn(pi.Name, propertyType);
 
-                if (pi.CanRead)
-                {
-                    dt.Columns.Add(dc);
-                }
+                if (pi.CanRead) dt.Columns.Add(dc);
             }
 
             return dt;
@@ -49,6 +47,7 @@ namespace Utility.Extensions
 
                 table.Rows.Add(dr);
             }
+
             return table;
         }
     }

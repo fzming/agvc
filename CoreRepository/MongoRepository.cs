@@ -13,20 +13,20 @@ using Polly;
 namespace CoreRepository
 {
     /// <summary>
-    /// repository implementation for mongo
+    ///     repository implementation for mongo
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public partial class MongoRepository<T> : DisposableRepository, IMongoRepository<T>
         where T : MongoEntity
     {
-
         public dynamic DynamicCollection => Collection;
+
         #region MongoSpecific
 
         public IMongoUnitOfWork UnitOfWork { get; set; }
 
         /// <summary>
-        /// mongo collection
+        ///     mongo collection
         /// </summary>
         public IMongoCollection<T> Collection =>
             _collection ??= UnitOfWork.MongoContext.GetCollection<T>();
@@ -35,22 +35,21 @@ namespace CoreRepository
         private IMongoCollection<T> _collection;
 
         /// <summary>
-        /// filter for collection
+        ///     filter for collection
         /// </summary>
         public FilterDefinitionBuilder<T> Filter => Builders<T>.Filter;
 
         public SortDefinitionBuilder<T> Sorter => Builders<T>.Sort;
 
         /// <summary>
-        /// projector for collection
+        ///     projector for collection
         /// </summary>
         public ProjectionDefinitionBuilder<T> Projection { get; } = Builders<T>.Projection;
 
         /// <summary>
-        /// updater for collection
+        ///     updater for collection
         /// </summary>
         public UpdateDefinitionBuilder<T> Updater => Builders<T>.Update;
-
 
 
         private IFindFluent<T, T> Query(FilterDefinition<T> filter)
@@ -62,7 +61,6 @@ namespace CoreRepository
         {
             return Collection.Find(filter);
         }
-
 
 
         private IFindFluent<T, T> Query()
@@ -77,7 +75,7 @@ namespace CoreRepository
         #region Delete
 
         /// <summary>
-        /// delete entity
+        ///     delete entity
         /// </summary>
         /// <param name="entity">entity</param>
         public virtual bool Delete(T entity)
@@ -87,19 +85,16 @@ namespace CoreRepository
 
 
         /// <summary>
-        /// delete by selector
+        ///     delete by selector
         /// </summary>
         /// <param name="id">selector</param>
         public virtual bool Delete(string id)
         {
-            return Retry(() =>
-            {
-                return Collection.DeleteOne(i => i.Id == id).DeletedCount > 0;
-            });
+            return Retry(() => { return Collection.DeleteOne(i => i.Id == id).DeletedCount > 0; });
         }
 
         /// <summary>
-        /// delete items with filter
+        ///     delete items with filter
         /// </summary>
         /// <param name="filter">expression filter</param>
         public virtual bool Delete(Expression<Func<T, bool>> filter)
@@ -109,19 +104,19 @@ namespace CoreRepository
 
 
         /// <summary>
-        /// delete all documents
+        ///     delete all documents
         /// </summary>
         public virtual bool Clear()
         {
             return Retry(() => Collection.DeleteMany(Filter.Empty).DeletedCount > 0);
         }
 
-
         #endregion Delete
 
         #region Find
+
         /// <summary>
-        /// find entities
+        ///     find entities
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <returns>collection of entity</returns>
@@ -131,9 +126,8 @@ namespace CoreRepository
         }
 
 
-
         /// <summary>
-        /// find entities
+        ///     find entities
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <returns>collection of entity</returns>
@@ -143,7 +137,7 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// find entities with paging
+        ///     find entities with paging
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="pageIndex">page index, based on 1</param>
@@ -155,21 +149,22 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// find entities with paging and ordering
-        /// default ordering is descending
+        ///     find entities with paging and ordering
+        ///     default ordering is descending
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
         /// <param name="pageIndex">page index, based on 1</param>
         /// <param name="size">number of items in page</param>
         /// <returns>collection of entity</returns>
-        public virtual IEnumerable<T> Find(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order, int pageIndex, int size)
+        public virtual IEnumerable<T> Find(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order,
+            int pageIndex, int size)
         {
             return Find(filter, order, pageIndex, size, true);
         }
 
         /// <summary>
-        /// find entities with paging and ordering in direction
+        ///     find entities with paging and ordering in direction
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
@@ -177,11 +172,12 @@ namespace CoreRepository
         /// <param name="size">number of items in page</param>
         /// <param name="isDescending">ordering direction</param>
         /// <returns>collection of entity</returns>
-        public virtual IEnumerable<T> Find(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order, int pageIndex, int size, bool isDescending)
+        public virtual IEnumerable<T> Find(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order,
+            int pageIndex, int size, bool isDescending)
         {
             return Retry(() =>
             {
-                var query = Query(filter).Skip(((Math.Max(pageIndex,1) - 1)) * size).Limit(size);
+                var query = Query(filter).Skip((Math.Max(pageIndex, 1) - 1) * size).Limit(size);
                 return (isDescending ? query.SortByDescending(order) : query.SortBy(order)).ToEnumerable();
             });
         }
@@ -191,7 +187,7 @@ namespace CoreRepository
         #region FindAll
 
         /// <summary>
-        /// fetch all items in collection
+        ///     fetch all items in collection
         /// </summary>
         /// <returns>collection of entity</returns>
         public virtual IEnumerable<T> FindAll()
@@ -200,7 +196,7 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// fetch all items in collection with paging
+        ///     fetch all items in collection with paging
         /// </summary>
         /// <param name="pageIndex">page index, based on 0</param>
         /// <param name="size">number of items in page</param>
@@ -211,8 +207,8 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// fetch all items in collection with paging and ordering
-        /// default ordering is descending
+        ///     fetch all items in collection with paging and ordering
+        ///     default ordering is descending
         /// </summary>
         /// <param name="order">ordering parameters</param>
         /// <param name="pageIndex">page index, based on 0</param>
@@ -224,18 +220,19 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// fetch all items in collection with paging and ordering in direction
+        ///     fetch all items in collection with paging and ordering in direction
         /// </summary>
         /// <param name="order">ordering parameters</param>
         /// <param name="pageIndex">page index, based on 1</param>
         /// <param name="size">number of items in page</param>
         /// <param name="isDescending">ordering direction</param>
         /// <returns>collection of entity</returns>
-        public virtual IEnumerable<T> FindAll(Expression<Func<T, object>> order, int pageIndex, int size, bool isDescending)
+        public virtual IEnumerable<T> FindAll(Expression<Func<T, object>> order, int pageIndex, int size,
+            bool isDescending)
         {
             return Retry(() =>
             {
-                var query = Query().Skip(((Math.Max(pageIndex,1) - 1)) * size).Limit(size);
+                var query = Query().Skip((Math.Max(pageIndex, 1) - 1) * size).Limit(size);
                 return (isDescending ? query.SortByDescending(order) : query.SortBy(order)).ToEnumerable();
             });
         }
@@ -246,29 +243,29 @@ namespace CoreRepository
         #region First
 
         /// <summary>
-        /// get first item in collection
+        ///     get first item in collection
         /// </summary>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T First()
         {
             return FindAll(i => i.Id, 1, 1, false).FirstOrDefault();
         }
 
         /// <summary>
-        /// get first item in query
+        ///     get first item in query
         /// </summary>
         /// <param name="filter">expression filter</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T First(FilterDefinition<T> filter)
         {
             return Find(filter).FirstOrDefault();
         }
 
         /// <summary>
-        /// get first item in query
+        ///     get first item in query
         /// </summary>
         /// <param name="filter">expression filter</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T First(Expression<Func<T, bool>> filter)
         {
             return First(filter, i => i.Id);
@@ -276,42 +273,40 @@ namespace CoreRepository
 
 
         /// <summary>
-        /// get first item in query with order
+        ///     get first item in query with order
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T First(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order)
         {
             return First(filter, order, false);
         }
 
         /// <summary>
-        /// get first item in query with order and direction
+        ///     get first item in query with order and direction
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
         /// <param name="isDescending">ordering direction</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T First(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order, bool isDescending)
         {
             return Find(filter, order, 1, 1, isDescending).FirstOrDefault();
         }
 
         #endregion First
+
         #region Get
 
         /// <summary>
-        /// get by selector
+        ///     get by selector
         /// </summary>
         /// <param name="id">selector value</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T Get(string id)
         {
-            return Retry(() =>
-            {
-                return Find(i => i.Id == id).FirstOrDefault();
-            });
+            return Retry(() => { return Find(i => i.Id == id).FirstOrDefault(); });
         }
 
         #endregion Get
@@ -319,83 +314,75 @@ namespace CoreRepository
         #region Insert
 
         /// <summary>
-        /// insert entity
+        ///     insert entity
         /// </summary>
         /// <param name="entity">entity</param>
         public virtual void Insert(T entity)
         {
-            Retry(() =>
-            {
-                Collection.InsertOne(entity);
-            });
+            Retry(() => { Collection.InsertOne(entity); });
         }
 
 
-
         /// <summary>
-        /// insert entity collection
+        ///     insert entity collection
         /// </summary>
         /// <param name="entities">collection of entities</param>
         public virtual void Insert(IEnumerable<T> entities)
         {
-            Retry(() =>
-            {
-                Collection.InsertMany(entities);
-            });
+            Retry(() => { Collection.InsertMany(entities); });
         }
-
 
         #endregion Insert
 
         #region Last
 
         /// <summary>
-        /// get first item in collection
+        ///     get first item in collection
         /// </summary>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T Last()
         {
             return FindAll(i => i.Id, 1, 1, true).FirstOrDefault();
         }
 
         /// <summary>
-        /// get last item in query
+        ///     get last item in query
         /// </summary>
         /// <param name="filter">expression filter</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T Last(FilterDefinition<T> filter)
         {
             return Query(filter).SortByDescending(i => i.Id).FirstOrDefault();
         }
 
         /// <summary>
-        /// get last item in query
+        ///     get last item in query
         /// </summary>
         /// <param name="filter">expression filter</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T Last(Expression<Func<T, bool>> filter)
         {
             return Last(filter, i => i.Id);
         }
 
         /// <summary>
-        /// get last item in query with order
+        ///     get last item in query with order
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T Last(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order)
         {
             return Last(filter, order, false);
         }
 
         /// <summary>
-        /// get last item in query with order and direction
+        ///     get last item in query with order and direction
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
         /// <param name="isDescending">ordering direction</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         public virtual T Last(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order, bool isDescending)
         {
             return First(filter, order, !isDescending);
@@ -415,11 +402,10 @@ namespace CoreRepository
         public virtual bool Update(T entity)
         {
             return Retry(() => { return Collection.ReplaceOne(p => p.Id == entity.Id, entity).IsAcknowledged; });
-
         }
 
         /// <summary>
-        /// update a property field in an entity
+        ///     update a property field in an entity
         /// </summary>
         /// <typeparam name="TField">field type</typeparam>
         /// <param name="entity">entity</param>
@@ -432,7 +418,7 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// 根据表达式更新
+        ///     根据表达式更新
         /// </summary>
         /// <param name="predicate"></param>
         /// <param name="lambda"></param>
@@ -449,7 +435,7 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// update an entity with updated fields
+        ///     update an entity with updated fields
         /// </summary>
         /// <param name="id">selector</param>
         /// <param name="updates">updated field(s)</param>
@@ -461,20 +447,19 @@ namespace CoreRepository
 
 
         /// <summary>
-        /// update an entity with updated fields
+        ///     update an entity with updated fields
         /// </summary>
         /// <param name="entity">entity</param>
         /// <param name="updates">updated field(s)</param>
         /// <returns>true if successful, otherwise false</returns>
         public virtual bool Update(T entity, params UpdateDefinition<T>[] updates)
         {
-
             return Update(entity.Id, updates);
         }
 
 
         /// <summary>
-        /// update a property field in entities
+        ///     update a property field in entities
         /// </summary>
         /// <typeparam name="TField">field type</typeparam>
         /// <param name="filter">filter</param>
@@ -487,20 +472,15 @@ namespace CoreRepository
         }
 
 
-
-
         /// <summary>
-        /// update found entities by filter with updated fields
+        ///     update found entities by filter with updated fields
         /// </summary>
         /// <param name="filter">collection filter</param>
         /// <param name="updates">updated field(s)</param>
         /// <returns>true if successful, otherwise false</returns>
         public virtual bool Update(FilterDefinition<T> filter, params UpdateDefinition<T>[] updates)
         {
-            if (updates.Length == 0)
-            {
-                throw new Exception("nothing to updates");
-            }
+            if (updates.Length == 0) throw new Exception("nothing to updates");
             return Retry(() =>
             {
                 var update = Updater.Combine(updates).CurrentDate(i => i.ModifiedOn);
@@ -516,7 +496,7 @@ namespace CoreRepository
 
 
         /// <summary>
-        /// update found entities by filter with updated fields
+        ///     update found entities by filter with updated fields
         /// </summary>
         /// <param name="filter">collection filter</param>
         /// <param name="updates">updated field(s)</param>
@@ -530,11 +510,12 @@ namespace CoreRepository
             });
         }
 
-
         #endregion Update
 
         #endregion CRUD
+
         #region Aggregate
+
         public virtual TResult Max<TResult>(Expression<Func<T, TResult>> selector)
         {
             return Collection.AsQueryable().GroupBy(selector).Max(p => p.Key);
@@ -556,9 +537,8 @@ namespace CoreRepository
         }
 
 
-
         /// <summary>
-        /// validate if filter result exists
+        ///     validate if filter result exists
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <returns>true if exists, otherwise false</returns>
@@ -568,8 +548,9 @@ namespace CoreRepository
         }
 
         #region Count
+
         /// <summary>
-        /// get number of filtered documents
+        ///     get number of filtered documents
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <returns>number of documents</returns>
@@ -579,15 +560,13 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// get number of documents in collection
+        ///     get number of documents in collection
         /// </summary>
         /// <returns>number of documents</returns>
         public virtual long Count()
         {
             return Retry(() => Collection.CountDocuments(Filter.Empty));
         }
-
-
 
         #endregion Count
 
@@ -624,22 +603,23 @@ namespace CoreRepository
         }
 
         #endregion
+
         #endregion Utils
 
         #region RetryPolicy
 
         /// <summary>
-        /// retry operation for three times if IOException occurs
+        ///     retry operation for three times if IOException occurs
         /// </summary>
         /// <typeparam name="TResult">return type</typeparam>
         /// <param name="action">action</param>
         /// <returns>action result</returns>
         /// <example>
-        /// return Retry(() => 
-        /// { 
+        ///     return Retry(() =>
+        ///     {
         ///     do_something;
         ///     return something;
-        /// });
+        ///     });
         /// </example>
         protected virtual TResult Retry<TResult>(Func<TResult> action)
         {
@@ -649,16 +629,16 @@ namespace CoreRepository
                 .Retry(3)
                 .Execute(action);
         }
+
         protected virtual void Retry(Action action)
         {
             Policy
-               .Handle<MongoConnectionException>(i => i.InnerException?.GetType() == typeof(IOException) ||
-               i.InnerException?.GetType() == typeof(SocketException))
-               .Retry(3)
-               .Execute(action);
+                .Handle<MongoConnectionException>(i => i.InnerException?.GetType() == typeof(IOException) ||
+                                                       i.InnerException?.GetType() == typeof(SocketException))
+                .Retry(3)
+                .Execute(action);
         }
+
         #endregion
-
-
     }
 }

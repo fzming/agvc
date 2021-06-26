@@ -6,9 +6,8 @@ namespace AgvcService.System.Signal
 {
     public class ConnectionMapping<T, TConnectionAgent> where TConnectionAgent : ConnectionAgent
     {
-         
         private readonly Dictionary<T, HashSet<TConnectionAgent>> _connections =
-            new Dictionary<T, HashSet<TConnectionAgent>>();
+            new();
 
         public int Count
         {
@@ -44,9 +43,12 @@ namespace AgvcService.System.Signal
         {
             lock (_connections)
             {
-                return _connections.TryGetValue(key, out var connections) ? connections : Enumerable.Empty<TConnectionAgent>();
+                return _connections.TryGetValue(key, out var connections)
+                    ? connections
+                    : Enumerable.Empty<TConnectionAgent>();
             }
         }
+
         public IEnumerable<TConnectionAgent> GetConnections(T[] keys)
         {
             lock (_connections)
@@ -59,42 +61,30 @@ namespace AgvcService.System.Signal
         {
             lock (_connections)
             {
-                if (!_connections.TryGetValue(key, out var connections))
-                {
-                    return;
-                }
+                if (!_connections.TryGetValue(key, out var connections)) return;
 
                 lock (connections)
                 {
                     connections.RemoveWhere(p => p.ConnectionId == connectionId);
 
-                    if (connections.Count == 0)
-                    {
-                        _connections.Remove(key);
-                    }
+                    if (connections.Count == 0) _connections.Remove(key);
                 }
             }
         }
+
         public void Remove(T key, string[] connectionIds)
         {
             lock (_connections)
             {
-                if (!_connections.TryGetValue(key, out var connections))
-                {
-                    return;
-                }
+                if (!_connections.TryGetValue(key, out var connections)) return;
 
                 lock (connections)
                 {
                     connections.RemoveWhere(p => connectionIds.Contains(p.ConnectionId));
 
-                    if (connections.Count == 0)
-                    {
-                        _connections.Remove(key);
-                    }
+                    if (connections.Count == 0) _connections.Remove(key);
                 }
             }
         }
     }
-
 }

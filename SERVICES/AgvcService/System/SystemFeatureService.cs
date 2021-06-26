@@ -14,30 +14,16 @@ namespace AgvcService.System
 {
     public class SystemFeatureService : AbstractCrudService<SystemFeature>, ISystemFeatureService
     {
-        #region IOC
-
-        private ISystemFeatureRepository SystemFeatureRepository { get; }
-        private IOrganizationFeatureValueRepository OrganizationFeatureValueRepository { get; }
-
-        public SystemFeatureService(ISystemFeatureRepository systemFeatureRepository,
-            IOrganizationFeatureValueRepository organizationFeatureValueRepository) :
-            base(systemFeatureRepository)
-        {
-            SystemFeatureRepository = systemFeatureRepository;
-            OrganizationFeatureValueRepository = organizationFeatureValueRepository;
-        }
-
-        #endregion
-
         public Task<bool> SetOrganizationFeatureValueAsync(string orgId, OrganizationFeatureValue value)
         {
-            if(value.OrgId.IsNullOrEmpty()) value.OrgId = orgId;
+            if (value.OrgId.IsNullOrEmpty()) value.OrgId = orgId;
             return OrganizationFeatureValueRepository.SetFeatureValueAsync(value);
         }
 
-        public async Task<PageResult<OrgFeatureDto>> QueryOrganizationFeaturesAsync(string orgId, PageQuery query, Expression<Func<SystemFeature, bool>> filter = null)
+        public async Task<PageResult<OrgFeatureDto>> QueryOrganizationFeaturesAsync(string orgId, PageQuery query,
+            Expression<Func<SystemFeature, bool>> filter = null)
         {
-            var ps = await PageQueryAsync(query, filter, order => order.CreatedOn, false);
+            var ps = await PageQueryAsync(query, filter, order => order.CreatedOn);
             var sysFeatures = ps.Datas.ToList();
 
             IEnumerable<OrganizationFeatureValue> orgFeatureValues;
@@ -45,7 +31,8 @@ namespace AgvcService.System
             {
                 var featureIds = sysFeatures.Select(p => p.Id);
                 orgFeatureValues =
-                  await OrganizationFeatureValueRepository.FindAsync(p => p.OrgId == orgId && featureIds.Contains(p.SysFeatureId));
+                    await OrganizationFeatureValueRepository.FindAsync(p =>
+                        p.OrgId == orgId && featureIds.Contains(p.SysFeatureId));
             }
             else
             {
@@ -53,31 +40,32 @@ namespace AgvcService.System
             }
 
             var datas = sysFeatures.Select(feature =>
-             {
-                 var dto = feature.MapTo(new OrgFeatureDto());
-                 dto.DefaultValue = feature.Value;
-                 dto.Value = feature.Value;
-                 var orgFeature = orgFeatureValues.FirstOrDefault(p => p.SysFeatureId == feature.Id);
-                 if (orgFeature == null) return dto;
-                 dto.Value = orgFeature.Value;
-                 return dto;
-             });
+            {
+                var dto = feature.MapTo(new OrgFeatureDto());
+                dto.DefaultValue = feature.Value;
+                dto.Value = feature.Value;
+                var orgFeature = orgFeatureValues.FirstOrDefault(p => p.SysFeatureId == feature.Id);
+                if (orgFeature == null) return dto;
+                dto.Value = orgFeature.Value;
+                return dto;
+            });
 
 
-            var dtoRs = new PageResult<OrgFeatureDto> { Datas = datas, PageCount = ps.PageCount, Total = ps.Total };
+            var dtoRs = new PageResult<OrgFeatureDto> {Datas = datas, PageCount = ps.PageCount, Total = ps.Total};
             return dtoRs;
-
         }
 
         public async Task<Dictionary<string, string>> GetOrganizationFeaturesAsync(string orgId)
         {
             var features = await QueryOrganizationFeaturesAsync(orgId, new PageQuery());
             return features.Datas.ToDictionary(key => key.Key, value => value.Value);
-        }       
+        }
+
         public async Task<Dictionary<string, string>> GetOrganizationFeaturesNoSafetyAsync(string orgId)
         {
             var features = await QueryOrganizationFeaturesAsync(orgId, new PageQuery());
-            return features.Datas.Where(p=>p.Safety==false&&p.Hidden==false).ToDictionary(key => key.Key, value => value.Value);
+            return features.Datas.Where(p => p.Safety == false && p.Hidden == false)
+                .ToDictionary(key => key.Key, value => value.Value);
         }
 
         public async Task<string> GetFeatureValueAsync(string orgId, string key)
@@ -86,10 +74,7 @@ namespace AgvcService.System
             // var datas = features.Datas;
             // return datas.FirstOrDefault();
             var features = await GetOrganizationFeaturesAsync(orgId);
-            if (features.TryGetValue(key, out var value))
-            {
-                return value;
-            }
+            if (features.TryGetValue(key, out var value)) return value;
 
             return string.Empty;
         }
@@ -113,19 +98,29 @@ namespace AgvcService.System
         {
             var feature = await GetFeatureByKeyAsync(featureModel.Key);
             if (feature == null)
-            {
                 await base.CreateAsync(null, featureModel);
-
-            }
             else
-            {
                 await base.UpdateAsync(featureModel.MapTo(new UpdateSystemFeatureModel
                 {
                     Id = feature.Id
                 }));
-            }
 
             return true;
         }
+
+        #region IOC
+
+        private ISystemFeatureRepository SystemFeatureRepository { get; }
+        private IOrganizationFeatureValueRepository OrganizationFeatureValueRepository { get; }
+
+        public SystemFeatureService(ISystemFeatureRepository systemFeatureRepository,
+            IOrganizationFeatureValueRepository organizationFeatureValueRepository) :
+            base(systemFeatureRepository)
+        {
+            SystemFeatureRepository = systemFeatureRepository;
+            OrganizationFeatureValueRepository = organizationFeatureValueRepository;
+        }
+
+        #endregion
     }
 }

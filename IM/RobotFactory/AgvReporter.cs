@@ -7,13 +7,12 @@ using Protocol.Report;
 namespace AgvcWorkFactory
 {
     /// <summary>
-    /// AGV设备回调监控
+    ///     AGV设备回调监控
     /// </summary>
     public class AgvReporter : IAgvReporter
     {
-        
         private readonly ConcurrentDictionary<string, AgvReport> Watchs =
-            new ConcurrentDictionary<string, AgvReport>();
+            new();
 
         public bool TryAddWatch(AgvReport agvReport)
         {
@@ -31,18 +30,19 @@ namespace AgvcWorkFactory
         }
 
         /// <summary>
-        /// IMG->AGVC 汇报了状态
+        ///     IMG->AGVC 汇报了状态
         /// </summary>
         /// <param name="report"></param>
         /// <returns></returns>
         public Response OnReport(BaseReport report)
         {
             Console.WriteLine($"<<Report>> {report.MRID}->{report.Type.FullName}");
-            var reportType = report.Type;//当前报告的任务类别
+            var reportType = report.Type; //当前报告的任务类别
 
             #region 针对MissionFail特殊处理
+
             /*Mission Done 和 Mission Fail是互斥的,不会同时在一个任务中出现*/
-            if (reportType==typeof(MissionFail)) //agv报告了MissionFail
+            if (reportType == typeof(MissionFail)) //agv报告了MissionFail
             {
                 reportType = typeof(MissionDone); //替换为MissionDone的监听，但增加了Error
                 report = new MissionDone
@@ -52,6 +52,7 @@ namespace AgvcWorkFactory
             }
 
             #endregion
+
             var tempReport = new AgvReport(report.MRID, report.MissionID, reportType, null);
             var received = true; //默认agree = true,该参数表明AGVC已经成功收到汇报,将在本次请求中同步返回IM.
             var key = tempReport.GetKey();
@@ -77,10 +78,7 @@ namespace AgvcWorkFactory
 
         public BaseReport GetReport(string key)
         {
-            if (Watchs.TryGetValue(key, out var wc))
-            {
-                return wc.Report;
-            }
+            if (Watchs.TryGetValue(key, out var wc)) return wc.Report;
 
             return null;
         }

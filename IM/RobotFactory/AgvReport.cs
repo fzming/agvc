@@ -16,20 +16,22 @@ namespace AgvcWorkFactory
             CreateTime = DateTime.Now;
         }
 
-        public string GetKey()
-        {
-            return $"{MrId}-{MissionId}-{Type.FullName}";
-        }
         public string MrId { get; set; }
         public string MissionId { get; set; }
         public Type Type { get; set; }
         public AutoResetEvent WaitHandle { get; set; }
+
         public DateTime CreateTime { get; set; }
+
         //汇报后========
         public Func<BaseReport, bool> AgreeCall { get; set; }
         public BaseReport Report { get; set; }
         public bool Received { get; set; }
         public double Ms { get; set; }
 
+        public string GetKey()
+        {
+            return $"{MrId}-{MissionId}-{Type.FullName}";
+        }
     }
 }

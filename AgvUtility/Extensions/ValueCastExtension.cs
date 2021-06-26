@@ -6,20 +6,78 @@ namespace Utility.Extensions
     public static class ValueCastExtension
     {
         /// <summary>
-        /// 遍历类型实现的所有接口，判断是否存在某个接口是泛型，且是参数中指定的原始泛型的实例
+        ///     遍历类型实现的所有接口，判断是否存在某个接口是泛型，且是参数中指定的原始泛型的实例
         /// </summary>
         /// <param name="type">当前类型</param>
         /// <param name="generic">泛型类型</param>
         /// <returns></returns>
         public static bool HasImplementedRawGeneric(this Type type, Type generic)
         {
-      
             return type.GetInterfaces().Any(x => generic == (x.IsGenericType ? x.GetGenericTypeDefinition() : x));
         }
 
-        #region 数值转换
+        #region 字符串转换
+
         /// <summary>
-        /// 转换为长整型
+        ///     转换为字符串
+        /// </summary>
+        /// <param name="data">数据</param>
+        public static string ToString(this object data)
+        {
+            return data == null ? string.Empty : data.ToString().Trim();
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     安全返回值
+        /// </summary>
+        /// <param name="value">可空值</param>
+        public static T SafeValue<T>(this T? value) where T : struct
+        {
+            return value ?? default;
+        }
+
+        /// <summary>
+        ///     是否为空
+        /// </summary>
+        /// <param name="value">值</param>
+        public static bool IsEmpty(this string value)
+        {
+            return string.IsNullOrWhiteSpace(value);
+        }
+
+        /// <summary>
+        ///     是否为空
+        /// </summary>
+        /// <param name="value">值</param>
+        public static bool IsEmpty(this Guid? value)
+        {
+            return value == null || IsEmpty(value.Value);
+        }
+
+        /// <summary>
+        ///     是否为空
+        /// </summary>
+        /// <param name="value">值</param>
+        public static bool IsEmpty(this Guid value)
+        {
+            return value == Guid.Empty;
+        }
+
+        /// <summary>
+        ///     是否为空
+        /// </summary>
+        /// <param name="value">值</param>
+        public static bool IsEmpty(this object value)
+        {
+            return value == null || string.IsNullOrEmpty(value.ToString());
+        }
+
+        #region 数值转换
+
+        /// <summary>
+        ///     转换为长整型
         /// </summary>
         /// <param name="data">数据</param>
         public static long ToLong(this object data)
@@ -40,7 +98,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为可空长整型
+        ///     转换为可空长整型
         /// </summary>
         /// <param name="data">数据</param>
         public static long? ToLongOrNull(this object data)
@@ -52,8 +110,9 @@ namespace Utility.Extensions
                 return result;
             return null;
         }
+
         /// <summary>
-        /// 转换为整型
+        ///     转换为整型
         /// </summary>
         /// <param name="data">数据</param>
         public static int ToInt(this object data)
@@ -80,7 +139,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为可空整型
+        ///     转换为可空整型
         /// </summary>
         /// <param name="data">数据</param>
         public static int? ToIntOrNull(this object data)
@@ -94,7 +153,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为双精度浮点数
+        ///     转换为双精度浮点数
         /// </summary>
         /// <param name="data">数据</param>
         public static double ToDouble(this object data)
@@ -105,7 +164,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为双精度浮点数,并按指定的小数位4舍5入
+        ///     转换为双精度浮点数,并按指定的小数位4舍5入
         /// </summary>
         /// <param name="data">数据</param>
         /// <param name="digits">小数位数</param>
@@ -115,7 +174,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为可空双精度浮点数
+        ///     转换为可空双精度浮点数
         /// </summary>
         /// <param name="data">数据</param>
         public static double? ToDoubleOrNull(this object data)
@@ -129,7 +188,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为高精度浮点数
+        ///     转换为高精度浮点数
         /// </summary>
         /// <param name="data">数据</param>
         public static decimal ToDecimal(this object data)
@@ -140,7 +199,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为高精度浮点数,并按指定的小数位4舍5入
+        ///     转换为高精度浮点数,并按指定的小数位4舍5入
         /// </summary>
         /// <param name="data">数据</param>
         /// <param name="digits">小数位数</param>
@@ -150,7 +209,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为可空高精度浮点数
+        ///     转换为可空高精度浮点数
         /// </summary>
         /// <param name="data">数据</param>
         public static decimal? ToDecimalOrNull(this object data)
@@ -164,7 +223,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为可空高精度浮点数,并按指定的小数位4舍5入
+        ///     转换为可空高精度浮点数,并按指定的小数位4舍5入
         /// </summary>
         /// <param name="data">数据</param>
         /// <param name="digits">小数位数</param>
@@ -179,8 +238,9 @@ namespace Utility.Extensions
         #endregion
 
         #region 日期转换
+
         /// <summary>
-        /// 转换为日期
+        ///     转换为日期
         /// </summary>
         /// <param name="data">数据</param>
         public static DateTime ToDate(this object data)
@@ -191,7 +251,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为可空日期
+        ///     转换为可空日期
         /// </summary>
         /// <param name="data">数据</param>
         public static DateTime? ToDateOrNull(this object data)
@@ -209,15 +269,16 @@ namespace Utility.Extensions
                 Console.WriteLine(e);
                 throw;
             }
-           
+
             return null;
         }
 
         #endregion
 
         #region 布尔转换
+
         /// <summary>
-        /// 转换为布尔值
+        ///     转换为布尔值
         /// </summary>
         /// <param name="data">数据</param>
         public static bool ToBool(this object data)
@@ -231,7 +292,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 获取布尔值
+        ///     获取布尔值
         /// </summary>
         private static bool? GetBool(this object data)
         {
@@ -255,7 +316,7 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 转换为可空布尔值
+        ///     转换为可空布尔值
         /// </summary>
         /// <param name="data">数据</param>
         public static bool? ToBoolOrNull(this object data)
@@ -272,58 +333,5 @@ namespace Utility.Extensions
         }
 
         #endregion
-
-        #region 字符串转换
-        /// <summary>
-        /// 转换为字符串
-        /// </summary>
-        /// <param name="data">数据</param>
-        public static string ToString(this object data)
-        {
-            return data == null ? string.Empty : data.ToString().Trim();
-        }
-        #endregion
-
-        /// <summary>
-        /// 安全返回值
-        /// </summary>
-        /// <param name="value">可空值</param>
-        public static T SafeValue<T>(this T? value) where T : struct
-        {
-            return value ?? default;
-        }
-        /// <summary>
-        /// 是否为空
-        /// </summary>
-        /// <param name="value">值</param>
-        public static bool IsEmpty(this string value)
-        {
-            return string.IsNullOrWhiteSpace(value);
-        }
-        /// <summary>
-        /// 是否为空
-        /// </summary>
-        /// <param name="value">值</param>
-        public static bool IsEmpty(this Guid? value)
-        {
-            return value == null || IsEmpty(value.Value);
-        }
-        /// <summary>
-        /// 是否为空
-        /// </summary>
-        /// <param name="value">值</param>
-        public static bool IsEmpty(this Guid value)
-        {
-            return value == Guid.Empty;
-        }
-        /// <summary>
-        /// 是否为空
-        /// </summary>
-        /// <param name="value">值</param>
-        public static bool IsEmpty(this object value)
-        {
-            return value == null || string.IsNullOrEmpty(value.ToString());
-        }
-
     }
 }

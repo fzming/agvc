@@ -17,29 +17,21 @@ namespace AgvcRepository.Users
         public AccountRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
+
         public Task<PageResult<Account>> AdvQueryAccountUsersAsync(AccountUserPageQuery userPageQuery, string orgId)
         {
             #region Build Query
 
-            if (userPageQuery==null)
-            {
-                userPageQuery = new AccountUserPageQuery();
-            }
+            if (userPageQuery == null) userPageQuery = new AccountUserPageQuery();
             var query = Collection.AsQueryable();
             query = query.Where(p => p.OrgId == orgId && !p.Ghost);
-            if (userPageQuery.Mobile.IsNotNullOrEmpty())
-            {
-                query = query.Where(p => p.Mobile == userPageQuery.Mobile);
-            }
+            if (userPageQuery.Mobile.IsNotNullOrEmpty()) query = query.Where(p => p.Mobile == userPageQuery.Mobile);
 
             if (userPageQuery.BranchCompanyId.IsObjectId())
-            {
                 query = query.Where(p => p.BranchCompanyId == userPageQuery.BranchCompanyId);
-            }
             if (userPageQuery.DepartmentId.IsObjectId())
-            {
                 query = query.Where(p => p.DepartmentId == userPageQuery.DepartmentId);
-            }
+
             #endregion
 
             return query.ToPageListAsync(userPageQuery.PageIndex, userPageQuery.PageSize,
@@ -59,7 +51,7 @@ namespace AgvcRepository.Users
         {
             var update = Updater.Unset(p => p.Mobile);
             return (await Collection.UpdateOneAsync(p => p.Id == id, update.CurrentDate(i => i.ModifiedOn)))
-                   .ModifiedCount > 0;
+                .ModifiedCount > 0;
         }
 
         public async Task<IEnumerable<Account>> FindRepeatMobileAccountAsync()
@@ -79,10 +71,8 @@ namespace AgvcRepository.Users
             var update = Builders<Account>.Update
                 .Set(p => p.NeedChangePassword, needChangePassword)
                 .CurrentDate(i => i.ModifiedOn);
-            var rs = await this.Collection.UpdateManyAsync(Filter.In(x => x.Id, userIds), update);
+            var rs = await Collection.UpdateManyAsync(Filter.In(x => x.Id, userIds), update);
             return rs.ModifiedCount > 0;
         }
-
-        
     }
 }

@@ -8,7 +8,6 @@ namespace Utility.Helpers
     {
         public static object CastTo(Type targetType, object value)
         {
-            
             // Null
             if (value == null)
                 return null;
@@ -28,7 +27,7 @@ namespace Utility.Helpers
                     && m.GetParameters().First().ParameterType == typeof(IFormatProvider));
 
                 if (convertableMethod != null)
-                    return convertableMethod.Invoke(value, new object[] { null });
+                    return convertableMethod.Invoke(value, new object[] {null});
             }
 
             if (targetType.IsEnum)
@@ -43,7 +42,7 @@ namespace Utility.Helpers
                     && m.GetParameters().First().ParameterType == sourceType);
 
             if (fromSource != null)
-                return fromSource.Invoke(null, new[] { value });
+                return fromSource.Invoke(null, new[] {value});
 
             // Target has (source) operator
             var toTarget = targetType.GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -54,10 +53,9 @@ namespace Utility.Helpers
                     && m.GetParameters().First().ParameterType == sourceType);
 
             if (toTarget != null)
-                return toTarget.Invoke(null, new[] { value });
+                return toTarget.Invoke(null, new[] {value});
 
             throw new NotSupportedException($"Can not cast value from {sourceType} to {targetType}!");
         }
     }
-
 }

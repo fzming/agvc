@@ -3,13 +3,12 @@ using Messages.Transfers;
 using Messages.Transfers.Core;
 using Protocol.Mission;
 using Protocol.Report;
-using Utility;
 using Utility.Extensions;
 
 namespace AgvcWorkFactory.Tasks
 {
     /// <summary>
-    /// Robot搬运指令(STK->EQP，EQP->STK,EQP->EQP,STK->STK)
+    ///     Robot搬运指令(STK->EQP，EQP->STK,EQP->EQP,STK->STK)
     /// </summary>
     [TaskType(RobotTaskType.Transfer)]
     public class RobotTransferTask : AbstractRobotTask
@@ -30,47 +29,43 @@ namespace AgvcWorkFactory.Tasks
         {
             var trx = message as Tx501i;
 
-            this.FromGoals.Add(new TaskGoal
+            FromGoals.Add(new TaskGoal
             {
                 BoxID = trx.kemlot_id.Trim(), //货物
                 Goal = trx.eqp_from, //目标Stock或EQP 名称
                 Port = trx.port_from.ToInt(), //目标Stock或EQP的实际Port 名称
-                WaferCount = trx.cur_sublot_wafcnt.ToInt(),
+                WaferCount = trx.cur_sublot_wafcnt.ToInt()
             });
 
-            this.ToGoals.Add(new TaskGoal
-            {
-
-                BoxID = trx.kemlot_id.Trim(), //货物
-                Goal = trx.eqp_to, //目标Stock或EQP 名称
-                Port = trx.port_to.ToInt(), //目标Stock或EQP的实际Port 名称
-                WaferCount = trx.cur_sublot_wafcnt.ToInt(),
-            }
+            ToGoals.Add(new TaskGoal
+                {
+                    BoxID = trx.kemlot_id.Trim(), //货物
+                    Goal = trx.eqp_to, //目标Stock或EQP 名称
+                    Port = trx.port_to.ToInt(), //目标Stock或EQP的实际Port 名称
+                    WaferCount = trx.cur_sublot_wafcnt.ToInt()
+                }
             );
         }
 
         /// <summary>
-        /// 實際任務单次執行步驟(From)
+        ///     實際任務单次執行步驟(From)
         /// </summary>
         protected override void OnRunFromTask(TaskGoal goal, int index)
         {
             Console.WriteLine($"{MRID} Begin Pick");
             RunPickMission(new Pick
             {
-                BoxID = goal.BoxID, 
-                Goal = goal.Goal, 
+                BoxID = goal.BoxID,
+                Goal = goal.Goal,
                 Port = goal.Port,
-                WaferCount = goal.WaferCount 
+                WaferCount = goal.WaferCount
             }, report =>
             {
                 switch (report)
                 {
                     case TransportEnd:
                         //AGV->MES 发送TXD27I(XS)
-                        AGVC2MES(new Txd27i
-                        {
-
-                        });
+                        AGVC2MES(new Txd27i());
                         break;
                     case MissionDone:
                         Console.WriteLine($"{MRID} Pick MissionDone");
@@ -80,28 +75,25 @@ namespace AgvcWorkFactory.Tasks
         }
 
         /// <summary>
-        /// 實際任務单次執行步驟(To)
+        ///     實際任務单次執行步驟(To)
         /// </summary>
         protected override void OnRunToTask(TaskGoal goal, int index)
         {
             Console.WriteLine($"{MRID} Begin Drop");
             RunDropMission(new Drop
-            {
-                BoxID = goal.BoxID,
-                Goal = goal.Goal,
-                Port = goal.Port, 
-                WaferCount = goal.WaferCount,
-            },
+                {
+                    BoxID = goal.BoxID,
+                    Goal = goal.Goal,
+                    Port = goal.Port,
+                    WaferCount = goal.WaferCount
+                },
                 report =>
                 {
                     switch (report)
                     {
                         case TransportEnd:
                             //AGV->MES 发送TXD27I(XS)
-                            AGVC2MES(new Txd27i
-                            {
-
-                            });
+                            AGVC2MES(new Txd27i());
                             break;
                         case MissionDone:
                             Console.WriteLine($"{MRID} Drop MissionDone");
@@ -111,7 +103,7 @@ namespace AgvcWorkFactory.Tasks
         }
 
         /// <summary>
-        /// 默认执行From To的规则,具体任务实例可以进行重写
+        ///     默认执行From To的规则,具体任务实例可以进行重写
         /// </summary>
         public override void ExecuteFromToRules()
         {

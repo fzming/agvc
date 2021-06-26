@@ -8,13 +8,14 @@ namespace CoreData
         string Error { get; set; }
         bool Success { get; set; }
     }
-    public class Result<T>: IResult<T>
+
+    public class Result<T> : IResult<T>
     {
+        public static Result<T> Failed => Fail();
+        public static Result<bool> Successed => Result<bool>.Ok(true);
         public T Data { get; set; }
         public string Error { get; set; }
         public bool Success { get; set; }
-        public static Result<T> Failed => Fail();
-        public static Result<bool> Successed => Result<bool>.Ok(true);
 
         public static Result<T> Ok(T data)
         {
@@ -24,7 +25,7 @@ namespace CoreData
                 Success = true
             };
         }
-         
+
         public static Result<T> Fail(Exception exception)
         {
             return Fail(exception.Message);
@@ -34,7 +35,8 @@ namespace CoreData
         {
             return d != null ? Result<T2>.Ok(d) : Result<T2>.Failed;
         }
-        public static Result<T> Fail(string error="")
+
+        public static Result<T> Fail(string error = "")
         {
             return new()
             {
@@ -46,11 +48,7 @@ namespace CoreData
 
         public static Result<bool> From(bool b)
         {
-
             return b ? Result<bool>.Successed : Result<bool>.Failed;
-
-
         }
     }
-
 }

@@ -20,14 +20,15 @@ namespace Utility.Extensions
     public static class ObjectExtensions
     {
         /// <summary>
-        /// 比较两个对象的属性值异同
+        ///     比较两个对象的属性值异同
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="newObject">新对象</param>
         /// <param name="oldObject">旧对象</param>
         /// <param name="onlyHasTrackAttr">是否只考察包含TrackFieldAttribute特性的属性</param>
         /// <returns></returns>
-        public static List<ChangedProperty> CompareProperties<T>(this T newObject, T oldObject, bool onlyHasTrackAttr = true) where T : class
+        public static List<ChangedProperty> CompareProperties<T>(this T newObject, T oldObject,
+            bool onlyHasTrackAttr = true) where T : class
         {
             var list = new List<ChangedProperty>();
             InternalCompareProperties(newObject, oldObject, typeof(T), ref list, onlyHasTrackAttr);
@@ -55,22 +56,21 @@ namespace Utility.Extensions
                 if (oValue == null && nValue == null) continue;
                 var trackAttr = po.GetCustomAttribute<TrackFieldAttribute>();
 
-                if (canCompare)  //valueType
+                if (canCompare) //valueType
                 {
-
                     if (trackAttr == null && onlyHasTrackAttr) continue;
                     if (oValue != null && nValue != null && nValue.Equals(oValue)) continue; //相同值
                     var originalValue = oValue.ToStringEx();
                     var newValue = nValue.ToStringEx();
-                    
+
                     //enum
                     if (trackAttr?.ValueConverter != null)
                     {
                         var instance = Activator.CreateInstance(trackAttr.ValueConverter) as ITrackFieldValueConverter;
                         originalValue = instance.Convert(oValue, po.PropertyType);
                         newValue = instance.Convert(nValue, po.PropertyType);
-
                     }
+
                     if (originalValue.Trim() == newValue.Trim()) continue; //字符串值相同
                     compareResults.Add(new ChangedProperty
                     {
@@ -80,29 +80,27 @@ namespace Utility.Extensions
                         OriginalValue = originalValue,
                         NewValue = newValue
                     });
-
                 }
                 else if (po.PropertyType.IsEnumerableType()) //IList
                 {
-                    var arrNewValues = ((IEnumerable<object>)nValue).ToList();
-                    var arrOldValues = ((IEnumerable<object>)oValue).ToList();
+                    var arrNewValues = ((IEnumerable<object>) nValue).ToList();
+                    var arrOldValues = ((IEnumerable<object>) oValue).ToList();
                     for (var i = 0; i < arrNewValues.Count; i++)
-                    {
-                        InternalCompareProperties(arrNewValues[i], arrOldValues.TryGetValue(i), arrNewValues[i].GetType(),
+                        InternalCompareProperties(arrNewValues[i], arrOldValues.TryGetValue(i),
+                            arrNewValues[i].GetType(),
                             ref compareResults, onlyHasTrackAttr, parentPath + $"${i}." + propertyName);
-                    }
                 }
                 else //object 比较的是对象，需记住父对象名称
                 {
-
                     InternalCompareProperties(nValue, oValue, po.PropertyType,
-                        ref compareResults, onlyHasTrackAttr, parentPath + propertyName, parentPathName + trackAttr?.Name);
+                        ref compareResults, onlyHasTrackAttr, parentPath + propertyName,
+                        parentPathName + trackAttr?.Name);
                 }
             }
         }
 
         /// <summary>
-        /// 将IDictionary转成指定对象T
+        ///     将IDictionary转成指定对象T
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
@@ -114,11 +112,9 @@ namespace Utility.Extensions
             var someObjectType = someObject.GetType();
 
             foreach (var item in source)
-            {
                 someObjectType
                     .GetProperty(item.Key)
                     ?.SetValue(someObject, item.Value, null);
-            }
 
             return someObject;
         }
@@ -129,30 +125,28 @@ namespace Utility.Extensions
         }
 
         /// <summary>
-        /// 将指定的对象转成IDictionary
+        ///     将指定的对象转成IDictionary
         /// </summary>
         /// <param name="source"></param>
         /// <param name="bindingAttr"></param>
         /// <returns></returns>
-        public static IDictionary<string, T> ToDictionary<T>(this object source, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+        public static IDictionary<string, T> ToDictionary<T>(this object source,
+            BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
         {
-            if (source == null)
-            {
-                return new ConcurrentDictionary<string, T>();
-            }
+            if (source == null) return new ConcurrentDictionary<string, T>();
             return source.GetType().GetProperties(bindingAttr).ToDictionary
             (
                 propInfo => propInfo.Name,
-                propInfo => (T)Convert.ChangeType(propInfo.GetValue(source, null), typeof(T))
+                propInfo => (T) Convert.ChangeType(propInfo.GetValue(source, null), typeof(T))
             );
-
         }
 
         public static Uri AddQueryString(this Uri uri, object s)
         {
-            var ub = new UriBuilder(uri) { Query = s.ToQueryString() };
+            var ub = new UriBuilder(uri) {Query = s.ToQueryString()};
             return ub.Uri;
         }
+
         public static Uri AddQueryString(this Uri uri, string name, string value)
         {
             var httpValueCollection = HttpUtility.ParseQueryString(uri.Query);
@@ -160,13 +154,13 @@ namespace Utility.Extensions
             httpValueCollection.Remove(name);
             httpValueCollection.Add(name, value);
 
-            var ub = new UriBuilder(uri) { Query = httpValueCollection.ToString() };
+            var ub = new UriBuilder(uri) {Query = httpValueCollection.ToString()};
 
             return ub.Uri;
         }
 
-        ///<summary>
-        /// 分析 url 字符串中的参数信息
+        /// <summary>
+        ///     分析 url 字符串中的参数信息
         /// </summary>
         /// <param name="url">输入的 URL</param>
         public static NameValueCollection ParseQueryString(this string url)
@@ -174,18 +168,16 @@ namespace Utility.Extensions
             var uri = new Uri(url);
             return HttpUtility.ParseQueryString(uri.Query, Encoding.UTF8);
         }
+
         /// <summary>
-        /// 将Object转换成查询字符串
+        ///     将Object转换成查询字符串
         /// </summary>
         /// <param name="source"></param>
         /// <param name="autoUrlEncode">是否自动进行UrlEncode进行编码</param>
         /// <returns></returns>
         public static string ToQueryString(this object source, bool autoUrlEncode = true)
         {
-            if (source == null)
-            {
-                return string.Empty;
-            }
+            if (source == null) return string.Empty;
 
             var dic = source.ToDictionary<string>();
             return autoUrlEncode
@@ -195,29 +187,21 @@ namespace Utility.Extensions
 
         public static FormUrlEncodedContent ToFormUrlEncodedContent(this object source)
         {
-            if (source == null)
-            {
-                return null;
-            }
+            if (source == null) return null;
             var dic = source.ToDictionary<string>();
             return new FormUrlEncodedContent(dic);
         }
+
         /// <summary>
-        /// JSON序列化
+        ///     JSON序列化
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
         public static string ToJson<T>(this T source)
         {
-            if (source == null)
-            {
-                return string.Empty;
-            }
+            if (source == null) return string.Empty;
 
-            if (source is string || source.GetType().IsValueType)
-            {
-                return source.ToString();
-            }
+            if (source is string || source.GetType().IsValueType) return source.ToString();
 
             //序列化JSON处理ISO时间问题
             //Newtonsoft.Json产生的默认日期时间格式为： IsoDateTimeConverter 格式
@@ -228,6 +212,7 @@ namespace Utility.Extensions
             };
             return JsonConvert.SerializeObject(source, dateTimeConverter);
         }
+
         public static object GetValue(this MemberInfo member, object obj)
         {
             var field = member as FieldInfo;
@@ -239,6 +224,7 @@ namespace Utility.Extensions
 
             throw new NotSupportedException($"The type '{member.GetType()}' is not supported.");
         }
+
         public static Type GetReturnType(this MethodBase method)
         {
             var returnType = (method as MethodInfo)?.ReturnType;
@@ -247,11 +233,8 @@ namespace Utility.Extensions
             if (returnType != null &&
                 returnType.IsGenericType &&
                 returnType.GetGenericTypeDefinition() == typeof(Task<>))
-            {
                 return returnType.GetGenericArguments()[0];
-            }
             return returnType;
         }
     }
-
 }

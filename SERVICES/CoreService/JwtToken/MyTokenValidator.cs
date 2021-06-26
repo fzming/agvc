@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace CoreService.JwtToken
 {
     /// <summary>
-    /// 自定义token校验
+    ///     自定义token校验
     /// </summary>
     public class MyTokenValidator : ISecurityTokenValidator
     {
@@ -15,19 +15,16 @@ namespace CoreService.JwtToken
         {
             return true;
         }
-        public bool CanValidateToken
-        {
-            get
-            {
-                return true;
-            }
-        }
+
+        public bool CanValidateToken => true;
 
         //验证token
-        public ClaimsPrincipal ValidateToken(string securityToken, TokenValidationParameters validationParameters, out SecurityToken validatedToken)
+        public ClaimsPrincipal ValidateToken(string securityToken, TokenValidationParameters validationParameters,
+            out SecurityToken validatedToken)
         {
-            string jwtToken = AESCryptoHelper.Decrypt(securityToken);
-            ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
+            var jwtToken = AESCryptoHelper.Decrypt(securityToken);
+            var principal =
+                new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
             return principal;
         }
     }

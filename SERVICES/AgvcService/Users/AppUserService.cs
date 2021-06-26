@@ -5,8 +5,13 @@ using CoreService;
 
 namespace AgvcService.Users
 {
-    public class AppUserService: AbstractCrudService<AppUser>,IAppUserService
+    public class AppUserService : AbstractCrudService<AppUser>, IAppUserService
     {
+        public Task<AppUser> FindAppUserAsync(string appId, string openid)
+        {
+            return AppUserRepository.FirstAsync(p => p.AppId == appId && p.OpenId == openid);
+        }
+
         #region IOC
 
         private IAppUserRepository AppUserRepository { get; }
@@ -17,10 +22,5 @@ namespace AgvcService.Users
         }
 
         #endregion
-
-        public Task<AppUser> FindAppUserAsync(string appId, string openid)
-        {
-            return AppUserRepository.FirstAsync(p => p.AppId == appId && p.OpenId == openid);
-        }
     }
 }

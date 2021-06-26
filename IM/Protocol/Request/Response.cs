@@ -3,13 +3,13 @@
     public class Response : Base
     {
         /// <summary>
-        /// AGVC 是否同意接受任務，True 表示同意
+        ///     AGVC 是否同意接受任務，True 表示同意
         /// </summary>
         public bool Agree { get; set; }
+
         /// <summary>
-        /// 日志
+        ///     日志
         /// </summary>
         public string Log { get; set; }
     }
 }
-

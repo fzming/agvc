@@ -4,15 +4,17 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace CoreData.Core
 {
     /// <summary>
-    /// 主键抽象实体基类
+    ///     主键抽象实体基类
     /// </summary>
     /// <typeparam name="TPrimaryKey">主键类型</typeparam>
     public abstract class PrimaryAggregateEntity<TPrimaryKey> : AggregateRoot
     {
         /// <summary>
-        /// 主键
+        ///     主键
         /// </summary>
-        [BsonIgnore] public abstract TPrimaryKey Id { get; set; }
+        [BsonIgnore]
+        public abstract TPrimaryKey Id { get; set; }
+
         public override bool Equals(object obj)
         {
             var compareTo = obj as PrimaryAggregateEntity<TPrimaryKey>;

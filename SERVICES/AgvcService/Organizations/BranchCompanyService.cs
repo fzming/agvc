@@ -4,7 +4,6 @@ using CoreService;
 
 namespace AgvcService.Organizations
 {
-
     public class BranchCompanyService : AbstractCrudService<BranchCompany>, IBranchCompanyService
     {
         #region IOC

@@ -6,7 +6,6 @@ namespace Utility.Extensions
 {
     public static class TaskExtensions
     {
-
         // 有返回值
         public static async Task<TResult> TimeoutAfter<TResult>(this Task<TResult> task, TimeSpan timeout)
         {

@@ -7,14 +7,13 @@ using System.Linq;
 namespace Utility.Extensions
 {
     /// <summary>
-    /// 数组对象扩展
+    ///     数组对象扩展
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public static class ArrayExtensions
     {
-
         /// <summary>
-        /// 从数组中安全读取指定位置元素（防溢出错误）
+        ///     从数组中安全读取指定位置元素（防溢出错误）
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -30,7 +29,7 @@ namespace Utility.Extensions
             if (type != typeof(string) && !type.IsValueType && (type.IsInterface || type.IsClass)) return v;
             try
             {
-                return (T)TypeDescriptor.GetConverter(type).ConvertFrom(v);
+                return (T) TypeDescriptor.GetConverter(type).ConvertFrom(v);
             }
             catch (FormatException exception)
             {
@@ -40,7 +39,7 @@ namespace Utility.Extensions
 
 
         /// <summary>
-        /// Array添加
+        ///     Array添加
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="array">Array</param>
@@ -53,8 +52,9 @@ namespace Utility.Extensions
             array[count] = item;
             return array;
         }
+
         /// <summary>
-        /// 从Array中移除
+        ///     从Array中移除
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="array"></param>
@@ -63,22 +63,22 @@ namespace Utility.Extensions
         public static T[] Remove<T>(this T[] array, T item)
         {
             return array.Where(p => p.Equals(item) == false).ToArray();
-
         }
+
         /// <summary>
-        /// 从Array中移除
+        ///     从Array中移除
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="array"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public static T[] Remove<T>(this T[] array, Func<T,bool> predicate)
+        public static T[] Remove<T>(this T[] array, Func<T, bool> predicate)
         {
             return array.Where(predicate).ToArray();
-
         }
+
         /// <summary>
-        /// Array添加块数据
+        ///     Array添加块数据
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="sourceArray">Array</param>
@@ -93,12 +93,20 @@ namespace Utility.Extensions
             addArray.CopyTo(sourceArray, count);
             return sourceArray;
         }
-        public static bool IsNullOrEmpty<T>(this T[] array) { return array == null || array.Length == 0; }
-        public static bool IsNullOrEmpty(this ArrayList list) { return (list == null) || (list.Count == 0); }
+
+        public static bool IsNullOrEmpty<T>(this T[] array)
+        {
+            return array == null || array.Length == 0;
+        }
+
+        public static bool IsNullOrEmpty(this ArrayList list)
+        {
+            return list == null || list.Count == 0;
+        }
 
 
         /// <summary>
-        /// Array 移除重复项
+        ///     Array 移除重复项
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="array"></param>
@@ -107,13 +115,13 @@ namespace Utility.Extensions
         {
             var al = new ArrayList();
             foreach (var t in array)
-            {
-                if (!al.Contains(t)) al.Add(t);
-            }
-            return (T[])al.ToArray(typeof(T));
+                if (!al.Contains(t))
+                    al.Add(t);
+            return (T[]) al.ToArray(typeof(T));
         }
+
         /// <summary>
-        /// Array 数组分割
+        ///     Array 数组分割
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="array"></param>
@@ -122,7 +130,12 @@ namespace Utility.Extensions
         /// <returns></returns>
         public static T[] Slice<T>(this T[] array, int start, int end)
         {
-            if (start >= array.Length) { start = 0; end = 0; }
+            if (start >= array.Length)
+            {
+                start = 0;
+                end = 0;
+            }
+
             if (end < 0) end = array.Length - start - end;
             if (end <= start) end = start;
             if (end >= array.Length) end = array.Length - 1;
@@ -131,6 +144,5 @@ namespace Utility.Extensions
             for (var i = 0; i < len; i++) res[i] = array[i + start];
             return res;
         }
-
     }
 }

@@ -12,7 +12,7 @@ namespace Utility.Extensions
     public static class EnumerableExtensions
     {
         /// <summary>
-        /// 使用hashtable形式快速去重
+        ///     使用hashtable形式快速去重
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TKey"></typeparam>
@@ -24,16 +24,12 @@ namespace Utility.Extensions
         {
             var seenKeys = new HashSet<TKey>();
             foreach (var element in source)
-            {
                 if (seenKeys.Add(keySelector(element)))
-                {
                     yield return element;
-                }
-            }
         }
 
         /// <summary>
-        /// 使用GROUP形式快速去重
+        ///     使用GROUP形式快速去重
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TKey"></typeparam>
@@ -50,23 +46,18 @@ namespace Utility.Extensions
 
         public static string JoinToString<T>(this IEnumerable<T> ns, string separator = ",")
         {
-            if (!ns.AnyNullable())
-            {
-                return string.Empty;
-            }
+            if (!ns.AnyNullable()) return string.Empty;
             return string.Join(separator, ns);
         }
 
         public static string JoinToString<T>(this IEnumerable<T> ns, char separator = ',')
         {
-            if (!ns.AnyNullable())
-            {
-                return string.Empty;
-            }
+            if (!ns.AnyNullable()) return string.Empty;
             return string.Join(separator.ToString(), ns);
         }
+
         /// <summary>
-        /// 随机抽取指定数量
+        ///     随机抽取指定数量
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="ns"></param>
@@ -77,8 +68,9 @@ namespace Utility.Extensions
             var rs = ns.OrderBy(_ => Guid.NewGuid());
             return count > 0 ? rs.Take(count) : rs;
         }
+
         /// <summary>
-        /// 随机抽取一个
+        ///     随机抽取一个
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="ns"></param>
@@ -87,8 +79,9 @@ namespace Utility.Extensions
         {
             return ns.TakeRandom(1).FirstOrDefault();
         }
+
         /// <summary>
-        /// 可为NUll Any
+        ///     可为NUll Any
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
@@ -103,14 +96,15 @@ namespace Utility.Extensions
             {
                 return false;
             }
-            
         }
+
         public static bool IsIEnumerableOfT(this Type type)
         {
             return type.GetInterfaces()
                 .Any(ti => ti.IsGenericType
                            && ti.GetGenericTypeDefinition() == typeof(IEnumerable<>));
         }
+
         public static bool AnyNullable<T>(this IEnumerable<T> source, Func<T, bool> predicate)
         {
             try
@@ -123,8 +117,9 @@ namespace Utility.Extensions
                 return false;
             }
         }
+
         /// <summary>
-        /// 防止Null ToList
+        ///     防止Null ToList
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
@@ -133,8 +128,9 @@ namespace Utility.Extensions
         {
             return source == null ? Enumerable.Empty<T>().ToList() : source.ToList();
         }
+
         /// <summary>
-        /// 可为NULL 的ANY ，并允许过滤NullOrEmpty
+        ///     可为NULL 的ANY ，并允许过滤NullOrEmpty
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
@@ -143,29 +139,26 @@ namespace Utility.Extensions
         /// <returns></returns>
         public static bool AnyNullable<T>(this IEnumerable<T> source, bool filterNullOrEmpty, Func<T, bool> predicate)
         {
-            if (source == null)
-            {
-                return false;
-            }
+            if (source == null) return false;
             var enumerable = source.ToList();
             var any = enumerable.AnyNullable(predicate);
-            if (!filterNullOrEmpty)
-            {
-                return any;
-            }
+            if (!filterNullOrEmpty) return any;
 
             return any && enumerable.Where(p => p != null).AnyNullable(predicate);
         }
+
         public static Task ForEachAsync<T>(this IEnumerable<T> sequence, Func<T, Task> selector)
         {
             return Task.WhenAll(sequence.Select(selector));
         }
+
         public static Task<TDis[]> ForEachAsync<T, TDis>(this IEnumerable<T> sequence, Func<T, Task<TDis>> selector)
         {
             return Task.WhenAll(sequence.Select(selector));
         }
+
         /// <summary>
-        /// 分页异步执行
+        ///     分页异步执行
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="sequence"></param>
@@ -175,10 +168,10 @@ namespace Utility.Extensions
         public static Task ForEachPageAsync<T>(this IEnumerable<T> sequence, int pageSize, Func<T, Task> selector)
         {
             return sequence.CreatePageTaskAsync(pageSize, (pageIndex, pageDatas) => ForEachAsync(pageDatas, selector));
-
         }
 
-        public static async Task CreatePageTaskAsync<T>(this IEnumerable<T> sequence, int pageSize, Func<int, IEnumerable<T>, Task> pageCallTask)
+        public static async Task CreatePageTaskAsync<T>(this IEnumerable<T> sequence, int pageSize,
+            Func<int, IEnumerable<T>, Task> pageCallTask)
         {
             var enumerable = sequence.ToList();
             var total = enumerable.Count;
@@ -186,17 +179,16 @@ namespace Utility.Extensions
 
             if (pageSize > 0 && total > 0)
             {
-
                 //计算总页面数
                 var pageCount = (total + pageSize - 1) / pageSize;
 
                 while (pageIndex <= pageCount)
                 {
-
                     var pageDatas = enumerable.Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize);
 #if DEBUG
-                    Trace.WriteLine($"PageTask(({typeof(T).Name} Total:{total})):{pageIndex}/{pageCount}  PageSize:{pageDatas.Count()}");
+                    Trace.WriteLine(
+                        $"PageTask(({typeof(T).Name} Total:{total})):{pageIndex}/{pageCount}  PageSize:{pageDatas.Count()}");
 #endif
                     await pageCallTask?.Invoke(pageIndex, pageDatas);
                     pageIndex++;
@@ -208,13 +200,14 @@ namespace Utility.Extensions
             }
         }
 
-        public static Task ForEachPageAsync<T>(this IEnumerable<T> sequence, int pageSize, Func<int, IEnumerable<T>, Task> pageTask)
+        public static Task ForEachPageAsync<T>(this IEnumerable<T> sequence, int pageSize,
+            Func<int, IEnumerable<T>, Task> pageTask)
         {
             return sequence.CreatePageTaskAsync(pageSize, pageTask);
         }
 
         /// <summary>
-        /// 分页异步执行并返回
+        ///     分页异步执行并返回
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="TDist"></typeparam>
@@ -241,12 +234,10 @@ namespace Utility.Extensions
             Func<TValue, TValue> updateFactory)
         {
             while (dict.TryGetValue(key, out var curValue))
-            {
                 if (dict.TryUpdate(key, updateFactory(curValue), curValue))
                     return true;
-                // if we're looping either the key was removed by another thread,
-                // or another thread changed the value, so we start again.
-            }
+            // if we're looping either the key was removed by another thread,
+            // or another thread changed the value, so we start again.
             return false;
         }
 

@@ -2,7 +2,7 @@
 
 namespace Messages.Serializer
 {
-    class MessageProperty
+    internal class MessageProperty
     {
         public int Length { get; set; }
         public string Name { get; set; }

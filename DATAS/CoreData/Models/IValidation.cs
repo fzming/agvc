@@ -1,14 +1,14 @@
 ﻿namespace CoreData.Models
 {
     /// <summary>
-    /// 通用验证接口
+    ///     通用验证接口
     /// </summary>
     public interface IValidation
     {
         /// <summary>
-        /// 验证元数据
+        ///     验证元数据
         /// </summary>
         /// <returns></returns>
-         Result<bool> Validate();
+        Result<bool> Validate();
     }
 }

@@ -3,11 +3,9 @@
 namespace AgvcEntitys.System
 {
     /// <summary>
-    /// 系统用户
+    ///     系统用户
     /// </summary>
-    public class SystemUser: UserAccountBase
+    public class SystemUser : UserAccountBase
     {
-     
-       
     }
 }

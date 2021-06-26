@@ -7,10 +7,7 @@ namespace CoreRepository.MapConventions
     {
         public void Apply(BsonMemberMap mMap)
         {
-            if (mMap.MemberType.Name == "Many`1")
-            {
-                mMap.SetShouldSerializeMethod(_ => false);
-            }
+            if (mMap.MemberType.Name == "Many`1") mMap.SetShouldSerializeMethod(_ => false);
         }
     }
 }

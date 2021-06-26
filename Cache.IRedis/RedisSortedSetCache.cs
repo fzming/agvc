@@ -5,16 +5,21 @@ using Cache.IRedis.Interfaces;
 
 namespace Cache.IRedis
 {
-
     /// <summary>
-    /// Redis SortedSet缓存
-    /// 有顺序，不能重复 （服务器消耗最高，要排序还要去重，尽量少用，）
+    ///     Redis SortedSet缓存
+    ///     有顺序，不能重复 （服务器消耗最高，要排序还要去重，尽量少用，）
     /// </summary>
     public class RedisSortedSetCache : RedisCaching, IRedisSortedSetCache
     {
+        public RedisSortedSetCache(IRedisConnectionMultiplexer redisRedisConnectionMultiplexer) : base(
+            redisRedisConnectionMultiplexer)
+        {
+        }
+
         #region 同步执行
+
         /// <summary>
-        /// 无序添加
+        ///     无序添加
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -28,7 +33,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 删除
+        ///     删除
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -41,7 +46,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 获取全部
+        ///     获取全部
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -57,7 +62,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        ///  获取集合中的数量
+        ///     获取集合中的数量
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -65,13 +70,14 @@ namespace Cache.IRedis
         {
             key = AddPrefixKey(key);
             return DoSync(db => db.SortedSetLength(key));
-
         }
+
         #endregion
 
         #region 异步执行
+
         /// <summary>
-        /// 异步无序添加
+        ///     异步无序添加
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -85,7 +91,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 删除
+        ///     删除
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -98,7 +104,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 获取全部
+        ///     获取全部
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -111,7 +117,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        ///  获取集合中的数量
+        ///     获取集合中的数量
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -119,12 +125,8 @@ namespace Cache.IRedis
         {
             key = AddPrefixKey(key);
             return DoAsync(db => db.SortedSetLengthAsync(key));
-
         }
+
         #endregion
-
-        public RedisSortedSetCache(IRedisConnectionMultiplexer redisRedisConnectionMultiplexer) : base(redisRedisConnectionMultiplexer)
-        {
-        }
     }
 }

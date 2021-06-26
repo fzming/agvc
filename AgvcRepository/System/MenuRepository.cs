@@ -10,15 +10,19 @@ using MongoDB.Driver;
 namespace AgvcRepository.System
 {
     /// <summary>
-    /// 菜单仓储实现
+    ///     菜单仓储实现
     /// </summary>
     public class MenuRepository : MongoRepository<Menu>, IMenuRepository
     {
+        public MenuRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
+
         public async Task<bool> BatchUpdateMenusMetaAsync(List<MenuRoleUpdateSet> roleUpdateSets)
         {
             var bulkModelList = roleUpdateSets.Select(CreateMenuUpdateOneModel).ToList();
 
-            var rs = await this.Collection.BulkWriteAsync(bulkModelList);
+            var rs = await Collection.BulkWriteAsync(bulkModelList);
             return rs.ModifiedCount > 0;
         }
 
@@ -50,7 +54,7 @@ namespace AgvcRepository.System
              *   Update.Set("Meta.Roles.$[]",value) //批量修改数组所有元素的值为value
              *   Update.Set("Meta.Roles.$[].name",value) //批量修改对象数组所有元素的name值等于value
              */
- 
+
             var update = menuRoleUpdate.UpsetType == UpsetType.Add
                 ? Builders<Menu>.Update.AddToSet(p => p.Meta.Roles,
                     menuRoleUpdate.RoleId)
@@ -59,10 +63,6 @@ namespace AgvcRepository.System
             return new UpdateOneModel<Menu>(Filter.Eq(x => x.Id, menuRoleUpdate.MenuId),
                 update.CurrentDate(i => i.ModifiedOn)
             );
-        }
-
-        public MenuRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
-        {
         }
     }
 }

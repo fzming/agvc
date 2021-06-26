@@ -1,7 +1,5 @@
 ﻿using System.Threading.Tasks;
-
 using CoreService.Interfaces;
-
 using Utility;
 
 namespace AgvcService

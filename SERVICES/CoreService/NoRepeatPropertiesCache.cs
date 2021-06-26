@@ -12,6 +12,7 @@ namespace CoreService
     {
         private static ConcurrentDictionary<Type, IEnumerable<PropertyInfo>> PropertiesCache { get; } =
             new();
+
         public static List<PropertyInfo> GetNoRepeatPropertyInfos<TModel>(TModel model) where TModel : Model, new()
         {
             var type = model.GetType();
@@ -21,7 +22,6 @@ namespace CoreService
             infos = properties.Where(p => p.GetCustomAttribute(typeof(NoRepeatAttribute)) != null).ToList();
             PropertiesCache.TryAdd(type, infos);
             return infos.ToList();
-
         }
     }
 }

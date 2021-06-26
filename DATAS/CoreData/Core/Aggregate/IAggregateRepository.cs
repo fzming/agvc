@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 namespace CoreData.Core.Aggregate
 {
     /// <summary>
-    /// 聚合仓储接口
+    ///     聚合仓储接口
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IAggregateRepository<T> where T : AggregateRoot
     {
         #region Max
-        
+
         Task<TResult> MaxAsync<TResult>(Expression<Func<T, TResult>> selector);
         Task<TResult> MaxAsync<TResult>(Expression<Func<T, bool>> filter, Expression<Func<T, TResult>> selector);
 

@@ -10,7 +10,7 @@ namespace AgvcWorkFactory.Interfaces
         void RemoveWatch(string key);
 
         /// <summary>
-        /// IMG->AGVC 汇报了状态
+        ///     IMG->AGVC 汇报了状态
         /// </summary>
         /// <param name="report"></param>
         /// <returns></returns>

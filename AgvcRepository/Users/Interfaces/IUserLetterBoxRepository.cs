@@ -7,12 +7,12 @@ using CoreRepository;
 namespace AgvcRepository.Users.Interfaces
 {
     /// <summary>
-    /// 用户收件箱仓储接口
+    ///     用户收件箱仓储接口
     /// </summary>
     public interface IUserLetterBoxRepository : IRepository<UserLetterBox>
     {
         /// <summary>
-        /// 用户收件箱高级查询
+        ///     用户收件箱高级查询
         /// </summary>
         /// <param name="clientId"></param>
         /// <param name="condition"></param>

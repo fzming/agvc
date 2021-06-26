@@ -20,17 +20,17 @@ namespace AgvcAgent
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogDebug($"TimedExecutService is starting.");
-            stoppingToken.Register(() => _logger.LogDebug($"TimedExecutService is stopping."));
+            _logger.LogDebug("TimedExecutService is starting.");
+            stoppingToken.Register(() => _logger.LogDebug("TimedExecutService is stopping."));
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogDebug($"TimedExecutService doing background work.");
+                _logger.LogDebug("TimedExecutService doing background work.");
                 //Doing Somethings
                 await Task.Delay(_settings.CheckUpdateTime, stoppingToken);
             }
 
-            _logger.LogDebug($"TimedExecutService is stopping.");
+            _logger.LogDebug("TimedExecutService is stopping.");
         }
 
         public override async Task StopAsync(CancellationToken stoppingToken)

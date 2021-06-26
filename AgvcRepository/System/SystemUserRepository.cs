@@ -8,23 +8,22 @@ using MongoDB.Driver;
 
 namespace AgvcRepository.System
 {
-    public class SystemUserRepository:MongoRepository<SystemUser>,ISystemUserRepository
+    public class SystemUserRepository : MongoRepository<SystemUser>, ISystemUserRepository
     {
+        public SystemUserRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
+
         public Task<PageResult<SystemUser>> AdvQuerySystemUsersAsync(SystemUserPageQuery userPageQuery)
         {
             #region Build Query
 
             var query = Collection.AsQueryable();
 
-            
             #endregion
 
             return query.ToPageListAsync(userPageQuery.PageIndex, userPageQuery.PageSize,
                 p => p.CreatedOn, true);
-        }
-
-        public SystemUserRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
-        {
         }
     }
 }

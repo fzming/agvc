@@ -7,20 +7,21 @@ using Cache.IRedis.Interfaces;
 
 namespace Cache.IRedis
 {
-
     /// <summary>
-    /// Key操作服务
-    /// 操作所有Redis存储类型的数据，可以删除和设置查询过期时间等操作
+    ///     Key操作服务
+    ///     操作所有Redis存储类型的数据，可以删除和设置查询过期时间等操作
     /// </summary>
-    public class RedisKeyCache:RedisCaching,IRedisKeyCache
+    public class RedisKeyCache : RedisCaching, IRedisKeyCache
     {
-        public RedisKeyCache(IRedisConnectionMultiplexer redisRedisConnectionMultiplexer) : base(redisRedisConnectionMultiplexer)
+        public RedisKeyCache(IRedisConnectionMultiplexer redisRedisConnectionMultiplexer) : base(
+            redisRedisConnectionMultiplexer)
         {
         }
+
         #region 同步执行
 
         /// <summary>
-        /// 删除单个Key
+        ///     删除单个Key
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -31,7 +32,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 删除多个Key
+        ///     删除多个Key
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -42,7 +43,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 重命名Key
+        ///     重命名Key
         /// </summary>
         /// <param name="key">old key name</param>
         /// <param name="newKey">new key name</param>
@@ -54,7 +55,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 设置Key的时间
+        ///     设置Key的时间
         /// </summary>
         /// <param name="key"></param>
         /// <param name="exp"></param>
@@ -82,8 +83,9 @@ namespace Cache.IRedis
         #endregion
 
         #region 异步执行
+
         /// <summary>
-        /// 异步删除单个key
+        ///     异步删除单个key
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -94,7 +96,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步删除多个Key
+        ///     异步删除多个Key
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -105,7 +107,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        ///  异步重命名Key
+        ///     异步重命名Key
         /// </summary>
         /// <param name="key">old key name</param>
         /// <param name="newKey">new key name</param>
@@ -113,23 +115,23 @@ namespace Cache.IRedis
         public Task<bool> KeyRenameAsync(string key, string newKey)
         {
             key = AddPrefixKey(key);
-            return  DoAsync(db => db.KeyRenameAsync(key, newKey));
+            return DoAsync(db => db.KeyRenameAsync(key, newKey));
         }
 
         /// <summary>
-        /// 异步设置Key的时间
+        ///     异步设置Key的时间
         /// </summary>
         /// <param name="key"></param>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public  Task<bool> KeyExpireAsync(string key, TimeSpan? exp = default)
+        public Task<bool> KeyExpireAsync(string key, TimeSpan? exp = default)
         {
             key = AddPrefixKey(key);
             return DoAsync(db => db.KeyExpireAsync(key, exp));
-        } 
-        
+        }
+
         /// <summary>
-        /// 异步设置Key的时间
+        ///     异步设置Key的时间
         /// </summary>
         /// <param name="keys"></param>
         /// <param name="exp"></param>
@@ -142,7 +144,7 @@ namespace Cache.IRedis
                 var tasks = keys.Select(key => db.KeyExpireAsync(key, exp)).ToList();
                 var count = tasks.Count;
                 var rs = await Task.WhenAll(tasks);
-                return rs.Count(p => p) ==  count;
+                return rs.Count(p => p) == count;
             });
         }
 
@@ -167,7 +169,5 @@ namespace Cache.IRedis
         }
 
         #endregion
-
-    
     }
 }

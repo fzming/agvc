@@ -1,8 +1,3 @@
-using System;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading;
-using RobotDefine;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -30,11 +25,8 @@ namespace AgvcUnitTest
         [Fact]
         public void TestWS()
         {
-
             //VirtualRobotManager.TryRefreshMRStatus("MR01");
             //VirtualRobotManager.GetMRStatusSync("MR01");
-            
         }
-
     }
 }

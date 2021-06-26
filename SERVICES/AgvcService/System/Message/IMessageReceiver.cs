@@ -1,6 +1,6 @@
 ﻿namespace AgvcService.System.Message
 {
-    public interface  IMessageReceiver
+    public interface IMessageReceiver
     {
         bool Validate();
     }

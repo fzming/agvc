@@ -5,7 +5,7 @@ using CoreRepository;
 namespace AgvcRepository.System.Authority
 {
     /// <summary>
-    /// 角色仓储实现
+    ///     角色仓储实现
     /// </summary>
     public class RoleRepository : MongoRepository<Role>, IRoleRepository
     {

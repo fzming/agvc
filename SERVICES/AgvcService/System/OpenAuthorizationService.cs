@@ -8,7 +8,6 @@ using AgvcService.System.Models.Authorization;
 using AgvcService.Users;
 using CoreData;
 using CoreService;
-using Newtonsoft.Json;
 using Utility.Extensions;
 
 namespace AgvcService.System
@@ -19,22 +18,26 @@ namespace AgvcService.System
         #region IOC
 
         private IAccountService AccountService { get; }
+
         private IPassportProtectService PassportProtectService { get; }
+
         // private ICaptchaService CaptchaService { get; }
         private IAuthorityService AuthorityService { get; }
+
         private ISystemUserService SystemUserService { get; }
+
         // private IAppUserService AppUserService { get; }
         // private IWxAppService WxAppService { get; }
         public OpenAuthorizationService(
             IAccountService accountService,
             IPassportProtectService passportProtectService,
-         //   ICaptchaService captchaService,
+            //   ICaptchaService captchaService,
             IAuthorityService authorityService,
             ISystemUserService systemUserService)
         {
             AccountService = accountService;
             PassportProtectService = passportProtectService;
-          //  CaptchaService = captchaService;
+            //  CaptchaService = captchaService;
             AuthorityService = authorityService;
             SystemUserService = systemUserService;
             // AppUserService = appUserService;
@@ -48,7 +51,6 @@ namespace AgvcService.System
         public Task<Result<Account>> LoginOpenIdAsync(string appId, string openId)
         {
             return AccountService.LoginAccountWithOpenIdAsync(appId, openId);
-
         }
 
         public async Task<Result<Account>> LoginAccountWithPasswordAsync(PasswordLoginModel pwdLoginModel)
@@ -63,40 +65,34 @@ namespace AgvcService.System
             var rs = await AccountService.LoginAccountWithPasswordAsync(pwdLoginModel.UserName, pwdLoginModel.Password,
                 pwdLoginModel.Identify, pwdLoginModel.AppUserInfo, pwdLoginModel.LoginDomain);
 
-            await SetFailureCountAsync(pwdLoginModel.UserName,pwdLoginModel.LoginType,rs.Success);
+            await SetFailureCountAsync(pwdLoginModel.UserName, pwdLoginModel.LoginType, rs.Success);
 
             return rs;
-
         }
 
         private async Task SetFailureCountAsync(string userName, string loginType, bool success)
         {
             if (success == false)
-            {
                 await PassportProtectService.IncreaseLoginFailedAsync(userName, loginType);
-            }
             else
-            {
                 await PassportProtectService.ClearLoginFailedAsync(userName, loginType);
-
-            }
         }
 
         public Task<Result<Account>> SmsLoginAsync(SmsLoginModel smsLoginModel)
         {
             return smsLoginModel.JustLogin
-                  ? AccountService.SmsLoginAsync(smsLoginModel.Mobile,
-                      smsLoginModel.SmsCode,
-                      smsLoginModel.SmsKey,
-                      smsLoginModel.Identify,
-                      smsLoginModel.AppUserInfo,
-                      smsLoginModel.LoginDomain)
-                  : AccountService.SmsLoginAndCreateAccountAsync(smsLoginModel.Mobile,
-                      smsLoginModel.SmsCode,
-                      smsLoginModel.SmsKey,
-                      smsLoginModel.Identify,
-                      smsLoginModel.AppUserInfo,
-                      smsLoginModel.LoginDomain);
+                ? AccountService.SmsLoginAsync(smsLoginModel.Mobile,
+                    smsLoginModel.SmsCode,
+                    smsLoginModel.SmsKey,
+                    smsLoginModel.Identify,
+                    smsLoginModel.AppUserInfo,
+                    smsLoginModel.LoginDomain)
+                : AccountService.SmsLoginAndCreateAccountAsync(smsLoginModel.Mobile,
+                    smsLoginModel.SmsCode,
+                    smsLoginModel.SmsKey,
+                    smsLoginModel.Identify,
+                    smsLoginModel.AppUserInfo,
+                    smsLoginModel.LoginDomain);
         }
 
         public Task<Result<Account>> LoginAccountWithAuthKeyAsync(string clientId, string authkey)
@@ -127,15 +123,17 @@ namespace AgvcService.System
 
         public Task<IEnumerable<UserAuthority>> GetUserAuthoritysAsync(string roleId, string userId)
         {
-            return AuthorityService.GetUserAuthoritysAsync(roleId,userId);
+            return AuthorityService.GetUserAuthoritysAsync(roleId, userId);
         }
 
-        public Task CacheUserAuthoritysAsync(string orgId, string id, IEnumerable<string> menuIdArray, IEnumerable<string> codeArray)
+        public Task CacheUserAuthoritysAsync(string orgId, string id, IEnumerable<string> menuIdArray,
+            IEnumerable<string> codeArray)
         {
-            return AuthorityService.CacheUserAuthoritysAsync(orgId,id,menuIdArray,codeArray);
+            return AuthorityService.CacheUserAuthoritysAsync(orgId, id, menuIdArray, codeArray);
         }
 
         #endregion
+
         /*private async Task<bool> CheckSafetyValidationAsync(string vaptchaToken, string contextUserName, string scope)
         {
             if (vaptchaToken.IsNotNullOrEmpty())

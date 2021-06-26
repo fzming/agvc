@@ -6,37 +6,50 @@ using CoreData.Core.Aggregate;
 using CoreData.Core.Attributes;
 using CoreRepository.Converters;
 using CoreRepository.MapConventions;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using Microsoft.Extensions.Configuration;
+
 namespace CoreRepository
 {
-
     public class MongoContext : IMongoContext
     {
-        private MongoConnection Connection { get; }
         private static readonly ConcurrentDictionary<Type, string> connectionNameDictionary;
+        private IMongoConnection Connection { get; }
+
+        /// <summary>
+        ///     获取集合
+        /// </summary>
+        /// <returns>The collection from URL.</returns>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public IMongoCollection<T> GetCollection<T>() where T : AggregateRoot
+        {
+            Connection.MakeSureConnected(MongoConfig.MongoUrl, MongoConfig.DatabaseName);
+
+            return Connection.Database.GetCollection<T>(GetCollectionName<T>());
+        }
+
         #region RegConventionRegistry
 
         static MongoContext()
         {
             connectionNameDictionary = new ConcurrentDictionary<Type, string>();
             RegConventionRegistry();
-
         }
-        public MongoContext(IConfiguration configuration )
+
+        public MongoContext(IConfiguration configuration, IMongoConnection connection)
         {
             var section = configuration.GetSection("Mongo");
-            this.MongoConfig = section.Get<MongoConfig>();
-            Connection = MongoConnection.Singleton();//单例数据库连接
+            MongoConfig = section.Get<MongoConfig>();
+            Connection = connection; //单例数据库连接
         }
 
         public MongoConfig MongoConfig { get; }
 
-        static void RegConventionRegistry()
+        private static void RegConventionRegistry()
         {
             //注册Conventions
             var pack = new ConventionPack
@@ -50,7 +63,8 @@ namespace CoreRepository
             };
             //支持decimal和decimal? 类型 https://stackoverflow.com/questions/43473147/how-to-use-decimal-type-in-mongodb
             BsonSerializer.RegisterSerializer(typeof(decimal), new DecimalSerializer(BsonType.Decimal128));
-            BsonSerializer.RegisterSerializer(typeof(decimal?), new NullableSerializer<decimal>(new DecimalSerializer(BsonType.Decimal128)));
+            BsonSerializer.RegisterSerializer(typeof(decimal?),
+                new NullableSerializer<decimal>(new DecimalSerializer(BsonType.Decimal128)));
             //https://kevsoft.net/2020/06/25/storing-guids-as-strings-in-mongodb-with-csharp.html
             BsonSerializer.RegisterSerializer(typeof(Guid), new GuidSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(typeof(Guid?), new GuidSerializer(BsonType.String));
@@ -70,7 +84,6 @@ namespace CoreRepository
             //BsonSerializer.RegisterSerializer(typeof(DateTime), new DateTimeSerializer(DateTimeKind.Local));
             //第三种
             //BsonSerializer.RegisterSerializer(typeof(DateTime), new LocalTimeSerializer());
-
         }
 
         #endregion
@@ -79,32 +92,26 @@ namespace CoreRepository
         #region Collection Name
 
         /// <summary>
-        /// Determines the collection name for T and assures it is not empty
+        ///     Determines the collection name for T and assures it is not empty
         /// </summary>
         /// <returns>Returns the collection name for T.</returns>
         public string GetCollectionName<T>()
         {
             var type = typeof(T);
-            if (connectionNameDictionary.TryGetValue(type, out var collectionName))
-            {
-                return collectionName;
-            }
+            if (connectionNameDictionary.TryGetValue(type, out var collectionName)) return collectionName;
 
-            collectionName = typeof(T).GetTypeInfo().BaseType == typeof(object) ?
-                GetCollectionNameFromInterface<T>() :
-                GetCollectionNameFromType<T>();
+            collectionName = typeof(T).GetTypeInfo().BaseType == typeof(object)
+                ? GetCollectionNameFromInterface<T>()
+                : GetCollectionNameFromType<T>();
 
-            if (string.IsNullOrEmpty(collectionName))
-            {
-                collectionName = typeof(T).Name;
-            }
+            if (string.IsNullOrEmpty(collectionName)) collectionName = typeof(T).Name;
 
             connectionNameDictionary.TryAdd(type, collectionName);
             return collectionName;
         }
 
         /// <summary>
-        /// Determines the collection name from the specified type.
+        ///     Determines the collection name from the specified type.
         /// </summary>
         /// <returns>Returns the collection name from the specified type.</returns>
         public string GetCollectionNameFromInterface<T>()
@@ -116,7 +123,7 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// Determines the collectionname from the specified type.
+        ///     Determines the collectionname from the specified type.
         /// </summary>
         /// <returns>Returns the collectionname from the specified type.</returns>
         public string GetCollectionNameFromType<T>()
@@ -130,29 +137,26 @@ namespace CoreRepository
             return collectionName;
         }
 
-        #endregion  
+        #endregion
 
         #region Connection Name
 
         /// <summary>
-        /// Determines the connection name for T and assures it is not empty
+        ///     Determines the connection name for T and assures it is not empty
         /// </summary>
         /// <returns>Returns the connection name for T.</returns>
         public string GetConnectionName<T>()
         {
-            var connectionName = typeof(T).GetTypeInfo().BaseType == typeof(object) ?
-                GetConnectionNameFromInterface<T>() :
-                GetConnectionNameFromType<T>();
+            var connectionName = typeof(T).GetTypeInfo().BaseType == typeof(object)
+                ? GetConnectionNameFromInterface<T>()
+                : GetConnectionNameFromType<T>();
 
-            if (string.IsNullOrEmpty(connectionName))
-            {
-                connectionName = typeof(T).Name;
-            }
+            if (string.IsNullOrEmpty(connectionName)) connectionName = typeof(T).Name;
             return connectionName.ToLowerInvariant();
         }
 
         /// <summary>
-        /// Determines the connection name from the specified type.
+        ///     Determines the connection name from the specified type.
         /// </summary>
         /// <returns>Returns the connection name from the specified type.</returns>
         public string GetConnectionNameFromInterface<T>()
@@ -163,7 +167,7 @@ namespace CoreRepository
         }
 
         /// <summary>
-        /// Determines the connection name from the specified type.
+        ///     Determines the connection name from the specified type.
         /// </summary>
         /// <returns>Returns the connection name from the specified type.</returns>
         public string GetConnectionNameFromType<T>()
@@ -181,13 +185,9 @@ namespace CoreRepository
             else
             {
                 if (typeof(MongoEntity).GetTypeInfo().IsAssignableFrom(entitytype))
-                {
                     // No attribute found, get the basetype
                     while (entitytype.GetTypeInfo().BaseType != typeof(MongoEntity))
-                    {
                         entitytype = entitytype.GetTypeInfo().BaseType;
-                    }
-                }
                 connectionname = entitytype?.Name;
             }
 
@@ -195,18 +195,5 @@ namespace CoreRepository
         }
 
         #endregion
-
-        /// <summary>
-        /// 获取集合
-        /// </summary>
-        /// <returns>The collection from URL.</returns>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-
-        public IMongoCollection<T> GetCollection<T>() where T : AggregateRoot
-        {
-            Connection.MakeSureConnected(MongoConfig.MongoUrl,MongoConfig.DatabaseName);
-
-            return Connection.Database.GetCollection<T>(GetCollectionName<T>());
-        }
     }
 }

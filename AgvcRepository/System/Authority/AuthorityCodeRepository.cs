@@ -5,9 +5,9 @@ using CoreRepository;
 namespace AgvcRepository.System.Authority
 {
     /// <summary>
-    /// 指令权限仓储实现
+    ///     指令权限仓储实现
     /// </summary>
-    public class AuthorityCodeRepository:MongoRepository<AuthorityCode>,IAuthorityCodeRepository
+    public class AuthorityCodeRepository : MongoRepository<AuthorityCode>, IAuthorityCodeRepository
     {
         public AuthorityCodeRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {

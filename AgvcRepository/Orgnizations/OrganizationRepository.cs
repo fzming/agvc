@@ -11,6 +11,10 @@ namespace AgvcRepository.Orgnizations
 {
     public class OrganizationRepository : MongoRepository<Organization>, IOrganizationRepository
     {
+        public OrganizationRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
+
         public Task<List<string>> GroupAllIdsAsync()
         {
             return Collection.AsQueryable().GroupBy(p => p.Id).Select(p => p.Key).ToListAsync();
@@ -20,10 +24,6 @@ namespace AgvcRepository.Orgnizations
         {
             var update = Updater.AddToSetEach(p => p.Modules, modules);
             return Collection.UpdateManyAsync(FilterDefinition<Organization>.Empty, update);
-        }
-
-        public OrganizationRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
-        {
         }
     }
 }

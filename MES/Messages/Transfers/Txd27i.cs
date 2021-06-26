@@ -3,63 +3,72 @@
 namespace Messages.Transfers
 {
     /// <summary>
-    /// Location Change Report(AGVC->MES 请求移动位置）
+    ///     Location Change Report(AGVC->MES 请求移动位置）
     /// </summary>
     public class Txd27i : InputMessageBase
     {
         /// <summary>
-        /// ticket_no
+        ///     ticket_no
         /// </summary>
         [Deserialization(14, 4)]
         public string ticket_no { get; set; }
+
         /// <summary>
-        /// eqp_id
+        ///     eqp_id
         /// </summary>
         [Deserialization(10, 5)]
         public string eqp_id { get; set; }
+
         /// <summary>
-        /// eqp_port_id
+        ///     eqp_port_id
         /// </summary>
         [Deserialization(10, 6)]
         public string eqp_port_id { get; set; }
+
         /// <summary>
-        /// car_type
+        ///     car_type
         /// </summary>
         [Deserialization(2, 7)]
         public string car_type { get; set; }
+
         /// <summary>
-        /// car_id
+        ///     car_id
         /// </summary>
         [Deserialization(13, 8)]
         public string car_id { get; set; }
+
         /// <summary>
-        /// tray_id
+        ///     tray_id
         /// </summary>
         [Deserialization(13, 9)]
         public string tray_id { get; set; }
+
         /// <summary>
-        /// tran_stat
-        /// MI:Manual In
-        /// MO:Manual Out
-        /// AI:Auto In
-        /// AO:Auto Out
-        /// XS:Trans Start
-        /// XC:Trans Complete
+        ///     tran_stat
+        ///     MI:Manual In
+        ///     MO:Manual Out
+        ///     AI:Auto In
+        ///     AO:Auto Out
+        ///     XS:Trans Start
+        ///     XC:Trans Complete
         /// </summary>
         [Deserialization(2, 10)]
         public string tran_stat { get; set; }
+
         /// <summary>
-        /// lot_type
+        ///     lot_type
         /// </summary>
         [Deserialization(1, 11)]
         public string lot_type { get; set; }
+
         /// <summary>
-        /// sublot_id
+        ///     sublot_id
         /// </summary>
         [Deserialization(20, 12)]
         public string sublot_id { get; set; }
+
         /// <summary>
-        /// pattern
+        ///     pattern
         /// </summary>
         [Deserialization(1, 13)]
         public string pattern { get; set; }

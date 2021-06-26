@@ -12,5 +12,4 @@ namespace AgvcService.System.Models
         public string ticket { get; set; }
         public string randstr { get; set; }
     }
-
 }

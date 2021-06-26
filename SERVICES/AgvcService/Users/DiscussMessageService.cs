@@ -7,35 +7,19 @@ using AgvcEntitys.Users;
 using AgvcRepository.Users.Interfaces;
 using AgvcService.System;
 using AgvcService.Users.Models;
-using AgvcService.Users.Models.Messages;
 using CoreData;
 using CoreService;
-using Microsoft.AspNetCore.Identity;
 using Utility.Extensions;
-using DiscussMessageModel = AgvcCoreData.Users.DiscussMessageModel;
 
 namespace AgvcService.Users
 {
     /// <summary>
-    /// 讨论组消息服务实现
+    ///     讨论组消息服务实现
     /// </summary>
     public class DiscussMessageService : AbstractService, IDiscussMessageService
     {
-        #region IOC
-
-        private IDiscussMessageRepository DiscussMessageRepository { get; }
-        private IUploadService UploadService { get; }
-        public DiscussMessageService(IDiscussMessageRepository discussMessageRepository,
-            IUploadService uploadService)
-        {
-            DiscussMessageRepository = discussMessageRepository;
-            UploadService = uploadService;
-        }
-
-        #endregion
-
         /// <summary>
-        /// 发送消息
+        ///     发送消息
         /// </summary>
         /// <param name="orgIds"></param>
         /// <param name="senderOrgId"></param>
@@ -64,7 +48,8 @@ namespace AgvcService.Users
             return messages;
         }
 
-        public async Task<DiscussMessage> SendAsync(string orgId, string senderId, SendDiscussMessageModel discussMessageModel)
+        public async Task<DiscussMessage> SendAsync(string orgId, string senderId,
+            SendDiscussMessageModel discussMessageModel)
         {
             var message = new DiscussMessage
             {
@@ -87,7 +72,7 @@ namespace AgvcService.Users
         }
 
         /// <summary>
-        /// 设为已读或已删除
+        ///     设为已读或已删除
         /// </summary>
         /// <param name="messageId"></param>
         /// <param name="userId"></param>
@@ -102,7 +87,7 @@ namespace AgvcService.Users
         }
 
         /// <summary>
-        /// 物理删除整条消息
+        ///     物理删除整条消息
         /// </summary>
         /// <param name="messageId"></param>
         /// <returns></returns>
@@ -112,18 +97,19 @@ namespace AgvcService.Users
         }
 
         /// <summary>
-        /// 获取讨论组消息列表
+        ///     获取讨论组消息列表
         /// </summary>
         /// <param name="orgId">机构ID</param>
         /// <param name="query">查询对象</param>
         /// <returns></returns>
-        public Task<PageResult<DiscussMessageModel>> QueryGroupMessagesAsync(string orgId, DiscussMessagePageQuery query)
+        public Task<PageResult<DiscussMessageModel>> QueryGroupMessagesAsync(string orgId,
+            DiscussMessagePageQuery query)
         {
             return DiscussMessageRepository.QueryGroupMessagesAsync(orgId, query);
         }
 
         /// <summary>
-        /// 获取发送人员
+        ///     获取发送人员
         /// </summary>
         /// <param name="clientId"></param>
         /// <param name="isSys"></param>
@@ -157,21 +143,29 @@ namespace AgvcService.Users
                 Attachment = attachmentUrl,
                 SenderId = senderId,
                 OrgId = p,
-                UserFlags = senderOrgId == p ? new[]
-                {
-                    new UserMsgFlag
+                UserFlags = senderOrgId == p
+                    ? new[]
                     {
-                        Id = senderId,
-                        Flag = MessageFlag.已读,
-                        Time = DateTime.Now
+                        new UserMsgFlag
+                        {
+                            Id = senderId,
+                            Flag = MessageFlag.已读,
+                            Time = DateTime.Now
+                        }
                     }
-                } : new UserMsgFlag[] { }
+                    : new UserMsgFlag[] { }
             })).ToList();
             await DiscussMessageRepository.InsertAsync(messages);
             return messages;
         }
 
-        public async Task<DiscussMessage> PostAttachmentMessageAsync(string orgId, string senderId, PostDiscussAttachmentModel postDiscussAttachmentModel)
+        public Task<Dictionary<string, int>> GetUnReadMessageCountAsync(string orgId, string clientId, string[] groups)
+        {
+            return DiscussMessageRepository.GetUnReadMessageCountAsync(orgId, clientId, groups);
+        }
+
+        public async Task<DiscussMessage> PostAttachmentMessageAsync(string orgId, string senderId,
+            PostDiscussAttachmentModel postDiscussAttachmentModel)
         {
             var attachmentUrl = await UploadService.UploadFileAsync(postDiscussAttachmentModel.File, null);
             var message = postDiscussAttachmentModel.MapTo(new DiscussMessage
@@ -193,9 +187,18 @@ namespace AgvcService.Users
             return message;
         }
 
-        public Task<Dictionary<string, int>> GetUnReadMessageCountAsync(string orgId, string clientId, string[] groups)
+        #region IOC
+
+        private IDiscussMessageRepository DiscussMessageRepository { get; }
+        private IUploadService UploadService { get; }
+
+        public DiscussMessageService(IDiscussMessageRepository discussMessageRepository,
+            IUploadService uploadService)
         {
-            return DiscussMessageRepository.GetUnReadMessageCountAsync(orgId, clientId, groups);
+            DiscussMessageRepository = discussMessageRepository;
+            UploadService = uploadService;
         }
+
+        #endregion
     }
 }

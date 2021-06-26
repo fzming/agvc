@@ -6,7 +6,7 @@ using CoreRepository;
 
 namespace AgvcRepository.System.Interfaces
 {
-    public interface ISystemUserRepository:IRepository<SystemUser>,IDynamicRepository
+    public interface ISystemUserRepository : IRepository<SystemUser>, IDynamicRepository
     {
         Task<PageResult<SystemUser>> AdvQuerySystemUsersAsync(SystemUserPageQuery userPageQuery);
     }

@@ -9,9 +9,9 @@ using StackExchange.Redis;
 namespace Cache.IRedis
 {
     /// <summary>
-    /// Redis哈希缓存
-    /// Hash——字典
-    /// 相当于一个key对于一个map，map中还有key-value
+    ///     Redis哈希缓存
+    ///     Hash——字典
+    ///     相当于一个key对于一个map，map中还有key-value
     /// </summary>
     public class RedisHashCache : RedisCaching, IRedisHashCache
     {
@@ -19,13 +19,14 @@ namespace Cache.IRedis
 
         #region 同步执行
 
-        public RedisHashCache(IRedisConnectionMultiplexer redisConnectionMultiplexer, RedisKeyCache redisKeyCache):base(redisConnectionMultiplexer)
+        public RedisHashCache(IRedisConnectionMultiplexer redisConnectionMultiplexer, IRedisKeyCache redisKeyCache) :
+            base(redisConnectionMultiplexer)
         {
             RedisKeyCache = redisKeyCache;
         }
 
         /// <summary>
-        /// 是否被缓存
+        ///     是否被缓存
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -37,7 +38,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 存储数据到hash表
+        ///     存储数据到hash表
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -55,7 +56,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 从hash表中移除数据
+        ///     从hash表中移除数据
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -67,7 +68,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 移除hash中的多个值
+        ///     移除hash中的多个值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -75,11 +76,11 @@ namespace Cache.IRedis
         public long HashRemove(string key, List<string> dataKey)
         {
             key = AddPrefixKey(key);
-            return DoSync(db => db.HashDelete(key, dataKey.Select(p => (RedisValue)p).ToArray()));
+            return DoSync(db => db.HashDelete(key, dataKey.Select(p => (RedisValue) p).ToArray()));
         }
 
         /// <summary>
-        /// 从hash表中获取数据
+        ///     从hash表中获取数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -94,6 +95,7 @@ namespace Cache.IRedis
                 return ConvertObj<T>(val);
             });
         }
+
         public Dictionary<string, T> HashAll<T>(string key)
         {
             key = AddPrefixKey(key);
@@ -115,7 +117,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 为数字增长val
+        ///     为数字增长val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -128,7 +130,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 为数字减少val
+        ///     为数字减少val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -141,7 +143,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        ///  查看所有key值
+        ///     查看所有key值
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -155,11 +157,13 @@ namespace Cache.IRedis
                 return ConvertList<T>(val);
             });
         }
+
         #endregion
 
         #region 异步执行
+
         /// <summary>
-        /// 异步是否被缓存
+        ///     异步是否被缓存
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -167,11 +171,11 @@ namespace Cache.IRedis
         public Task<bool> HashExistsAsync(string key, string dataKey)
         {
             key = AddPrefixKey(key);
-            return DoAsync(db =>db.HashExistsAsync(key, dataKey));
+            return DoAsync(db => db.HashExistsAsync(key, dataKey));
         }
 
         /// <summary>
-        /// 异步存储数据到hash表
+        ///     异步存储数据到hash表
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -189,7 +193,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步从hash表中移除数据
+        ///     异步从hash表中移除数据
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -199,8 +203,9 @@ namespace Cache.IRedis
             key = AddPrefixKey(key);
             return DoAsync(db => db.HashDeleteAsync(key, dataKey));
         }
+
         /// <summary>
-        /// 删除整个hash
+        ///     删除整个hash
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -211,7 +216,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步移除hash中的多个值
+        ///     异步移除hash中的多个值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -219,11 +224,11 @@ namespace Cache.IRedis
         public Task<long> HashRemoveAsync(string key, List<string> dataKey)
         {
             key = AddPrefixKey(key);
-            return DoAsync(db => db.HashDeleteAsync(key, dataKey.Select(p => (RedisValue)p).ToArray()));
+            return DoAsync(db => db.HashDeleteAsync(key, dataKey.Select(p => (RedisValue) p).ToArray()));
         }
 
         /// <summary>
-        /// 从hash表中获取数据
+        ///     从hash表中获取数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -242,15 +247,16 @@ namespace Cache.IRedis
             var val = await DoAsync(db => db.HashGetAsync(key, dataKey));
             return ConvertObj(val, type);
         }
+
         public async Task<Dictionary<string, T>> HashAllAsync<T>(string key)
         {
             key = AddPrefixKey(key);
             var hashEntries = await DoAsync(db => db.HashGetAllAsync(key));
             return hashEntries.ToDictionary(p => p.Name.ToString(), p => ConvertObj<T>(p.Value));
-
         }
+
         /// <summary>
-        /// 为数字增长val
+        ///     为数字增长val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -263,7 +269,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 为数字减少val
+        ///     为数字减少val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -276,7 +282,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        ///  查看所有key值
+        ///     查看所有key值
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -287,8 +293,9 @@ namespace Cache.IRedis
             var val = await DoAsync(db => db.HashKeysAsync(key));
             return ConvertList<T>(val);
         }
+
         /// <summary>
-        /// 获取或创建缓存（使用自定义哈希键名称）
+        ///     获取或创建缓存（使用自定义哈希键名称）
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dataKey"></param>
@@ -301,7 +308,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 获取或创建缓存
+        ///     获取或创建缓存
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="hashKey">哈希键</param>
@@ -309,34 +316,24 @@ namespace Cache.IRedis
         /// <param name="createAsync">如果不存在则创建</param>
         /// <param name="expires">为整个hash创建过期时间</param>
         /// <returns></returns>
-        public async Task<T> GetOrCreateHashCacheAsync<T>(string hashKey, string dataKey, Func<Task<T>> createAsync, TimeSpan? expires = null)
+        public async Task<T> GetOrCreateHashCacheAsync<T>(string hashKey, string dataKey, Func<Task<T>> createAsync,
+            TimeSpan? expires = null)
         {
             #region 检查Redis缓存
 
             var cacheExsits = await HashExistsAsync(hashKey, dataKey);
-            if (cacheExsits)
-            {
-                return await HashGetAsync<T>(hashKey, dataKey);
-            }
+            if (cacheExsits) return await HashGetAsync<T>(hashKey, dataKey);
 
             #endregion
 
             //创建缓存
             var cache = await createAsync();
-            if (cache == null)
-            {
-                return default;
-            }
+            if (cache == null) return default;
             await HashSetAsync(hashKey, dataKey, cache);
-            if (expires.HasValue)
-            {
-                await RedisKeyCache.KeyExpireAsync(hashKey, expires);
-            }
+            if (expires.HasValue) await RedisKeyCache.KeyExpireAsync(hashKey, expires);
             return cache;
         }
 
         #endregion
     }
-
-
 }

@@ -3,7 +3,7 @@
 namespace AgvcWorkFactory.Tasks
 {
     /// <summary>
-    /// 晶棒搬运任务
+    ///     晶棒搬运任务
     /// </summary>
     [TaskType(RobotTaskType.Tray)]
     public class RobotTrayTask : AbstractRobotTask
@@ -12,17 +12,18 @@ namespace AgvcWorkFactory.Tasks
         {
             base.ExecuteFromToRules();
         }
+
         #region Overrides of AbstractRobotTask
 
         /// <summary>
-        /// 實際任務单次執行步驟(From)
+        ///     實際任務单次執行步驟(From)
         /// </summary>
         protected override void OnRunFromTask(TaskGoal goal, int index)
         {
         }
 
         /// <summary>
-        /// 實際任務单次執行步驟(To)
+        ///     實際任務单次執行步驟(To)
         /// </summary>
         protected override void OnRunToTask(TaskGoal goal, int index)
         {

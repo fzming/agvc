@@ -12,10 +12,9 @@ namespace CoreRepository.Converters
 
         public void Serialize(BsonSerializationContext context, BsonSerializationArgs args, object value)
         {
-            context.Writer.WriteDateTime(((DateTime)value).ToLocalTime().Ticks);
+            context.Writer.WriteDateTime(((DateTime) value).ToLocalTime().Ticks);
         }
 
         public Type ValueType => typeof(DateTime);
     }
-
 }

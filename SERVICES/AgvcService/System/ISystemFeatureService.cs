@@ -12,7 +12,10 @@ namespace AgvcService.System
     public interface ISystemFeatureService : ICrudService<SystemFeature>
     {
         Task<bool> SetOrganizationFeatureValueAsync(string orgId, OrganizationFeatureValue value);
-        Task<PageResult<OrgFeatureDto>> QueryOrganizationFeaturesAsync(string orgId, PageQuery query, Expression<Func<SystemFeature, bool>> filter = null);
+
+        Task<PageResult<OrgFeatureDto>> QueryOrganizationFeaturesAsync(string orgId, PageQuery query,
+            Expression<Func<SystemFeature, bool>> filter = null);
+
         Task<Dictionary<string, string>> GetOrganizationFeaturesAsync(string orgId);
         Task<Dictionary<string, string>> GetOrganizationFeaturesNoSafetyAsync(string orgId);
         Task<string> GetFeatureValueAsync(string orgId, string key);

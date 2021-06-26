@@ -5,7 +5,7 @@ using CoreService;
 
 namespace AgvcService.Organizations
 {
-    public class DepartmentService : AbstractCrudService<Department>,IDepartmentService
+    public class DepartmentService : AbstractCrudService<Department>, IDepartmentService
     {
         #region IOC
 
@@ -20,7 +20,7 @@ namespace AgvcService.Organizations
 
         #region 部门重复判断
 
-        public Task<bool> IsNameExsitAsync(string orgId,string companyId, string name)
+        public Task<bool> IsNameExsitAsync(string orgId, string companyId, string name)
         {
             return DepartmentRepository.AnyAsync(p =>
                 p.OrgId == orgId && p.BranchCompanyId == companyId && p.Name == name);

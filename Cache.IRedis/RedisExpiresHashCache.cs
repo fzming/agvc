@@ -10,28 +10,27 @@ using Utility.Extensions;
 namespace Cache.IRedis
 {
     /// <summary>
-    /// 带过期Redis哈希缓存
-    /// Hash——字典
-    /// 相当于一个key对于一个map，map中还有key-value
+    ///     带过期Redis哈希缓存
+    ///     Hash——字典
+    ///     相当于一个key对于一个map，map中还有key-value
     /// </summary>
-
-    public class RedisExpiresHashCache:RedisCaching,IRedisExpiresHashCache
+    public class RedisExpiresHashCache : RedisCaching, IRedisExpiresHashCache
     {
-        private IRedisHashCache RedisHashCache { get; }
-
         public RedisExpiresHashCache(IRedisConnectionMultiplexer redisConnectionMultiplexer,
             IRedisHashCache redisHashCache) : base(redisConnectionMultiplexer)
         {
             RedisHashCache = redisHashCache;
         }
 
+        private IRedisHashCache RedisHashCache { get; }
+
         public string GetExpireKey(string key)
         {
             return $"{key}-expires-set";
         }
-        
+
         /// <summary>
-        /// 异步是否被缓存
+        ///     异步是否被缓存
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -56,7 +55,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步存储数据到hash表
+        ///     异步存储数据到hash表
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -68,15 +67,15 @@ namespace Cache.IRedis
         {
             var json = ConvertJson(val);
             await HashDeleteAsync(key, dataKey);
-            
+
             var taskSet = RedisHashCache.HashSetAsync(key, dataKey, json);
             var taskSetExpires = RedisHashCache.HashSetAsync(GetExpireKey(key), dataKey, DateTime.Now.Add(expires));
-            var result= await Task.WhenAll(taskSet, taskSetExpires);
+            var result = await Task.WhenAll(taskSet, taskSetExpires);
             return result.All(p => p);
         }
 
         /// <summary>
-        /// 异步从hash表中移除数据
+        ///     异步从hash表中移除数据
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -90,7 +89,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步移除hash中的多个值
+        ///     异步移除hash中的多个值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -98,7 +97,7 @@ namespace Cache.IRedis
         public async Task<long> HashRemoveAsync(string key, List<string> dataKey)
         {
             var dataKeys = dataKey.Select(p => (RedisValue) p).ToArray();
-            
+
             var taskSet = DoAsync(db => db.HashDeleteAsync(key, dataKeys));
             var taskSetExpires = DoAsync(db => db.HashDeleteAsync(GetExpireKey(key), dataKeys));
             var result = await Task.WhenAll(taskSet, taskSetExpires);
@@ -106,7 +105,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 从hash表中获取数据
+        ///     从hash表中获取数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -115,10 +114,7 @@ namespace Cache.IRedis
         public async Task<T> HashGetAsync<T>(string key, string dataKey)
         {
             var hasKey = await HashExistsAsync(key, dataKey);
-            if (!hasKey)
-            {
-                return default;
-            }
+            if (!hasKey) return default;
 
             return await RedisHashCache.HashGetAsync<T>(key, dataKey);
         }
@@ -126,12 +122,9 @@ namespace Cache.IRedis
         public async Task<object> HashGetAsync(string key, string dataKey, Type type)
         {
             var hasKey = await HashExistsAsync(key, dataKey);
-            if (!hasKey)
-            {
-                return default;
-            }
+            if (!hasKey) return default;
 
-            return await RedisHashCache.HashGetAsync(key, dataKey,type);
+            return await RedisHashCache.HashGetAsync(key, dataKey, type);
         }
     }
 }

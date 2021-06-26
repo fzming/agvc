@@ -1,11 +1,12 @@
-﻿namespace AgvcService.System.Message.Address
+﻿using System;
+
+namespace AgvcService.System.Message.Address
 {
-    public class SignalReceiver:IMessageReceiver
+    public class SignalReceiver : IMessageReceiver
     {
-          
         public bool Validate()
         {
-            throw new global::System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

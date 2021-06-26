@@ -4,10 +4,9 @@ using CoreRepository;
 namespace AgvcRepository.Orgnizations.Interfaces
 {
     /// <summary>
-    /// BranchCompanyRepository
+    ///     BranchCompanyRepository
     /// </summary>
     public interface IBranchCompanyRepository : IRepository<BranchCompany>
     {
-
     }
 }

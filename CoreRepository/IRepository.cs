@@ -2,76 +2,79 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-
 using CoreData;
 using CoreData.Core.Aggregate;
-
 using Utility;
 
 namespace CoreRepository
 {
-
     /// <summary>
-    ///  仓储服务公开接口
+    ///     仓储服务公开接口
     /// </summary>
     /// <typeparam name="T">聚合实体</typeparam>
     //  [InheritedExport]
     public interface IRepository<T> : IDisposable, ISingletonDependency where T : AggregateRoot
     {
+        Task PageExecuteAsync(int size, Func<int, IEnumerable<T>, Task> pageCallTask);
+
+        Task PageExecuteAsync(int size, Expression<Func<T, bool>> filter,
+            Func<int, IEnumerable<T>, Task> pageCallTask);
+
+        Task<PageResult<T>> PageQueryAsync<TPageQuery, TKey>(TPageQuery pager, Expression<Func<T, bool>> filter,
+            Expression<Func<T, TKey>> orderByKeySelector, bool desc = false) where TPageQuery : PageQuery, new();
 
         #region CRUD
 
         #region Delete
 
         /// <summary>
-        /// delete by selector
+        ///     delete by selector
         /// </summary>
         /// <param name="id">selector</param>
         bool Delete(string id);
 
 
         /// <summary>
-        /// delete entity
+        ///     delete entity
         /// </summary>
         /// <param name="entity">entity</param>
         bool Delete(T entity);
 
         /// <summary>
-        /// delete items with filter
+        ///     delete items with filter
         /// </summary>
         /// <param name="filter">expression filter</param>
         bool Delete(Expression<Func<T, bool>> filter);
 
         /// <summary>
-        /// delete all documents
+        ///     delete all documents
         /// </summary>
         bool Clear();
-
 
         #endregion Delete
 
         #region Async Delete
 
         /// <summary>
-        /// delete by selector
+        ///     delete by selector
         /// </summary>
         /// <param name="id">selector</param>
         Task<bool> DeleteAsync(string id);
 
         /// <summary>
-        /// delete entity
+        ///     delete entity
         /// </summary>
         /// <param name="entity">entity</param>
         Task<bool> DeleteAsync(T entity);
 
         /// <summary>
-        /// delete items with filter
+        ///     delete items with filter
         /// </summary>
         /// <param name="filter">expression filter</param>
         Task<bool> DeleteAsync(Expression<Func<T, bool>> filter);
 
         /// <summary>
-        /// delete all documents
+        ///     delete all documents
         /// </summary>
         Task<bool> ClearAsync();
 
@@ -79,16 +82,15 @@ namespace CoreRepository
 
         #region Find
 
-
         /// <summary>
-        /// find entities
+        ///     find entities
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <returns>collection of entity</returns>
         IEnumerable<T> Find(Expression<Func<T, bool>> filter);
 
         /// <summary>
-        /// find entities with paging
+        ///     find entities with paging
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="pageIndex">page index, based on 0</param>
@@ -97,8 +99,8 @@ namespace CoreRepository
         IEnumerable<T> Find(Expression<Func<T, bool>> filter, int pageIndex, int size);
 
         /// <summary>
-        /// find entities with paging and ordering
-        /// default ordering is descending
+        ///     find entities with paging and ordering
+        ///     default ordering is descending
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
@@ -109,7 +111,7 @@ namespace CoreRepository
             int size);
 
         /// <summary>
-        /// find entities with paging and ordering in direction
+        ///     find entities with paging and ordering in direction
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
@@ -124,16 +126,15 @@ namespace CoreRepository
 
         #region Async Find
 
-
         /// <summary>
-        /// find entities
+        ///     find entities
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <returns>collection of entity</returns>
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> filter);
 
         /// <summary>
-        /// find entities with paging
+        ///     find entities with paging
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="pageIndex">page index, based on 0</param>
@@ -142,8 +143,8 @@ namespace CoreRepository
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> filter, int pageIndex, int size);
 
         /// <summary>
-        /// find entities with paging and ordering
-        /// default ordering is descending
+        ///     find entities with paging and ordering
+        ///     default ordering is descending
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
@@ -154,7 +155,7 @@ namespace CoreRepository
             int pageIndex, int size);
 
         /// <summary>
-        /// find entities with paging and ordering in direction
+        ///     find entities with paging and ordering in direction
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
@@ -170,13 +171,13 @@ namespace CoreRepository
         #region FindAll
 
         /// <summary>
-        /// fetch all items in collection
+        ///     fetch all items in collection
         /// </summary>
         /// <returns>collection of entity</returns>
         IEnumerable<T> FindAll();
 
         /// <summary>
-        /// fetch all items in collection with paging
+        ///     fetch all items in collection with paging
         /// </summary>
         /// <param name="pageIndex">page index, based on 0</param>
         /// <param name="size">number of items in page</param>
@@ -184,8 +185,8 @@ namespace CoreRepository
         IEnumerable<T> FindAll(int pageIndex, int size);
 
         /// <summary>
-        /// fetch all items in collection with paging and ordering
-        /// default ordering is descending
+        ///     fetch all items in collection with paging and ordering
+        ///     default ordering is descending
         /// </summary>
         /// <param name="order">ordering parameters</param>
         /// <param name="pageIndex">page index, based on 0</param>
@@ -194,7 +195,7 @@ namespace CoreRepository
         IEnumerable<T> FindAll(Expression<Func<T, object>> order, int pageIndex, int size);
 
         /// <summary>
-        /// fetch all items in collection with paging and ordering in direction
+        ///     fetch all items in collection with paging and ordering in direction
         /// </summary>
         /// <param name="order">ordering parameters</param>
         /// <param name="pageIndex">page index, based on 0</param>
@@ -205,16 +206,16 @@ namespace CoreRepository
 
         #endregion FindAll
 
-        #region  Async FindAll
+        #region Async FindAll
 
         /// <summary>
-        /// fetch all items in collection
+        ///     fetch all items in collection
         /// </summary>
         /// <returns>collection of entity</returns>
         Task<IEnumerable<T>> FindAllAsync();
 
         /// <summary>
-        /// fetch all items in collection with paging
+        ///     fetch all items in collection with paging
         /// </summary>
         /// <param name="pageIndex">page index, based on 0</param>
         /// <param name="size">number of items in page</param>
@@ -222,8 +223,8 @@ namespace CoreRepository
         Task<IEnumerable<T>> FindAllAsync(int pageIndex, int size);
 
         /// <summary>
-        /// fetch all items in collection with paging and ordering
-        /// default ordering is descending
+        ///     fetch all items in collection with paging and ordering
+        ///     default ordering is descending
         /// </summary>
         /// <param name="order">ordering parameters</param>
         /// <param name="pageIndex">page index, based on 0</param>
@@ -232,7 +233,7 @@ namespace CoreRepository
         Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, object>> order, int pageIndex, int size);
 
         /// <summary>
-        /// fetch all items in collection with paging and ordering in direction
+        ///     fetch all items in collection with paging and ordering in direction
         /// </summary>
         /// <param name="order">ordering parameters</param>
         /// <param name="pageIndex">page index, based on 0</param>
@@ -247,35 +248,34 @@ namespace CoreRepository
         #region First
 
         /// <summary>
-        /// get first item in collection
+        ///     get first item in collection
         /// </summary>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         T First();
 
 
-
         /// <summary>
-        /// get first item in query
+        ///     get first item in query
         /// </summary>
         /// <param name="filter">expression filter</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         T First(Expression<Func<T, bool>> filter);
 
         /// <summary>
-        /// get first item in query with order
+        ///     get first item in query with order
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         T First(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order);
 
         /// <summary>
-        /// get first item in query with order and direction
+        ///     get first item in query with order and direction
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
         /// <param name="isDescending">ordering direction</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         T First(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order, bool isDescending);
 
         #endregion First
@@ -283,35 +283,34 @@ namespace CoreRepository
         #region Async First
 
         /// <summary>
-        /// get first item in collection
+        ///     get first item in collection
         /// </summary>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         Task<T> FirstAsync();
 
 
-
         /// <summary>
-        /// get first item in query
+        ///     get first item in query
         /// </summary>
         /// <param name="filter">expression filter</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         Task<T> FirstAsync(Expression<Func<T, bool>> filter);
 
         /// <summary>
-        /// get first item in query with order
+        ///     get first item in query with order
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         Task<T> FirstAsync(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order);
 
         /// <summary>
-        /// get first item in query with order and direction
+        ///     get first item in query with order and direction
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
         /// <param name="isDescending">ordering direction</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         Task<T> FirstAsync(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order, bool isDescending);
 
         #endregion First
@@ -319,10 +318,10 @@ namespace CoreRepository
         #region Get
 
         /// <summary>
-        /// get by selector
+        ///     get by selector
         /// </summary>
         /// <param name="id">selector value</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         T Get(string id);
 
         #endregion Get
@@ -330,10 +329,10 @@ namespace CoreRepository
         #region Async Get
 
         /// <summary>
-        /// get by selector
+        ///     get by selector
         /// </summary>
         /// <param name="id">selector value</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         Task<T> GetAsync(string id);
 
         #endregion Get
@@ -341,13 +340,13 @@ namespace CoreRepository
         #region Insert
 
         /// <summary>
-        /// insert entity
+        ///     insert entity
         /// </summary>
         /// <param name="entity">entity</param>
         void Insert(T entity);
 
         /// <summary>
-        /// insert entity collection
+        ///     insert entity collection
         /// </summary>
         /// <param name="entities">collection of entities</param>
         void Insert(IEnumerable<T> entities);
@@ -356,15 +355,14 @@ namespace CoreRepository
 
         #region Async Insert
 
-
         /// <summary>
-        /// insert entity
+        ///     insert entity
         /// </summary>
         /// <param name="entity">entity</param>
         Task InsertAsync(T entity);
 
         /// <summary>
-        /// insert entity collection
+        ///     insert entity collection
         /// </summary>
         /// <param name="entities">collection of entities</param>
         Task InsertAsync(IEnumerable<T> entities);
@@ -374,35 +372,34 @@ namespace CoreRepository
         #region Last
 
         /// <summary>
-        /// get last item in collection
+        ///     get last item in collection
         /// </summary>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         T Last();
 
 
-
         /// <summary>
-        /// get last item in query
+        ///     get last item in query
         /// </summary>
         /// <param name="filter">expression filter</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         T Last(Expression<Func<T, bool>> filter);
 
         /// <summary>
-        /// get last item in query with order
+        ///     get last item in query with order
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         T Last(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order);
 
         /// <summary>
-        /// get last item in query with order and direction
+        ///     get last item in query with order and direction
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
         /// <param name="isDescending">ordering direction</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         T Last(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order, bool isDescending);
 
         #endregion Last
@@ -410,46 +407,46 @@ namespace CoreRepository
         #region Async Last
 
         /// <summary>
-        /// get last item in collection
+        ///     get last item in collection
         /// </summary>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         Task<T> LastAsync();
 
 
-
         /// <summary>
-        /// get last item in query
+        ///     get last item in query
         /// </summary>
         /// <param name="filter">expression filter</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         Task<T> LastAsync(Expression<Func<T, bool>> filter);
 
         /// <summary>
-        /// get last item in query with order
+        ///     get last item in query with order
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         Task<T> LastAsync(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order);
 
         /// <summary>
-        /// get last item in query with order and direction
+        ///     get last item in query with order and direction
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <param name="order">ordering parameters</param>
         /// <param name="isDescending">ordering direction</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
+        /// <returns>entity of <typeparamref name="T" /></returns>
         Task<T> LastAsync(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order, bool isDescending);
 
         #endregion Last
 
 
         #region Update
+
         bool Replace(string id, T entity);
         bool Update(T entity);
 
         /// <summary>
-        /// update a property field in an entity
+        ///     update a property field in an entity
         /// </summary>
         /// <typeparam name="TField">field type</typeparam>
         /// <param name="entity">entity</param>
@@ -459,12 +456,13 @@ namespace CoreRepository
         bool Update<TField>(T entity, Expression<Func<T, TField>> field, TField value);
 
         /// <summary>
-        /// 根据表达式更新
+        ///     根据表达式更新
         /// </summary>
         /// <param name="predicate"></param>
         /// <param name="lambda"></param>
         /// <returns></returns>
         long Update(Expression<Func<T, bool>> predicate, Expression<Func<T, T>> lambda);
+
         #endregion Update
 
         #region Async Update
@@ -473,17 +471,18 @@ namespace CoreRepository
         Task<bool> ReplaceAsync(string id, T entity);
 
         /// <summary>
-        /// update a property field in an entity
+        ///     update a property field in an entity
         /// </summary>
         /// <typeparam name="TField">field type</typeparam>
         /// <param name="entity">entity</param>
         /// <param name="field">field</param>
         /// <param name="value">new value</param>
         Task<bool> UpdateAsync<TField>(T entity, Expression<Func<T, TField>> field, TField value);
+
         Task<bool> UpdateAsync<TField>(string id, Expression<Func<T, TField>> field, TField value);
 
         /// <summary>
-        /// 更新多个字段
+        ///     更新多个字段
         /// </summary>
         /// <param name="id"></param>
         /// <param name="updates"></param>
@@ -491,19 +490,21 @@ namespace CoreRepository
         Task<bool> UpdateAsync(string id, IDictionary<Expression<Func<T, object>>, object> updates);
 
         /// <summary>
-        /// 根据表达式更新
+        ///     根据表达式更新
         /// </summary>
         /// <param name="predicate"></param>
         /// <param name="lambda"></param>
         /// <returns></returns>
         Task<long> UpdateAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, T>> lambda);
+
         #endregion
 
         #endregion CRUD
 
         #region Utils
+
         /// <summary>
-        /// 字段值是否有重复
+        ///     字段值是否有重复
         /// </summary>
         /// <typeparam name="TField"></typeparam>
         /// <param name="field">字段</param>
@@ -513,10 +514,12 @@ namespace CoreRepository
         /// <returns></returns>
         Task<bool> IsFieldRepeatAsync<TField>(Expression<Func<T, TField>> field, TField value,
             string orgId = "", string modifyId = "");
+
         Task<bool> IsFieldRepeatAsync<TField>(string field, TField value,
             string orgId = "", string modifyId = "");
+
         /// <summary>
-        /// validate if filter result exists
+        ///     validate if filter result exists
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <returns>true if exists, otherwise false</returns>
@@ -527,27 +530,27 @@ namespace CoreRepository
         #region Count
 
         /// <summary>
-        /// get number of filtered documents
+        ///     get number of filtered documents
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <returns>number of documents</returns>
         long Count(Expression<Func<T, bool>> filter);
 
         /// <summary>
-        /// get number of filtered documents
+        ///     get number of filtered documents
         /// </summary>
         /// <param name="filter">expression filter</param>
         /// <returns>number of documents</returns>
         Task<long> CountAsync(Expression<Func<T, bool>> filter);
 
         /// <summary>
-        /// get number of documents in collection
+        ///     get number of documents in collection
         /// </summary>
         /// <returns>number of documents</returns>
         long Count();
 
         /// <summary>
-        /// get number of documents in collection
+        ///     get number of documents in collection
         /// </summary>
         /// <returns>number of documents</returns>
         Task<long> CountAsync();
@@ -579,11 +582,5 @@ namespace CoreRepository
         #endregion
 
         #endregion Utils
-
-        Task PageExecuteAsync(int size, Func<int, IEnumerable<T>, Task> pageCallTask);
-        Task PageExecuteAsync(int size, Expression<Func<T, bool>> filter,
-            Func<int, IEnumerable<T>, Task> pageCallTask);
-        Task<PageResult<T>> PageQueryAsync<TPageQuery, TKey>(TPageQuery pager, Expression<Func<T, bool>> filter,
-            Expression<Func<T, TKey>> orderByKeySelector, bool desc = false) where TPageQuery : PageQuery, new();
     }
 }

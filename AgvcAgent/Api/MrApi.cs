@@ -3,20 +3,22 @@ using AgvcAgent.Api.Kernel;
 using AgvcEntitys.Agv;
 using AgvcRepository;
 using Microsoft.AspNetCore.Mvc;
+
 namespace AgvcAgent.Api
 {
     [ApiController]
     [Route("mr")]
     public class MrApi : AuthorizedApiController
     {
-        private IMrRepository MrRepository { get; }
-
         public MrApi(IMrRepository mrRepository)
         {
             MrRepository = mrRepository;
         }
+
+        private IMrRepository MrRepository { get; }
+
         /// <summary>
-        /// 获取MR实体
+        ///     获取MR实体
         /// </summary>
         /// <param name="mrId"></param>
         /// <returns></returns>

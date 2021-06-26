@@ -6,7 +6,7 @@ using CoreRepository;
 
 namespace AgvcRepository.System.Interfaces
 {
-    public interface IMenuRepository:IRepository<Menu>
+    public interface IMenuRepository : IRepository<Menu>
     {
         Task<bool> BatchUpdateMenusMetaAsync(List<MenuRoleUpdateSet> roleUpdateSets);
         Task<IEnumerable<Menu>> QueryModuleMenusAsync(ModuleType[] modules);

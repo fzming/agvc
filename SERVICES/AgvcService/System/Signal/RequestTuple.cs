@@ -6,10 +6,12 @@ namespace AgvcService.System.Signal
     public class RequestTuple
     {
         public string client_id { get; set; }
+
         /// <summary>
-        /// 来源
+        ///     来源
         /// </summary>
         public string source { get; set; }
+
         public bool kickoff { get; set; }
 
         #region 设备信息

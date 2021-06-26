@@ -6,24 +6,23 @@ namespace AgvcService.Users.Models
     public class AccountUserUpdateModel : AccountModel
     {
         /// <summary>
-        /// 待修改的用户ID
+        ///     待修改的用户ID
         /// </summary>
         public string Id { get; set; }
 
 
         public override Result<bool> Validate()
         {
-            if (this.LoginId.IsNullOrEmpty())
+            if (LoginId.IsNullOrEmpty())
                 return Result<bool>.Fail("登录ID不能为空");
 
-            if (this.RoleId.IsNullOrEmpty())
+            if (RoleId.IsNullOrEmpty())
                 return Result<bool>.Fail("用户角色不能为空");
 
-            if (this.Nick.IsNullOrEmpty())
+            if (Nick.IsNullOrEmpty())
                 return Result<bool>.Fail("姓名不能为空");
 
             return Result<bool>.Successed;
-
         }
     }
 }

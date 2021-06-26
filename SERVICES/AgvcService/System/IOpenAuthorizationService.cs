@@ -19,6 +19,8 @@ namespace AgvcService.System
         Task<Result<Account>> LoginAppAccountAsync(AppOpenIdentify openIdentify, string loginDomain);
         Task<Result<Account>> SysUserLoginAsync(SystemUserLoginModel systemUserLoginModel);
         Task<IEnumerable<UserAuthority>> GetUserAuthoritysAsync(string roleId, string userId);
-        Task CacheUserAuthoritysAsync(string orgId, string id, IEnumerable<string> menuIdArray, IEnumerable<string> codeArray);
+
+        Task CacheUserAuthoritysAsync(string orgId, string id, IEnumerable<string> menuIdArray,
+            IEnumerable<string> codeArray);
     }
 }

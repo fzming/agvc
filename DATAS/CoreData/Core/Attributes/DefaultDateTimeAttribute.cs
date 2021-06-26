@@ -6,9 +6,13 @@ namespace CoreData.Core.Attributes
     public class DefaultDateTimeAttribute : DefaultValueAttribute
     {
         public DefaultDateTimeAttribute()
-            : base(DateTime.Now) { }
+            : base(DateTime.Now)
+        {
+        }
 
         public DefaultDateTimeAttribute(string dateTime)
-            : base(DateTime.Parse(dateTime)) { }
+            : base(DateTime.Parse(dateTime))
+        {
+        }
     }
 }

@@ -6,14 +6,35 @@ using Utility;
 namespace Cache.IRedis.Interfaces
 {
     /// <summary>
-    /// Redis 哈希表操作接口
+    ///     Redis 哈希表操作接口
     /// </summary>
     public interface IRedisHashCache : ISingletonDependency
     {
+        /// <summary>
+        ///     获取或创建哈希缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataKey">数据键名</param>
+        /// <param name="createAsync">当缓存不存在时自动调用</param>
+        /// <returns></returns>
+        Task<T> GetOrCreateHashCacheAsync<T>(string dataKey, Func<Task<T>> createAsync);
+
+        /// <summary>
+        ///     获取或创建哈希缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="hashKey">哈希键名</param>
+        /// <param name="dataKey">数据键名</param>
+        /// <param name="createAsync">当缓存不存在时自动调用</param>
+        /// <param name="expires">过期时间</param>
+        /// <returns></returns>
+        Task<T> GetOrCreateHashCacheAsync<T>(string hashKey, string dataKey, Func<Task<T>> createAsync,
+            TimeSpan? expires = null);
+
         #region 同步执行
 
         /// <summary>
-        /// 是否被缓存
+        ///     是否被缓存
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -22,7 +43,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 存储数据到hash表
+        ///     存储数据到hash表
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -33,7 +54,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 从hash表中移除数据
+        ///     从hash表中移除数据
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -42,7 +63,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 移除hash中的多个值
+        ///     移除hash中的多个值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -51,7 +72,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 从hash表中获取数据
+        ///     从hash表中获取数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -60,10 +81,10 @@ namespace Cache.IRedis.Interfaces
         T HashGet<T>(string key, string dataKey);
 
         Dictionary<string, T> HashAll<T>(string key);
-        object HashGet(string key, string dataKey,Type type);
+        object HashGet(string key, string dataKey, Type type);
 
         /// <summary>
-        /// 为数字增长val
+        ///     为数字增长val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -73,7 +94,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 为数字减少val
+        ///     为数字减少val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -82,7 +103,7 @@ namespace Cache.IRedis.Interfaces
         double HashDecrement(string key, string dataKey, double val = 1);
 
         /// <summary>
-        /// 获取hashkey所有Redis key
+        ///     获取hashkey所有Redis key
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -94,7 +115,7 @@ namespace Cache.IRedis.Interfaces
         #region 异步执行
 
         /// <summary>
-        /// 异步是否被缓存
+        ///     异步是否被缓存
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -103,7 +124,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 异步存储数据到hash表
+        ///     异步存储数据到hash表
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -111,14 +132,16 @@ namespace Cache.IRedis.Interfaces
         /// <param name="val"></param>
         /// <returns></returns>
         Task<bool> HashSetAsync<T>(string key, string dataKey, T val);
+
         /// <summary>
-        /// 删除整个Hash
+        ///     删除整个Hash
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         Task<bool> DeleteAsync(string key);
+
         /// <summary>
-        /// 异步从hash表中移除数据
+        ///     异步从hash表中移除数据
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -127,7 +150,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 异步移除hash中的多个值
+        ///     异步移除hash中的多个值
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -136,17 +159,19 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 从hash表中获取数据
+        ///     从hash表中获取数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
         /// <returns></returns>
         Task<T> HashGetAsync<T>(string key, string dataKey);
-        Task<object> HashGetAsync(string key, string dataKey,Type type);
+
+        Task<object> HashGetAsync(string key, string dataKey, Type type);
         Task<Dictionary<string, T>> HashAllAsync<T>(string key);
+
         /// <summary>
-        /// 为数字增长val
+        ///     为数字增长val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -155,7 +180,7 @@ namespace Cache.IRedis.Interfaces
         Task<double> HashIncrementAsync(string key, string dataKey, double val = 1);
 
         /// <summary>
-        /// 为数字减少val
+        ///     为数字减少val
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataKey"></param>
@@ -165,7 +190,7 @@ namespace Cache.IRedis.Interfaces
 
 
         /// <summary>
-        /// 获取hashkey所有Redis key
+        ///     获取hashkey所有Redis key
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -173,26 +198,5 @@ namespace Cache.IRedis.Interfaces
         Task<List<T>> HashKeysAsync<T>(string key);
 
         #endregion
-
-        /// <summary>
-        /// 获取或创建哈希缓存
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dataKey">数据键名</param>
-        /// <param name="createAsync">当缓存不存在时自动调用</param>
-        /// <returns></returns>
-        Task<T> GetOrCreateHashCacheAsync<T>(string dataKey,Func<Task<T>> createAsync);
-
-        /// <summary>
-        /// 获取或创建哈希缓存
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="hashKey">哈希键名</param>
-        /// <param name="dataKey">数据键名</param>
-        /// <param name="createAsync">当缓存不存在时自动调用</param>
-        /// <param name="expires">过期时间</param>
-        /// <returns></returns>
-        Task<T> GetOrCreateHashCacheAsync<T>(string hashKey,string dataKey,Func<Task<T>> createAsync,TimeSpan? expires=null);
     }
-
 }

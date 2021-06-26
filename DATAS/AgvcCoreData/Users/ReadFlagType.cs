@@ -1,7 +1,7 @@
 ﻿namespace AgvcCoreData.Users
 {
     /// <summary>
-    /// 阅读标记
+    ///     阅读标记
     /// </summary>
     public enum ReadFlagType
     {

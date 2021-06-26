@@ -7,15 +7,20 @@ using StackExchange.Redis;
 namespace Cache.IRedis
 {
     /// <summary>
-    /// Redis Set缓存
-    /// Set——集合
+    ///     Redis Set缓存
+    ///     Set——集合
     /// </summary>
     public class RedisSetCache : RedisCaching, IRedisSetCache
     {
+        public RedisSetCache(IRedisConnectionMultiplexer redisRedisConnectionMultiplexer) : base(
+            redisRedisConnectionMultiplexer)
+        {
+        }
+
         #region 同步执行
 
         /// <summary>
-        /// 添加
+        ///     添加
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -29,11 +34,11 @@ namespace Cache.IRedis
         public bool SetAdd(string key, string[] values)
         {
             key = AddPrefixKey(key);
-            return DoSync(db => db.SetAdd(key, values.Select(p => (RedisValue)p).ToArray()) > 0);
+            return DoSync(db => db.SetAdd(key, values.Select(p => (RedisValue) p).ToArray()) > 0);
         }
 
         /// <summary>
-        /// 查询key值中所有value值
+        ///     查询key值中所有value值
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -44,7 +49,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 获取长度
+        ///     获取长度
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -55,7 +60,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 是否存在
+        ///     是否存在
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -67,7 +72,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 移除
+        ///     移除
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -77,12 +82,13 @@ namespace Cache.IRedis
             key = AddPrefixKey(key);
             return DoSync(db => db.SetRemove(key, val));
         }
+
         #endregion
 
         #region 异步执行
 
         /// <summary>
-        /// 添加
+        ///     添加
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -96,11 +102,11 @@ namespace Cache.IRedis
         public Task<bool> SetAddAsync(string key, string[] values)
         {
             key = AddPrefixKey(key);
-            return DoAsync(async db => await db.SetAddAsync(key, values.Select(p => (RedisValue)p).ToArray()) > 0);
+            return DoAsync(async db => await db.SetAddAsync(key, values.Select(p => (RedisValue) p).ToArray()) > 0);
         }
 
         /// <summary>
-        /// 查询key值中所有value值
+        ///     查询key值中所有value值
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -111,7 +117,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 获取长度
+        ///     获取长度
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -122,7 +128,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 是否存在
+        ///     是否存在
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -134,7 +140,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 移除
+        ///     移除
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
@@ -145,10 +151,7 @@ namespace Cache.IRedis
 
             return DoAsync(db => db.SetRemoveAsync(key, val));
         }
-        #endregion
 
-        public RedisSetCache(IRedisConnectionMultiplexer redisRedisConnectionMultiplexer) : base(redisRedisConnectionMultiplexer)
-        {
-        }
+        #endregion
     }
 }

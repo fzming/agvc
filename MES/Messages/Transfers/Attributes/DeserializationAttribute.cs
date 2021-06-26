@@ -4,10 +4,9 @@ using System.ComponentModel;
 namespace Messages.Transfers.Core
 {
     /// <summary>
-    /// 指示MES的消息字段长度和顺序,用于自动序列化和反序列化.
+    ///     指示MES的消息字段长度和顺序,用于自动序列化和反序列化.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field,
-        Inherited = true, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     [ImmutableObject(true)]
     public sealed class DeserializationAttribute : Attribute
     {

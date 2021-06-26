@@ -7,8 +7,7 @@ namespace Utility.Extensions.AutoMapperConverters
     {
         public ObjectId Convert(string source, ObjectId destination, ResolutionContext context)
         {
-
-            return (source != null) ? ObjectId.Parse(source) : ObjectId.Empty;
+            return source != null ? ObjectId.Parse(source) : ObjectId.Empty;
         }
     }
 }

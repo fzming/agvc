@@ -8,13 +8,12 @@ namespace Protocol.Query
         public Response GetResponse(IEnumerable<string> mrids)
         {
             if (mrids != null)
-            {
-                return new Response { 
-                    SN = base.SN,
-                    MRIDs = mrids.ToList<string>()
+                return new Response
+                {
+                    SN = SN,
+                    MRIDs = mrids.ToList()
                 };
-            }
-            return new Response { SN = base.SN };
+            return new Response {SN = SN};
         }
 
         public class Response : Base
@@ -23,4 +22,3 @@ namespace Protocol.Query
         }
     }
 }
-

@@ -6,14 +6,20 @@ using Cache.IRedis.Interfaces;
 namespace Cache.IRedis
 {
     /// <summary>
-    /// Redis 集合缓存
-    /// List——列表 有顺序可重复（处理不完时,排队相关处理）
+    ///     Redis 集合缓存
+    ///     List——列表 有顺序可重复（处理不完时,排队相关处理）
     /// </summary>
     public class RedisListCache : RedisCaching, IRedisListCache
     {
+        public RedisListCache(IRedisConnectionMultiplexer redisRedisConnectionMultiplexer) : base(
+            redisRedisConnectionMultiplexer)
+        {
+        }
+
         #region 同步执行
+
         /// <summary>
-        /// 移除List内部指定的值
+        ///     移除List内部指定的值
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -25,7 +31,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 获取指定Key的List
+        ///     获取指定Key的List
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -41,7 +47,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 插入（入队）
+        ///     插入（入队）
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -53,7 +59,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 取出（出队）
+        ///     取出（出队）
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -69,7 +75,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 入栈
+        ///     入栈
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -81,7 +87,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 出栈
+        ///     出栈
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -97,7 +103,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 获取集合中的数量
+        ///     获取集合中的数量
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -106,11 +112,13 @@ namespace Cache.IRedis
             key = AddPrefixKey(key);
             return DoSync(db => db.ListLength(key));
         }
+
         #endregion
 
         #region 异步执行
+
         /// <summary>
-        /// 异步移除List内部指定的值
+        ///     异步移除List内部指定的值
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -122,7 +130,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步获取指定Key的List
+        ///     异步获取指定Key的List
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -135,7 +143,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步插入（入队）
+        ///     异步插入（入队）
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -147,7 +155,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步取出（出队）
+        ///     异步取出（出队）
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -160,7 +168,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步入栈
+        ///     异步入栈
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -172,7 +180,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 异步出栈
+        ///     异步出栈
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -185,7 +193,7 @@ namespace Cache.IRedis
         }
 
         /// <summary>
-        /// 获取集合中的数量
+        ///     获取集合中的数量
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -194,10 +202,7 @@ namespace Cache.IRedis
             key = AddPrefixKey(key);
             return DoAsync(db => db.ListLengthAsync(key));
         }
-        #endregion
 
-        public RedisListCache(IRedisConnectionMultiplexer redisRedisConnectionMultiplexer) : base(redisRedisConnectionMultiplexer)
-        {
-        }
+        #endregion
     }
 }

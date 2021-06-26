@@ -5,7 +5,7 @@ namespace Utility.Attributes
     [AttributeUsage(
         AttributeTargets.Parameter | AttributeTargets.Field |
         AttributeTargets.Property)]
-    public class TagAttribute : Attribute,IDescription
+    public class TagAttribute : Attribute, IDescription
     {
         public TagAttribute(string description)
         {

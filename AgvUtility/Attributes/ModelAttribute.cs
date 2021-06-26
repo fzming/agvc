@@ -2,12 +2,10 @@
 
 namespace Utility.Attributes
 {
-    
-
     [AttributeUsage(AttributeTargets.Property)]
     public class ModelAttribute : Attribute
     {
-        public ModelAttribute(string modelName,TextType type= TextType.Text,bool isPrimaryKey=false)
+        public ModelAttribute(string modelName, TextType type = TextType.Text, bool isPrimaryKey = false)
         {
             Name = modelName;
             TextType = type;
@@ -15,10 +13,9 @@ namespace Utility.Attributes
         }
 
         public string Name { get; set; }
-        public TextType TextType {
-            get;
-            set;
-        }
+
+        public TextType TextType { get; set; }
+
         public bool IsPrimaryKey { get; set; }
     }
 }

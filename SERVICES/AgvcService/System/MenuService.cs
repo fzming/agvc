@@ -9,7 +9,6 @@ using AgvcEntitys.System.Authority;
 using AgvcRepository.System.Interfaces;
 using AgvcRepository.System.Interfaces.Authority;
 using AgvcService.Organizations;
-using AgvcService.Organizations.Models;
 using AgvcService.System.Models;
 using AutoMapper;
 using CoreService;
@@ -18,7 +17,7 @@ using Utility.Extensions;
 namespace AgvcService.System
 {
     /// <summary>
-    /// 系统菜单服务实现
+    ///     系统菜单服务实现
     /// </summary>
     public class MenuService : AbstractService, IMenuService
     {
@@ -48,7 +47,6 @@ namespace AgvcService.System
                         .PreserveReferences()
                         .ReverseMap();
                 });
-
             });
         }
 
@@ -57,7 +55,7 @@ namespace AgvcService.System
         #region 查询
 
         /// <summary>
-        /// 根据指定的模块列表，返回菜单项目
+        ///     根据指定的模块列表，返回菜单项目
         /// </summary>
         /// <param name="modules">模块列表</param>
         /// <returns></returns>
@@ -65,30 +63,25 @@ namespace AgvcService.System
         {
             return MenuRepository.QueryModuleMenusAsync(modules);
         }
+
         /// <summary>
-        /// 获取机构所有菜单
+        ///     获取机构所有菜单
         /// </summary>
         /// <param name="orgId">机构ID</param>
         /// <returns></returns>
         public async Task<IEnumerable<Menu>> QueryOrgMenusAsync(string orgId)
         {
-
             var org = await OrgnizationService.GetOrgAsync(orgId);
-            if (org == null)
-            {
-                throw new Exception("用户所属机构不存在");
-            }
+            if (org == null) throw new Exception("用户所属机构不存在");
             var modules = org.Modules ?? Array.Empty<ModuleType>();
             if (org.PrimaryType == OrganizationType.System) //系统机构
-            {
                 modules = typeof(ModuleType).AsEnumerable<ModuleType>().ToArray(); //系统机构默认拥有所有模块
-            }
 
             return await QueryModuleMenusAsync(modules);
         }
 
         /// <summary>
-        /// 获取路由菜单
+        ///     获取路由菜单
         /// </summary>
         /// <param name="orgId">当前机构ID</param>
         /// <param name="roleId">当前角色ID</param>
@@ -107,21 +100,16 @@ namespace AgvcService.System
 
             var menus = (await QueryOrgMenusAsync(orgId)).ToList();
             var codes = new List<AuthorityCode>();
-            if (hasCode)
-            {
-                codes = (await AuthorityCodeRepository.FindAllAsync()).ToList();
-            }
+            if (hasCode) codes = (await AuthorityCodeRepository.FindAllAsync()).ToList();
 
             #endregion
+
             var isSupperRole = await AuthorityService.IsSupperRoleAsync(roleId);
 
             //授权模式下:授权的菜单不能超过当前操作人员角色的范围
             if (authMode)
-            {
-
                 if (!isSupperRole) //超级管理角色将跳过授权模式下的菜单控制
                 {
-
                     var authoritys = (await AuthorityService.GetUserAuthoritysAsync(roleId, userId)).ToList();
 
                     //限定：当前用户拥有的菜单范围
@@ -140,8 +128,6 @@ namespace AgvcService.System
                     }
                 }
 
-            }
-
             var rootMenus = menus.Where(p => p.PaMenuId.IsNullOrEmpty()).OrderByDescending(p => p.OrderIndex)
                 .ToList();
             var curRoleId = authMode ? authRoleId : roleId;
@@ -154,8 +140,9 @@ namespace AgvcService.System
 
             return dtoMenus;
         }
+
         /// <summary>
-        /// 创建菜单
+        ///     创建菜单
         /// </summary>
         /// <param name="menu"></param>
         /// <returns></returns>
@@ -163,33 +150,31 @@ namespace AgvcService.System
         {
             var entity = menu.MapTo(new Menu());
             entity.Id = string.Empty;
-            await this.MenuRepository.InsertAsync(entity);
+            await MenuRepository.InsertAsync(entity);
             return true;
         }
+
         /// <summary>
-        /// 删除菜单
+        ///     删除菜单
         /// </summary>
         /// <param name="menuId"></param>
         /// <returns></returns>
         public async Task<bool> DeleteMenuAsync(string menuId)
         {
-            var hasChildren = await this.MenuRepository.AnyAsync(p => p.PaMenuId == menuId);
+            var hasChildren = await MenuRepository.AnyAsync(p => p.PaMenuId == menuId);
             if (!hasChildren)
             {
-                var deleted =  await this.MenuRepository.DeleteAsync(menuId);
-                if (deleted)
-                {
-                    await AuthorityService.DeleteMenuCodesAsync(menuId);
-                }
+                var deleted = await MenuRepository.DeleteAsync(menuId);
+                if (deleted) await AuthorityService.DeleteMenuCodesAsync(menuId);
 
                 return deleted;
             }
 
             return false;
-
         }
+
         /// <summary>
-        /// 更新菜单
+        ///     更新菜单
         /// </summary>
         /// <param name="menu"></param>
         /// <returns></returns>
@@ -199,8 +184,9 @@ namespace AgvcService.System
             var entity = menu.MapTo(new Menu());
             return MenuRepository.ReplaceAsync(menu.Id, entity);
         }
+
         /// <summary>
-        /// 更新菜单的隶属模块列表
+        ///     更新菜单的隶属模块列表
         /// </summary>
         /// <param name="menuModule"></param>
         /// <returns></returns>
@@ -209,8 +195,9 @@ namespace AgvcService.System
             if (menuModule.MenuId.IsNullOrEmpty()) throw new Exception("菜单ID不能为空");
             return MenuRepository.UpdateAsync(menuModule.MenuId, p => p.Modules, menuModule.Modules);
         }
+
         /// <summary>
-        /// 更改菜单的同级排序
+        ///     更改菜单的同级排序
         /// </summary>
         /// <param name="menuId">菜单ID</param>
         /// <param name="direction">排序方向</param>
@@ -219,11 +206,10 @@ namespace AgvcService.System
         {
             var menu = await MenuRepository.GetAsync(menuId);
             var paid = menu.PaMenuId;
-            var sibblings = (await MenuRepository.FindAsync(p => p.PaMenuId == paid)).OrderByDescending(p => p.OrderIndex).ToList();
+            var sibblings = (await MenuRepository.FindAsync(p => p.PaMenuId == paid))
+                .OrderByDescending(p => p.OrderIndex).ToList();
             if (!sibblings.Any()) //没有兄弟节点，没有排序的意义
-            {
                 return false;
-            }
 
             var j = 0;
             //修正排序
@@ -232,17 +218,15 @@ namespace AgvcService.System
                 sibblings[j].OrderIndex = i;
                 j++;
             }
+
             //找出当前所处兄弟节点的位置索引
             var index = sibblings.FindIndex(p => p.Id == menu.Id);
             var menuIndex = menu.OrderIndex;
 
             switch (direction)
             {
-                case OrderDirection.Up://向上
-                    if (index == 0)
-                    {
-                        return false;
-                    }
+                case OrderDirection.Up: //向上
+                    if (index == 0) return false;
 
 
                     var prevIndex = sibblings[index - 1].OrderIndex;
@@ -250,12 +234,9 @@ namespace AgvcService.System
                     sibblings[index - 1].OrderIndex = menuIndex;
 
                     break;
-                case OrderDirection.Down://向下
+                case OrderDirection.Down: //向下
 
-                    if (index >= sibblings.Count - 1)
-                    {
-                        return false;
-                    }
+                    if (index >= sibblings.Count - 1) return false;
 
 
                     var nextIndex = sibblings[index + 1].OrderIndex;
@@ -272,7 +253,7 @@ namespace AgvcService.System
         }
 
         /// <summary>
-        /// 查找所有菜单
+        ///     查找所有菜单
         /// </summary>
         /// <returns></returns>
         public Task<IEnumerable<Menu>> FindAllMenusAsync()
@@ -287,21 +268,21 @@ namespace AgvcService.System
 
 
         /// <summary>
-        /// 递归获取子菜单
+        ///     递归获取子菜单
         /// </summary>
         /// <param name="menu">当前菜单</param>
         /// <param name="menus"></param>
         /// <param name="codes"></param>
         /// <param name="roleAuthorities">用户权限列表</param>
         /// <param name="roleId">当前用户角色</param>
-        private async Task RecursionChildrenMenu(RouteMenuDto menu, IEnumerable<Menu> menus, IReadOnlyCollection<AuthorityCode> codes,
+        private async Task RecursionChildrenMenu(RouteMenuDto menu, IEnumerable<Menu> menus,
+            IReadOnlyCollection<AuthorityCode> codes,
             IReadOnlyCollection<UserAuthority> roleAuthorities, string roleId)
         {
-
             var childrens = menus.Where(p => p.PaMenuId == menu.Id).OrderByDescending(p => p.OrderIndex).ToList();
             var menuHasAuthed = roleAuthorities.Any(p => p.MenuId == menu.Id);
 
-            menu.Meta.Roles = menuHasAuthed ? new[] { roleId } : Enumerable.Empty<string>().ToArray();
+            menu.Meta.Roles = menuHasAuthed ? new[] {roleId} : Enumerable.Empty<string>().ToArray();
             if (childrens.Any())
             {
                 var dtoChildrens = childrens
@@ -311,9 +292,9 @@ namespace AgvcService.System
                 menu.Children = dtoChildrens.ToArray();
 
 
-                var tasks = dtoChildrens.Select(child => RecursionChildrenMenu(child, menus, codes, roleAuthorities, roleId));
+                var tasks = dtoChildrens.Select(child =>
+                    RecursionChildrenMenu(child, menus, codes, roleAuthorities, roleId));
                 await Task.WhenAll(tasks);
-
             }
             else if (codes.Any())
             {
@@ -321,26 +302,20 @@ namespace AgvcService.System
 
                 var codeChildrens = codes.Where(p => p.MenuId == menu.Id).ToList();
                 if (codeChildrens.Any())
-                {
                     menu.Children = codeChildrens.Select(c => CreateMenuFromCode(c, roleAuthorities, roleId)).ToArray();
-                }
-
             }
         }
 
         private RouteMenuDto CreateMenuFromCode(AuthorityCode authorityCode,
             IReadOnlyCollection<UserAuthority> roleAuthorities, string roleId)
         {
-
             var roles = new List<string>();
             if (roleAuthorities.Any())
             {
                 var codeHasAuthed = roleAuthorities.Any(p => p.AuthCode == authorityCode.Code);
-                if (codeHasAuthed)
-                {
-                    roles.Add(roleId);
-                }
+                if (codeHasAuthed) roles.Add(roleId);
             }
+
             return new RouteMenuDto
             {
                 Id = authorityCode.Code,
@@ -355,8 +330,5 @@ namespace AgvcService.System
         }
 
         #endregion
-
-
-
     }
 }

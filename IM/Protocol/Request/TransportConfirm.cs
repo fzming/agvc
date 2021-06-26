@@ -1,6 +1,6 @@
 ﻿namespace Protocol.Request
 {
-    public class TransportConfirm:BaseRequest
+    public class TransportConfirm : BaseRequest
     {
         public string Goal { get; set; }
 

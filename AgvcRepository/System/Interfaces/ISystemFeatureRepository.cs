@@ -5,6 +5,5 @@ namespace AgvcRepository.System.Interfaces
 {
     public interface ISystemFeatureRepository : IRepository<SystemFeature>
     {
-        
     }
 }

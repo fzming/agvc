@@ -11,7 +11,7 @@ namespace CoreRepository.Kernel
                 return e;
 
             return e.Expression.NodeType == ExpressionType.MemberAccess
-                ? ((MemberExpression)e.Expression).GetRootMember()
+                ? ((MemberExpression) e.Expression).GetRootMember()
                 : null;
         }
 
@@ -42,11 +42,13 @@ namespace CoreRepository.Kernel
         {
             var parameter = Expression.Parameter(typeof(object), "local");
             var parameters = Expression.Parameter(typeof(object[]), "args");
-            var castExpression = Expression.Convert(parameter, topMember.Member.DeclaringType ?? throw new InvalidOperationException());
+            var castExpression = Expression.Convert(parameter,
+                topMember.Member.DeclaringType ?? throw new InvalidOperationException());
             var localExpression = topMember.Update(castExpression);
             var replaceExpression = ExpressionModifier.Replace(e, topMember, localExpression);
             replaceExpression = Expression.Convert(replaceExpression, typeof(object));
-            var compileExpression = Expression.Lambda<Func<object, object[], object>>(replaceExpression, parameter, parameters);
+            var compileExpression =
+                Expression.Lambda<Func<object, object[], object>>(replaceExpression, parameter, parameters);
             return compileExpression.Compile();
         }
 
@@ -55,21 +57,22 @@ namespace CoreRepository.Kernel
             var parameter = Expression.Parameter(typeof(object), "local");
             var parameters = Expression.Parameter(typeof(object[]), "args");
             var convertExpression = Expression.Convert(e, typeof(object));
-            var compileExpression = Expression.Lambda<Func<object, object[], object>>(convertExpression, parameter, parameters);
+            var compileExpression =
+                Expression.Lambda<Func<object, object[], object>>(convertExpression, parameter, parameters);
             return compileExpression.Compile();
         }
     }
 
     internal class ExpressionModifier : ExpressionVisitor
     {
+        private readonly Expression _newExpression;
+        private readonly Expression _oldExpression;
+
         public ExpressionModifier(Expression newExpression, Expression oldExpression)
         {
             _newExpression = newExpression;
             _oldExpression = oldExpression;
         }
-
-        private readonly Expression _newExpression;
-        private readonly Expression _oldExpression;
 
         public Expression Replace(Expression node)
         {

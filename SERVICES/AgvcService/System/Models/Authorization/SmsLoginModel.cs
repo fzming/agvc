@@ -9,6 +9,7 @@ namespace AgvcService.System.Models.Authorization
         public string LoginDomain { get; set; }
         public string LoginType { get; set; }
     }
+
     public class SmsLoginModel : CoreLoginModel
     {
         public string Mobile { get; set; }
@@ -23,6 +24,5 @@ namespace AgvcService.System.Models.Authorization
         public string UserName { get; set; }
         public string Password { get; set; }
         public string VaptchaToken { get; set; }
-
     }
 }

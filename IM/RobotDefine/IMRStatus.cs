@@ -27,4 +27,3 @@ namespace RobotDefine
         double Y { get; }
     }
 }
-

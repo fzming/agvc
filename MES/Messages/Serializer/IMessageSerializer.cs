@@ -6,13 +6,14 @@ namespace Messages.Serializer
     public interface IMessageSerializer : ISingletonDependency
     {
         /// <summary>
-        /// 反序列化
+        ///     反序列化
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
         IMessage Deserialize(string message);
+
         /// <summary>
-        /// 序列化
+        ///     序列化
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>

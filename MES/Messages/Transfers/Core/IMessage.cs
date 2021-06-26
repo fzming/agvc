@@ -3,16 +3,16 @@
     public interface IMessage
     {
         /// <summary>
-        /// Transaction ID
+        ///     Transaction ID
         /// </summary>
-        [Deserialization(5,0)]
+        [Deserialization(5, 0)]
         string trx_id { get; set; }
 
         /// <summary>
-        /// Transmission type
-        /// I:Input  O:Output
+        ///     Transmission type
+        ///     I:Input  O:Output
         /// </summary>
-        [Deserialization(1,1)]
+        [Deserialization(1, 1)]
         string type_id { get; set; }
     }
 }

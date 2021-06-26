@@ -3,21 +3,27 @@ using System.Linq.Expressions;
 
 namespace Utility.Helpers
 {
-
     public static class PredicateBuilder
     {
         /// <summary>
-        /// AND连接初始
+        ///     AND连接初始
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Expression<Func<T, bool>> True<T>() { return f => true; }
+        public static Expression<Func<T, bool>> True<T>()
+        {
+            return f => true;
+        }
+
         /// <summary>
-        /// OR连接初始
+        ///     OR连接初始
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Expression<Func<T, bool>> False<T>() { return f => false; }
+        public static Expression<Func<T, bool>> False<T>()
+        {
+            return f => false;
+        }
 
         public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> expr1,
             Expression<Func<T, bool>> expr2)

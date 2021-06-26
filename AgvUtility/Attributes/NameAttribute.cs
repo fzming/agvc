@@ -13,6 +13,5 @@ namespace Utility.Attributes
         }
 
         public string Description { get; }
-    } 
-    
+    }
 }
