@@ -13,11 +13,12 @@ namespace AgvcWorkFactory
     public class VirtualRobot : IDisposable, IVirtualRobot
     {
         private IWS WS { get; }
-
+        private AgvcConfig agvcConfig { get; }
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        public VirtualRobot(IWS ws)
+        public VirtualRobot(IWS ws, IAgvcConfiguration agvcConfiguration)
         {
             WS = ws;
+            agvcConfig = agvcConfiguration.GetConfig();
         }
 
         /// <summary>
@@ -44,6 +45,7 @@ namespace AgvcWorkFactory
         ///     请求更新实时状态
         /// </summary>
         public event MrRequestStatusRefreshEventHandler OnMrRequestStatusRefresh;
+        public event MrIdleEventHandler OnMrIdle;
 
         /// <summary>
         ///     请求异步更新MR状态
@@ -169,9 +171,9 @@ namespace AgvcWorkFactory
         {
             try
             {
-                _cancelTokenSource.Cancel(false);
-                _watchThread.Join();
-                _waitHandle.Close();
+                _cancelTokenSource?.Cancel(false);
+                _watchThread?.Join();
+                _waitHandle?.Close();
                 _watchThread = null;
             }
             catch
@@ -230,13 +232,14 @@ namespace AgvcWorkFactory
 
                 if ((task != null || rollUpdateStatus) && _tasks.Count > 0)
                 {
-                    //Thread.Sleep(300);
-                    Thread.Sleep(rollUpdateStatus ? 5000 : 500); //轮询为5秒一次
+                    Thread.Sleep(rollUpdateStatus ? agvcConfig.RobotIdleStatusInterval : agvcConfig.RobotWorkInterval); //轮询为5秒一次
                 }
                 else
                 {
-                    Console.WriteLine($"[{MRStatus.MRID}] 工作线程已休眠，等待任务。");
+                    Console.WriteLine($"[{MRStatus.MRID}] 闲置，等待任务。");
                     SetWorkingStatus(false);
+                    //触发闲置事件
+                    OnMrIdle?.Invoke(this, new MrIdArg { MRID = this.MRStatus.MRID });
                     _waitHandle.WaitOne();
                 }
             }
@@ -250,7 +253,8 @@ namespace AgvcWorkFactory
         {
             if (MRStatus.IOperatorStatus == IOperatorStatus.Docked) //当前正在充电
                 return CheckBattery(); //仅检查充电是否可以完毕
-            return !Working && CheckBattery() && (IsIdle() || IsInitialize());
+            var idle = !Working && (IsIdle() || IsInitialize());
+            return idle && CheckBattery();
         }
 
         /// <summary>
@@ -260,9 +264,10 @@ namespace AgvcWorkFactory
         /// </summary>
         private bool CheckBattery()
         {
-            if (MRStatus.Battery < 30) //电量不足[可配置]
+            Console.WriteLine($"[CheckBattery]{MRStatus.MRID} Battery:{MRStatus.Battery}");
+
+            if (MRStatus.Battery < agvcConfig.ChargePolicy.Battery) //电量不足[可配置]
             {
-                Console.WriteLine($"[CheckBattery]{MRStatus.MRID} Battery:{MRStatus.Battery}");
                 //命令MR去充电
                 if (!Docking && MRStatus.IOperatorStatus != IOperatorStatus.Docked)
                 {
@@ -279,7 +284,7 @@ namespace AgvcWorkFactory
             if (Docking)
             {
                 //当前正在充电中,且30%(充电前)<电量<70%,若充电前电量小于30%.不允许继续分派任务[可配置]
-                if (BeforeDockBattery < 30 && MRStatus.Battery < 70)
+                if (BeforeDockBattery < agvcConfig.ChargePolicy.IfDockBattery && MRStatus.Battery < agvcConfig.ChargePolicy.StillBattery)
                 {
                     Console.WriteLine($"充电中（保养策略）充电前：{BeforeDockBattery} 当前电量：{MRStatus.Battery}");
                     State = "充电中（保养策略）";

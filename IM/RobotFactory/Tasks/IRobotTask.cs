@@ -1,5 +1,4 @@
-﻿using AgvcWorkFactory.Interfaces;
-using Messages.Transfers.Core;
+﻿using Messages.Transfers.Core;
 
 namespace AgvcWorkFactory.Tasks
 {

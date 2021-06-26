@@ -7,6 +7,7 @@ namespace AgvcWorkFactory
     public delegate void MrStatusErrorEventHandler(object sender, MrStatusErrorArg e);
 
     public delegate void MrRequestStatusRefreshEventHandler(object sender, MrIdArg e);
+    public delegate void MrIdleEventHandler(object sender, MrIdArg e);
 
     public class MrIdArg : EventArgs
     {

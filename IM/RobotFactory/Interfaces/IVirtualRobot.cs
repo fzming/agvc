@@ -32,7 +32,10 @@ namespace AgvcWorkFactory.Interfaces
         ///     请求更新实时状态
         /// </summary>
         event MrRequestStatusRefreshEventHandler OnMrRequestStatusRefresh;
-
+        /// <summary>
+        /// 当MR完成了所有队列任务时触发
+        /// </summary>
+        event MrIdleEventHandler OnMrIdle;
         /// <summary>
         ///     请求异步更新MR状态
         /// </summary>

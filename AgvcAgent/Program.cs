@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using AgvcService.Organizations;
 using AgvcWorkFactory.Interfaces;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -10,25 +9,35 @@ namespace AgvcAgent
 {
     internal class Program
     {
+        private static IConfiguration _configuration;
+
         private static void Main(string[] args)
         {
+              _configuration = CreateConfiguration();
             var webHost = CreateWebHostBuilder(args).Build();
             DependencyInjection.ServiceProvider = webHost.Services;
-            // var orgRepo = DependencyInjection.GetService<IOrganizationRepository>();
-            var orgService = DependencyInjection.GetService<IOrgnizationService>();
+           
             var agvc = DependencyInjection.GetService<IAgvcCenter>();
             agvc.Run();
             webHost.Run();
             agvc.Stop();
         }
 
+        static IConfiguration CreateConfiguration()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                //.AddJsonFile("hosting.json", optional: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                //.AddCommandLine(args)
+                //.AddEnvironmentVariables()
+                .Build();
+            return config;
+        }
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
-            return WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration(builder =>
-                {
-                    builder.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json");
-                })
-                .UseUrls("http://*:5000;http://localhost:5001;")
+            return WebHost.CreateDefaultBuilder(args).UseConfiguration(_configuration)
+                .UseUrls(_configuration.GetValue<string>("AGVC.ListenUrls"))
                 .ConfigureServices(DependencyInjection.ConfigureServices)
                 .ConfigureKestrel((context, options) => { options.Limits.MaxRequestBodySize = 20000000; })
                 .ConfigureLogging((hostingContext, logging) =>
@@ -45,7 +54,7 @@ namespace AgvcAgent
 
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddConsole();
-                    logging.AddDebug();
+                    //logging.AddDebug();
                     //  logging.AddEventSourceLogger();
 
                     // if (isWindows)

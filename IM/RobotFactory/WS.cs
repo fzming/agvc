@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using AgvcWorkFactory.Interfaces;
 using Protocol;
 using Protocol.Mission;
 using RobotDefine;
@@ -18,7 +19,13 @@ namespace AgvcWorkFactory
         /// <summary>
         ///     IM URI地址
         /// </summary>
-        private const string header = "http://localhost:1025/IMServer/Dispatch?json=";
+        private readonly string _header;
+
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public WS(IAgvcConfiguration agvcConfiguration)
+        {
+            _header = agvcConfiguration.GetConfig().IMUrl;
+        } 
 
         /// <summary>
         ///     執行Mission,Query,Interrupt
@@ -33,7 +40,7 @@ namespace AgvcWorkFactory
             {
                 try
                 {
-                    var bytes = client.DownloadData(header + json);
+                    var bytes = client.DownloadData(_header + json);
                     char[] trimChars = {'"'};
                     var str = Encoding.ASCII.GetString(bytes).Trim(trimChars).Replace("\\\"", "\"");
                     return str.DeserializeJsonToObject() as T;
@@ -59,7 +66,7 @@ namespace AgvcWorkFactory
             {
                 try
                 {
-                    var bytes = await client.DownloadDataTaskAsync(header + json);
+                    var bytes = await client.DownloadDataTaskAsync(_header + json);
                     char[] trimChars = {'"'};
                     var str = Encoding.ASCII.GetString(bytes).Trim(trimChars).Replace("\\\"", "\"");
                     return str.DeserializeJsonToObject() as T;

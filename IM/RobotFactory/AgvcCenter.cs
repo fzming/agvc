@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using AgvcWorkFactory.Interfaces;
-using RobotDefine;
 
 namespace AgvcWorkFactory
 {

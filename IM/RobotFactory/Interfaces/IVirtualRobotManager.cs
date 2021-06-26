@@ -26,7 +26,10 @@ namespace AgvcWorkFactory.Interfaces
         /// <param name="MRID"></param>
         /// <returns></returns>
         MRStatus GetMRStatusSync(string MRID);
-
+        /// <summary>
+        /// 当MR完成了所有队列任务时触发
+        /// </summary>
+        event MrIdleEventHandler OnMrIdle;
         IEnumerable<string> ReadMrListFromIm();
         void CreateVirtualRobot(string mrId,Action<IVirtualRobot> createAction);
         IEnumerable<IVirtualRobot> GetAllVirtualRobots();

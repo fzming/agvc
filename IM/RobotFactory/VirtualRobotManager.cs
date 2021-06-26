@@ -90,6 +90,11 @@ namespace AgvcWorkFactory
         }
 
         /// <summary>
+        /// 当MR完成了所有队列任务时触发
+        /// </summary>
+        public event MrIdleEventHandler OnMrIdle;
+
+        /// <summary>
         ///     调用IM读取所有在线MR列表
         /// </summary>
         /// <returns></returns>
@@ -126,11 +131,13 @@ namespace AgvcWorkFactory
                 if (robot!=null)
                 {
                     robot.OnMrRequestStatusRefresh += (sender, e) => { TryRefreshMRStatus(e.MRID); };
+                    if (OnMrIdle != null) robot.OnMrIdle += OnMrIdle;
                     VirtualRobots.Add(robot);
                 }
               
             }
         }
+
 
         /// <summary>
         ///    尝试机器状态数据(异步)
