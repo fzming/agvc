@@ -1,0 +1,18 @@
+{
+  "from": [
+    {
+      "BoxID": "1",
+      "Goal": "STK1", //STOCK OR EQP ID
+      "Port": 1, //STOCK PORT OR EQP PORT
+      "WaferCount": 10
+    }
+  ],
+  "to": [
+    {
+      "BoxID": "1",
+      "Goal": "EQP1", //STOCK OR EQP ID
+      "Port": 2, //STOCK PORT OR EQP PORT
+      "WaferCount": 10
+    }
+  ]
+}

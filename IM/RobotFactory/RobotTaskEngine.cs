@@ -91,8 +91,8 @@ namespace AgvcWorkFactory
                 if (robotTask != null)
                 {
                     //userTask -> RobotTask
-                    robotTask.FromGoals = task.FromGoals;
-                    robotTask.ToGoals = task.ToGoals;
+                    robotTask.Froms = task.Froms;
+                    robotTask.Tos = task.Tos;
                     AddTask(robotTask);
                 }
             }

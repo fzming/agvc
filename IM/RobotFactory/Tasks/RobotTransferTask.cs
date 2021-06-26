@@ -38,7 +38,7 @@ namespace AgvcWorkFactory.Tasks
         {
             var trx = message as Tx501i;
 
-            FromGoals.Add(new TaskGoal
+            Froms.Add(new TaskGoal
             {
                 BoxID = trx.kemlot_id.Trim(), //货物
                 Goal = trx.eqp_from, //目标Stock或EQP 名称
@@ -46,7 +46,7 @@ namespace AgvcWorkFactory.Tasks
                 WaferCount = trx.cur_sublot_wafcnt.ToInt()
             });
 
-            ToGoals.Add(new TaskGoal
+            Tos.Add(new TaskGoal
                 {
                     BoxID = trx.kemlot_id.Trim(), //货物
                     Goal = trx.eqp_to, //目标Stock或EQP 名称

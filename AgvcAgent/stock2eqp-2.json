@@ -1,0 +1,32 @@
+{
+  /*从STK1-1,STK2-2处Pick*/
+  "from": [
+    {
+      "BoxID": "1",
+      "Goal": "STK1", //STOCK OR EQP ID
+      "Port": 1, //STOCK PORT OR EQP PORT
+      "WaferCount": 10
+    },
+    {
+      "BoxID": "2",
+      "Goal": "STK2", //STOCK OR EQP ID
+      "Port": 2, //STOCK PORT OR EQP PORT
+      "WaferCount": 10
+    }
+  ],
+  /*从EQP1-2,EQP2-1处Drop*/
+  "to": [
+    {
+      "BoxID": "1",
+      "Goal": "EQP1", //STOCK OR EQP ID
+      "Port": 2, //STOCK PORT OR EQP PORT
+      "WaferCount": 10
+    },
+    {
+      "BoxID": "2",
+      "Goal": "EQP2", //STOCK OR EQP ID
+      "Port": 1, //STOCK PORT OR EQP PORT
+      "WaferCount": 10
+    }
+  ]
+}

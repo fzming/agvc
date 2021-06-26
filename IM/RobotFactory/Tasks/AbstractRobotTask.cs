@@ -65,12 +65,12 @@ namespace AgvcWorkFactory.Tasks
         /// <summary>
         ///     Froms
         /// </summary>
-        public List<TaskGoal> FromGoals { get; set; } = new();
+        public List<TaskGoal> Froms { get; set; } = new();
 
         /// <summary>
         ///     Tos
         /// </summary>
-        public List<TaskGoal> ToGoals { get; set; } = new();
+        public List<TaskGoal> Tos { get; set; } = new();
 
         /// <summary>
         ///     开始执行
@@ -119,7 +119,7 @@ namespace AgvcWorkFactory.Tasks
         {
             //from
             var index = 0;
-            foreach (var fromGoal in FromGoals)
+            foreach (var fromGoal in Froms)
             {
                 index++;
                 OnRunFromTask(fromGoal, index);
@@ -127,7 +127,7 @@ namespace AgvcWorkFactory.Tasks
 
             //to
             index = 0;
-            foreach (var toGoal in ToGoals)
+            foreach (var toGoal in Tos)
             {
                 index++;
                 OnRunToTask(toGoal, index);

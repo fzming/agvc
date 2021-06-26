@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using AgvcWorkFactory.Interfaces;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +14,9 @@ namespace AgvcAgent
 
         private static void Main(string[] args)
         {
+            Console.Title = "AgvcAgentV1.0";
+            //Console.ForegroundColor = ConsoleColor.Green;
+
               _configuration = CreateConfiguration();
             var webHost = CreateWebHostBuilder(args).Build();
             DependencyInjection.ServiceProvider = webHost.Services;

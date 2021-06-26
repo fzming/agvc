@@ -18,12 +18,12 @@ namespace AgvcWorkFactory.Tasks
         /// <summary>
         ///     Froms
         /// </summary>
-        List<TaskGoal> FromGoals { get; set; }
+        List<TaskGoal> Froms { get; set; }
 
         /// <summary>
         ///     Tos
         /// </summary>
-        List<TaskGoal> ToGoals { get; set; }
+        List<TaskGoal> Tos { get; set; }
 
     }
 }

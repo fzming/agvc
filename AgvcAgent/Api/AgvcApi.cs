@@ -1,7 +1,11 @@
-﻿using AgvcAgent.Api.Filters.GlobalFilters;
+﻿using System.Collections.Generic;
+using AgvcAgent.Api.Filters.GlobalFilters;
 using AgvcWorkFactory.Interfaces;
+using AgvcWorkFactory.Tasks;
 using Messages.Serializer;
+using Messages.Transfers.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Protocol;
 using Protocol.Query;
 using Serialize;
@@ -29,15 +33,34 @@ namespace AgvcAgent.Api
         {
             return "Abc";
         }
-
-        [Route("test2")]
-        public string test2()
+        /// <summary>
+        /// 测试人工任务
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="mrid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("task")]
+        public bool testFromTo(string file, string mrid)
         {
-            return "Abc";
+            var builder = new ConfigurationBuilder();
+            builder.AddJsonFile($"{file}.json", optional: false, reloadOnChange: true);
+            var configuration = builder.Build();
+            var froms = configuration.GetSection("from").Get<List<TaskGoal>>();
+            var tos = configuration.GetSection("to").Get<List<TaskGoal>>();
+
+            var userTask = new UserTask()
+            {
+                MRID = mrid,
+                Froms = froms,
+                Tos = tos,
+            };
+            TaskEngine.AcceptUserTask(userTask);
+            return true;
         }
 
         [Route("tx501i")]
-        public string tx501i(string mrid)
+        public IMessage tx501i(string mrid)
         {
             //測試任務
             var mqMessage =
@@ -45,7 +68,7 @@ namespace AgvcAgent.Api
 
             var message = MessageParser.Deserialize(mqMessage);
             TaskEngine.AcceptMessage(message, mrid);
-            return mqMessage;
+            return message;
         }
 
         /// <summary>

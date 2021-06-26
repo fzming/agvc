@@ -25,11 +25,11 @@ namespace AgvcWorkFactory.Tasks
         /// <summary>
         ///     Froms 定义
         /// </summary>
-        public List<TaskGoal> FromGoals { get; set; }
+        public List<TaskGoal> Froms { get; set; }
 
         /// <summary>
         ///     Tos 定义
         /// </summary>
-        public List<TaskGoal> ToGoals { get; set; }
+        public List<TaskGoal> Tos { get; set; }
     }
 }
