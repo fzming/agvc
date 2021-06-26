@@ -24,7 +24,7 @@ namespace AgvcRepository.System
             return FirstAsync(p => p.OrgId == orgId && p.SysFeatureId == sysFeatureId);
         }
 
-        protected OrganizationFeatureValueRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public OrganizationFeatureValueRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

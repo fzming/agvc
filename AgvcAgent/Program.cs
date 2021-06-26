@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using AgvcService.Organizations;
 using AgvcWorkFactory.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,8 @@ namespace AgvcAgent
         {
             var webHost = CreateWebHostBuilder(args).Build();
             DependencyInjection.ServiceProvider = webHost.Services;
+            // var orgRepo = DependencyInjection.GetService<IOrganizationRepository>();
+            var orgService = DependencyInjection.GetService<IOrgnizationService>();
             var agvc = DependencyInjection.GetService<IAgvcCenter>();
             agvc.Run();
             webHost.Run();

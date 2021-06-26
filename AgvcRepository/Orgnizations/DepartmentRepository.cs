@@ -7,7 +7,7 @@ namespace AgvcRepository.Orgnizations
 
     public class DepartmentRepository : MongoRepository<Department>, IDepartmentRepository
     {
-        protected DepartmentRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public DepartmentRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

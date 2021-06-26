@@ -9,7 +9,7 @@ namespace AgvcRepository.System.Authority
     /// </summary>
     public class AuthorityCodeRepository:MongoRepository<AuthorityCode>,IAuthorityCodeRepository
     {
-        protected AuthorityCodeRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public AuthorityCodeRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

@@ -14,7 +14,7 @@ namespace AgvcRepository.Users
 {
     public class AccountRepository : MongoRepository<Account>, IAccountRepository
     {
-        protected AccountRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public AccountRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
         public Task<PageResult<Account>> AdvQueryAccountUsersAsync(AccountUserPageQuery userPageQuery, string orgId)

@@ -16,7 +16,7 @@ namespace AgvcRepository.System.Authority
             return UpdateAsync(Filter.In(p => p.Id, denyAuthoritys), p => p.UserDeny, deny);
         }
 
-        protected UserAuthorityRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public UserAuthorityRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

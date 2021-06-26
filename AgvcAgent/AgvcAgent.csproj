@@ -6,11 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Api\OAuth\OpenAuthorizationServerProvider.cs" />
-    <Compile Remove="Api\OAuth\OpenRefreshTokenProvider.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
@@ -20,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AgvcRepository\AgvcRepository.csproj" />
     <ProjectReference Include="..\AgvUtility\Utility.csproj" />
     <ProjectReference Include="..\IM\Protocol\Protocol.csproj" />
     <ProjectReference Include="..\IM\RobotFactory\AgvcWorkFactory.csproj" />
@@ -32,10 +26,6 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Api\OAuth\" />
   </ItemGroup>
 
 </Project>

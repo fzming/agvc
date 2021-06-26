@@ -22,7 +22,7 @@ namespace AgvcRepository.Orgnizations
             return Collection.UpdateManyAsync(FilterDefinition<Organization>.Empty, update);
         }
 
-        protected OrganizationRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public OrganizationRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

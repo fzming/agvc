@@ -23,7 +23,7 @@ namespace AgvcRepository
         #endregion
     }
 
-    public interface IMrRepository : IMongoRepository<MrEntity>, ISingletonDependency
+    public interface IMrRepository : IRepository<MrEntity>
     {
         Task CreateAsync(MrEntity mrEntity);
     }

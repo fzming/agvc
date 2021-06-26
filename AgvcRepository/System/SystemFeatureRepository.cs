@@ -7,7 +7,7 @@ namespace AgvcRepository.System
 
     public class SystemFeatureRepository : MongoRepository<SystemFeature>, ISystemFeatureRepository
     {
-        protected SystemFeatureRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public SystemFeatureRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

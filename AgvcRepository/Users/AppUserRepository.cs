@@ -6,7 +6,7 @@ namespace AgvcRepository.Users
 {
     public class AppUserRepository : MongoRepository<AppUser>, IAppUserRepository
     {
-        protected AppUserRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public AppUserRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

@@ -17,7 +17,7 @@ namespace AgvcRepository.Users
     {
         private IAccountRepository AccountRepository { get; }
 
-        protected AccountBalanceRepository(IMongoUnitOfWork unitOfWork, IAccountRepository accountRepository) : base(unitOfWork)
+        public AccountBalanceRepository(IMongoUnitOfWork unitOfWork, IAccountRepository accountRepository) : base(unitOfWork)
         {
             AccountRepository = accountRepository;
         }

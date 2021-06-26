@@ -6,7 +6,7 @@ namespace AgvcRepository.Orgnizations
 {
     public class BranchCompanyRepository:MongoRepository<BranchCompany>,IBranchCompanyRepository
     {
-        protected BranchCompanyRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public BranchCompanyRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

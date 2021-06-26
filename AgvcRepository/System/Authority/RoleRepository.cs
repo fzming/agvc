@@ -9,7 +9,7 @@ namespace AgvcRepository.System.Authority
     /// </summary>
     public class RoleRepository : MongoRepository<Role>, IRoleRepository
     {
-        protected RoleRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public RoleRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

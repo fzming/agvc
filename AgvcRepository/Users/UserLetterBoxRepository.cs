@@ -60,7 +60,7 @@ namespace AgvcRepository.Users
            return rs.IsAcknowledged;
         }
 
-        protected UserLetterBoxRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public UserLetterBoxRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

@@ -23,7 +23,7 @@ namespace AgvcRepository.System
                 p => p.CreatedOn, true);
         }
 
-        protected SystemUserRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public SystemUserRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

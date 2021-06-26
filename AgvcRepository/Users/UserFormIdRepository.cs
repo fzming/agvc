@@ -6,7 +6,7 @@ namespace AgvcRepository.Users
 {
     public class UserFormIdRepository : MongoRepository<UserFormId>, IUserFormIdRepository
     {
-        protected UserFormIdRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public UserFormIdRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

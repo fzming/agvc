@@ -61,7 +61,7 @@ namespace AgvcRepository.System
             );
         }
 
-        protected MenuRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
+        public MenuRepository(IMongoUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }
