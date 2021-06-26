@@ -10,6 +10,8 @@ namespace AgvcWorkFactory
     /// </summary>
     public class RobotStatusWatcher : IDisposable, IRobotStatusWatcher
     {
+        private IWS Ws { get; }
+
         /// <summary>
         ///     线程取消句柄
         /// </summary>
@@ -36,6 +38,12 @@ namespace AgvcWorkFactory
         private readonly object syncRoot = new();
 
         #region IDisposable
+
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public RobotStatusWatcher(IWS ws)
+        {
+            Ws = ws;
+        }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public void Dispose()
@@ -109,7 +117,7 @@ namespace AgvcWorkFactory
                         mrid = queue.Dequeue();
                         //调用IM WS 更新MR状态
                         // Console.WriteLine($"[StatusWatcher->调用IM WS 更新MR({mrid})状态]");
-                        var mrStatus = WS.GetMRStatus(mrid);
+                        var mrStatus = Ws.GetMRStatus(mrid);
                         if (mrStatus != null)
                             MrStatusReceived?.Invoke(this, new MrStatusEventArg
                             {

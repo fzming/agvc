@@ -6,22 +6,18 @@ namespace AgvcWorkFactory.Tasks
     public interface IRobotTask : ITask
     {
         /// <summary>
-        ///     路径类型
+        /// 路径类型
         /// </summary>
         TaskPathType PathType { get; set; }
-
         /// <summary>
-        ///     任务类型
+        /// 任务形式(只读)
         /// </summary>
-        RobotTaskType TaskType { get; set; }
-
+        RobotTaskType TaskType { get; }
         /// <summary>
         ///     设置MES->AGVC TX501i消息
         /// </summary>
         /// <param name="message"></param>
         void AddTrxMessage(IMessage message);
-
-        void SetAgvReporter(IAgvReporter agvReporter);
 
         /// <summary>
         ///     执行任务

@@ -1,4 +1,5 @@
 ﻿using System;
+using AgvcWorkFactory.Interfaces;
 using Messages.Transfers;
 using Messages.Transfers.Core;
 using Protocol.Mission;
@@ -10,9 +11,12 @@ namespace AgvcWorkFactory.Tasks
     /// <summary>
     ///     Robot搬运指令(STK->EQP，EQP->STK,EQP->EQP,STK->STK)
     /// </summary>
-    [TaskType(RobotTaskType.Transfer)]
     public class RobotTransferTask : AbstractRobotTask
     {
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public RobotTransferTask(IAgvReporter agvReporter, IWS ws) : base(agvReporter, ws)
+        {
+        }
         /*
          *
          *  EQP1       <==>  STK2
@@ -24,6 +28,11 @@ namespace AgvcWorkFactory.Tasks
          */
 
         #region Overrides of RobotTask
+
+        /// <summary>
+        ///     任务类型
+        /// </summary>
+        public override RobotTaskType TaskType => RobotTaskType.Transfer;
 
         protected override void OnTrxMessageAdded(IMessage message)
         {

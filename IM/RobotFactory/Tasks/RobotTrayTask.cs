@@ -1,13 +1,18 @@
-﻿using Messages.Transfers.Core;
+﻿using AgvcWorkFactory.Interfaces;
+using Messages.Transfers.Core;
 
 namespace AgvcWorkFactory.Tasks
 {
     /// <summary>
     ///     晶棒搬运任务
     /// </summary>
-    [TaskType(RobotTaskType.Tray)]
     public class RobotTrayTask : AbstractRobotTask
     {
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public RobotTrayTask(IAgvReporter agvReporter, IWS ws) : base(agvReporter, ws)
+        {
+        }
+
         public override void ExecuteFromToRules()
         {
             base.ExecuteFromToRules();
@@ -28,6 +33,11 @@ namespace AgvcWorkFactory.Tasks
         protected override void OnRunToTask(TaskGoal goal, int index)
         {
         }
+
+        /// <summary>
+        ///     任务类型
+        /// </summary>
+        public override RobotTaskType TaskType => RobotTaskType.Tray;
 
         protected override void OnTrxMessageAdded(IMessage message)
         {

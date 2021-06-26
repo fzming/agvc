@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AgvcWorkFactory.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Protocol.Query;
 using Utility.Helpers;
 using MRStatus = RobotDefine.MRStatus;
@@ -13,10 +14,14 @@ namespace AgvcWorkFactory
     /// </summary>
     public class VirtualRobotManager : IVirtualRobotManager
     {
+        private IWS WS { get; }
+        private IServiceProvider ServiceProvider { get; }
         private readonly IRobotStatusWatcher _statusWatcher;
-
-        public VirtualRobotManager(IRobotStatusWatcher statusWatcher)
+        private readonly object locker = new object();
+        public VirtualRobotManager(IRobotStatusWatcher statusWatcher, IWS ws, IServiceProvider serviceProvider)
         {
+            WS = ws;
+            ServiceProvider = serviceProvider;
             _statusWatcher = statusWatcher;
             _statusWatcher.MrStatusReceived += StatusWatcher_MrStatusReceived1;
         }
@@ -24,14 +29,14 @@ namespace AgvcWorkFactory
         /// <summary>
         ///     当前虚拟机器人列表
         /// </summary>
-        private List<VirtualRobot> VirtualRobots { get; } = new();
+        private List<IVirtualRobot> VirtualRobots { get; } = new();
 
         /// <summary>
         ///     根据MRID查找指定机器人
         /// </summary>
         /// <param name="MRID"></param>
         /// <returns></returns>
-        public VirtualRobot FindRobot(string MRID)
+        public IVirtualRobot FindRobot(string MRID)
         {
             return VirtualRobots.FirstOrDefault(p => p?.MRStatus.MRID == MRID);
         }
@@ -40,18 +45,21 @@ namespace AgvcWorkFactory
         ///     查找空闲机器人
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<VirtualRobot> FindIdleRobots()
+        public IEnumerable<IVirtualRobot> FindIdleRobots()
         {
-            var idleRobots = new List<VirtualRobot>();
-            Console.WriteLine("-----------------FindIdleRobots-------------------");
-            VirtualRobots.ForEach(robot =>
+            lock (locker)
             {
-                Console.WriteLine(
-                    $"-[{robot.MRStatus.MRID}] TaskCount:{robot.TaskCount} Idle:{robot.IsIdle()} Working:{robot.Working} State:{robot.State}");
-                if (robot.IsRobotReadyWork()) idleRobots.Add(robot);
-            });
-            Console.WriteLine("--------------------------------------------------");
-            return idleRobots;
+                var idleRobots = new List<IVirtualRobot>();
+                Console.WriteLine("-----------------FindIdleRobots-------------------");
+                VirtualRobots.ForEach(robot =>
+                {
+                    Console.WriteLine(
+                        $"-[{robot.MRStatus.MRID}] TaskCount:{robot.TaskCount} Idle:{robot.IsIdle()} Working:{robot.Working} State:{robot.State}");
+                    if (robot.IsRobotReadyWork()) idleRobots.Add(robot);
+                });
+                Console.WriteLine("--------------------------------------------------");
+                return idleRobots;
+            }
         }
 
         /// <summary>
@@ -69,10 +77,6 @@ namespace AgvcWorkFactory
         /// <returns></returns>
         public MRStatus GetMRStatusSync(string MRID)
         {
-            // var response = WS.Dispatch<Protocol.Query.MRStatus.Response>(new Protocol.Query.MRStatus
-            // {
-            //     MRID = MRID
-            // });
             var response = AsyncHelper.RunSync(() => WS.DispatchAsync<Protocol.Query.MRStatus.Response>(
                 new Protocol.Query.MRStatus
                 {
@@ -91,13 +95,45 @@ namespace AgvcWorkFactory
         /// <returns></returns>
         public IEnumerable<string> ReadMrListFromIm()
         {
-            var response = AsyncHelper.RunSync(() => WS.DispatchAsync<MRList.Response>(new MRList()));
-
-            return response?.MRIDs ?? Enumerable.Empty<string>();
+            lock (locker)
+            {
+                var response = AsyncHelper.RunSync(() => WS.DispatchAsync<MRList.Response>(new MRList()));
+                return response?.MRIDs ?? Enumerable.Empty<string>();
+            }
         }
 
         /// <summary>
-        ///     尝试机器状态数据(异步)
+        /// 添加机器人
+        /// 注意:MRID必须唯一
+        /// </summary>
+        /// <param name="mrId"></param>
+        /// <param name="createAction"></param>
+        public void CreateVirtualRobot(string mrId, Action<IVirtualRobot> createAction)
+        {
+            lock (locker)
+            {
+                IVirtualRobot robot = null;
+                if (FindRobot(mrId) == null)
+                {
+                    robot = ServiceProvider.GetService<IVirtualRobot>();
+                    robot.MRStatus = new MRStatus
+                    {
+                        MRID = mrId
+                    };
+                    createAction?.Invoke(robot);
+                }
+
+                if (robot!=null)
+                {
+                    robot.OnMrRequestStatusRefresh += (sender, e) => { TryRefreshMRStatus(e.MRID); };
+                    VirtualRobots.Add(robot);
+                }
+              
+            }
+        }
+
+        /// <summary>
+        ///    尝试机器状态数据(异步)
         /// </summary>
         public void TryRefreshMRStatus(string MRID)
         {
@@ -105,24 +141,10 @@ namespace AgvcWorkFactory
         }
 
         /// <summary>
-        ///     添加机器人
-        ///     注意:MRID必须唯一
-        /// </summary>
-        /// <param name="virtualRobot"></param>
-        public void AddVirtualRobot(VirtualRobot virtualRobot)
-        {
-            if (FindRobot(virtualRobot.MRStatus.MRID) == null)
-            {
-                virtualRobot.OnMrRequestStatusRefresh += (sender, e) => { TryRefreshMRStatus(e.MRID); };
-                VirtualRobots.Add(virtualRobot);
-            }
-        }
-
-        /// <summary>
         ///     获取当前的机器人列表
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<VirtualRobot> GetAllVirtualRobots()
+        public IEnumerable<IVirtualRobot> GetAllVirtualRobots()
         {
             return VirtualRobots;
         }
@@ -132,7 +154,7 @@ namespace AgvcWorkFactory
             // Console.WriteLine("[StatusWatcher_MrStatusReceived]");
             // Console.WriteLine(e.MrStatus.ToJson());
             var robot = FindRobot(e.MrStatus.MRID);
-            robot?.OnMRStatusChange(e.MrStatus);
+            robot?.SetMRStatus(e.MrStatus);
         }
     }
 }

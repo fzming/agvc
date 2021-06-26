@@ -13,10 +13,24 @@ using Utility.Helpers;
 namespace AgvcWorkFactory.Tasks
 {
     /// <summary>
-    ///     机器人任务抽象基类
+    ///  机器人任务抽象基类
     /// </summary>
     public abstract class AbstractRobotTask : IRobotTask
     {
+        #region IOC
+
+        private IAgvReporter AgvReporter { get; }
+        private IWS Ws { get; }
+
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        protected AbstractRobotTask(IAgvReporter agvReporter,IWS ws)
+        {
+            AgvReporter = agvReporter;
+            Ws = ws;
+        }
+
+        #endregion
+
         /// <summary>
         ///     Transfer Request [TX501I]
         /// </summary>
@@ -78,7 +92,7 @@ namespace AgvcWorkFactory.Tasks
         /// <summary>
         ///     任务类型
         /// </summary>
-        public RobotTaskType TaskType { get; set; }
+        public abstract RobotTaskType TaskType { get;  }
 
         /// <summary>
         ///     当MES TX501 请求消息被设置时.需要具体任务实体自行处理,
@@ -140,7 +154,7 @@ namespace AgvcWorkFactory.Tasks
             var agvError = false;
             var reportKey = reportTask.GetKey();
             Thread.Sleep(10);
-            if (_agvReporter.TryAddWatch(reportTask)) //IM Report是不受控制的。有可能这里还没有AddWatch,通知却已经到达了。
+            if (AgvReporter.TryAddWatch(reportTask)) //IM Report是不受控制的。有可能这里还没有AddWatch,通知却已经到达了。
                 while (reportTask.Report == null && !agvError)
                 {
                     VirtualRobot.State = $"等待AGV信号：{reportKey}中";
@@ -162,13 +176,13 @@ namespace AgvcWorkFactory.Tasks
                 }
 
             //已经成功Report
-            var report = _agvReporter.GetReport(reportKey);
+            var report = AgvReporter.GetReport(reportKey);
             if (report != null)
             {
                 if (report is MissionDone done && !string.IsNullOrEmpty(done.Error)) //正对MissionDone特殊判断
                     throw new Exception($"MissionFail:{done.Error}");
                 Console.WriteLine($"<<OK>><<{reportKey}>> 实际耗时：{reportTask.Ms} ms");
-                _agvReporter.RemoveWatch(reportKey);
+                AgvReporter.RemoveWatch(reportKey);
             }
             else
             {
@@ -186,8 +200,8 @@ namespace AgvcWorkFactory.Tasks
         {
             mission.MRID = MRID;
             mission.MissionID = Id;
-
-            return AsyncHelper.RunSync(() => { return WS.DispatchAsync<BaseMission.Response>(mission); });
+             
+            return AsyncHelper.RunSync(() => { return Ws.DispatchAsync<BaseMission.Response>(mission); });
         }
 
         /// <summary>
@@ -199,21 +213,6 @@ namespace AgvcWorkFactory.Tasks
             //todo:由于尚未对接MES 的IBM MQ,
             //暂时不写
         }
-
-        #region Agv Reporter
-
-        /// <summary>
-        ///     设置AgvReporter
-        /// </summary>
-        /// <param name="agvReporter"></param>
-        public void SetAgvReporter(IAgvReporter agvReporter)
-        {
-            _agvReporter = agvReporter;
-        }
-
-        private IAgvReporter _agvReporter { get; set; }
-
-        #endregion
 
         #region OptionalReportTimeouts
 

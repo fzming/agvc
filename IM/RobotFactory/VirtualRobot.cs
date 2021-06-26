@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using AgvcWorkFactory.Interfaces;
 using AgvcWorkFactory.Tasks;
 using RobotDefine;
 
@@ -9,8 +10,16 @@ namespace AgvcWorkFactory
     /// <summary>
     ///     虚拟机器人
     /// </summary>
-    public class VirtualRobot : IDisposable
+    public class VirtualRobot : IDisposable, IVirtualRobot
     {
+        private IWS WS { get; }
+
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public VirtualRobot(IWS ws)
+        {
+            WS = ws;
+        }
+
         /// <summary>
         ///     机器人实时状态
         /// </summary>
@@ -19,7 +28,7 @@ namespace AgvcWorkFactory
         /// <summary>
         ///     充电前電量百分
         /// </summary>
-        public double BeforeDockBattery { get; set; }
+        private double BeforeDockBattery { get; set; }
 
         /// <summary>
         ///     正处于充电状态
@@ -53,7 +62,7 @@ namespace AgvcWorkFactory
         /// </summary>
         public void RequestUpdateStatusSync()
         {
-            OnMRStatusChange(WS.GetMRStatus(MRStatus.MRID));
+            SetMRStatus(WS.GetMRStatus(MRStatus.MRID));
         }
 
         /// <summary>
@@ -72,7 +81,7 @@ namespace AgvcWorkFactory
         ///     当更新最新的MRStatus事件
         /// </summary>
         /// <param name="eMrStatus"></param>
-        public void OnMRStatusChange(MRStatus eMrStatus)
+        public void SetMRStatus(MRStatus eMrStatus)
         {
             if (eMrStatus != null)
             {
@@ -92,7 +101,7 @@ namespace AgvcWorkFactory
         }
 
         /// <summary>
-        ///     是否处于初始化状态.MR重启后,一直会处于此状态.
+        /// 是否处于初始化状态.MR重启后,一直会处于此状态.
         /// </summary>
         /// <returns></returns>
         public bool IsInitialize()
@@ -130,7 +139,7 @@ namespace AgvcWorkFactory
             if (_watchThread == null) //启动任务线程
             {
                 _cancelTokenSource = new CancellationTokenSource();
-                _watchThread = new Thread(TaskWorkerThread) {IsBackground = true};
+                _watchThread = new Thread(TaskWorkerThread) { IsBackground = true };
                 _watchThread.Start();
             }
 

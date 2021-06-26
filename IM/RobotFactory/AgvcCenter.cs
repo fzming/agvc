@@ -36,13 +36,7 @@ namespace AgvcWorkFactory
             {
                 mrList.ToList().ForEach(mrid =>
                 {
-                    VirtualRobotManager.AddVirtualRobot(new VirtualRobot
-                    {
-                        MRStatus = new MRStatus
-                        {
-                            MRID = mrid
-                        }
-                    });
+                    VirtualRobotManager.CreateVirtualRobot(mrid, null);
                 });
                 VirtualRobotManager.TryRefreshMRStatus();
             }

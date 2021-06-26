@@ -17,36 +17,24 @@ namespace AgvcWorkFactory
     /// </summary>
     public sealed class RobotTaskEngine : IRobotTaskEngine
     {
-        private static IEnumerable<Type> _taskTypes;
         private readonly object _locker = new();
         private readonly AutoResetEvent _waitHandle = new(false);
         private CancellationTokenSource _cancelTokenSource;
         private Thread _watchThread;
 
         /// <summary>
-        ///     构造函数
+        ///  构造函数
         /// </summary>
         /// <param name="robotManager">机器人管理器</param>
-        /// <param name="agvReporter">Agv设备状态上报监控对象</param>
-        public RobotTaskEngine(IVirtualRobotManager robotManager, IAgvReporter agvReporter)
+        /// <param name="robotTaskFactory"></param>
+        public RobotTaskEngine(IVirtualRobotManager robotManager, IRobotTaskFactory robotTaskFactory)
         {
             RobotManager = robotManager;
-            AgvReporter = agvReporter;
-            Console.WriteLine("AgvReporter->" + AgvReporter.GetHashCode());
+            RobotTaskFactory = robotTaskFactory;
         }
 
         private IVirtualRobotManager RobotManager { get; }
-        private IAgvReporter AgvReporter { get; }
-
-        private static IEnumerable<Type> TaskTypes
-        {
-            get
-            {
-                _taskTypes ??= Assembly.GetAssembly(typeof(AbstractRobotTask)).GetTypes()
-                    .Where(t => t.GetInterfaces().Contains(typeof(IRobotTask)) && t.IsAbstract == false);
-                return _taskTypes;
-            }
-        }
+        private IRobotTaskFactory RobotTaskFactory { get; }
 
         /// <summary>
         ///     任务队列
@@ -64,28 +52,37 @@ namespace AgvcWorkFactory
             {
                 // Transfer Request
                 case Tx501i tx501I:
-                {
-                    var pathType = GetTaskPathType(tx501I);
-                    var robotTask = CreateRobotTask(pathType);
-                    robotTask.MRID = MRID;
-                    //执行两条搬运指令
-                    robotTask.AddTrxMessage(message);
-                    // robotTask.AddTrxMessage(message);
+                    {
+                        var pathType = GetTaskPathType(tx501I);
+                        var robotTask = RobotTaskFactory.CreateRobotTask(pathType);
+                        robotTask.MRID = MRID;
+                        //执行两条搬运指令
+                        robotTask.AddTrxMessage(message);
+                        // robotTask.AddTrxMessage(message);
 
-                    AddTask(robotTask);
-                    break;
-                }
+                        AddTask(robotTask);
+                        break;
+                    }
             }
         }
 
         /// <summary>
         ///     Accept 用户任务指令,一般情况下:用户指令由WebApi调用传输
         /// </summary>
-        public void AcceptUserTask(ITask userTask)
+        public void AcceptUserTask(ITask task)
         {
-            var pathType = GetTaskPathType(userTask);
-            var robotTask = CreateRobotTask(pathType);
-            if (robotTask != null) AddTask(robotTask);
+            if (task is UserTask userTask)
+            {
+                var pathType = GetTaskPathType(userTask);
+                var robotTask = RobotTaskFactory.CreateRobotTask(pathType);
+                if (robotTask != null)
+                {
+                    //userTask -> RobotTask
+                    robotTask.FromGoals = task.FromGoals;
+                    robotTask.ToGoals = task.ToGoals;
+                    AddTask(robotTask);
+                }
+            }
         }
 
         #region IDisposable
@@ -100,7 +97,7 @@ namespace AgvcWorkFactory
 
         private TaskPathType GetTaskPathType(Tx501i tx501I)
         {
-            //从Message中分析出PathType,
+            //todo:从Message中分析出PathType,
             return TaskPathType.StockToEQP;
         }
 
@@ -111,7 +108,7 @@ namespace AgvcWorkFactory
         /// <returns></returns>
         private TaskPathType GetTaskPathType(ITask userTask)
         {
-            //从UserTask分析
+            //todo:从UserTask分析TaskPathType
             return TaskPathType.StockToEQP;
         }
 
@@ -130,30 +127,6 @@ namespace AgvcWorkFactory
             }
         }
 
-        #region 创建RobotTask
-
-        /// <summary>
-        ///     根据路径类型创建一个对应的机器人任务
-        /// </summary>
-        /// <param name="pathType"></param>
-        /// <returns></returns>
-        private IRobotTask CreateRobotTask(TaskPathType pathType)
-        {
-            var taskType = pathType.GetAttribute<TaskTypeAttribute>().TaskType;
-            var type = TaskTypes.FirstOrDefault(p => p.GetCustomAttribute<TaskTypeAttribute>().TaskType == taskType);
-            if (type != null)
-            {
-                var task = Activator.CreateInstance(type) as IRobotTask;
-                task.TaskType = taskType;
-                task.PathType = pathType;
-                task.SetAgvReporter(AgvReporter);
-                return task;
-            }
-
-            return null;
-        }
-
-        #endregion
 
         #region 任务分配线程
 
@@ -164,7 +137,7 @@ namespace AgvcWorkFactory
         {
             Console.WriteLine("[RobotTaskEngine->Start]");
             _cancelTokenSource = new CancellationTokenSource();
-            _watchThread = new Thread(QueueWatchThread) {IsBackground = true};
+            _watchThread = new Thread(QueueWatchThread) { IsBackground = true };
             _watchThread.Start();
         }
 
@@ -200,7 +173,7 @@ namespace AgvcWorkFactory
                     if (TaskQueue.Count > 0)
                     {
                         var forDequeueTask = TaskQueue.First();
-                        VirtualRobot idleRobot;
+                        IVirtualRobot idleRobot;
                         if (!string.IsNullOrEmpty(forDequeueTask.MRID)) //如果是指定了MRID
                         {
                             idleRobot = RobotManager.FindRobot(forDequeueTask.MRID);

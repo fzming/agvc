@@ -13,7 +13,7 @@ namespace AgvcWorkFactory
     /// <summary>
     ///     IM WebService调用工具类
     /// </summary>
-    public class WS
+    public class WS : IWS
     {
         /// <summary>
         ///     IM URI地址
@@ -26,7 +26,7 @@ namespace AgvcWorkFactory
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static T Dispatch<T>(Base query) where T : class
+        public T Dispatch<T>(Base query) where T : class
         {
             var json = query.SerializeJSONObject();
             using (var client = new WebClient())
@@ -52,7 +52,7 @@ namespace AgvcWorkFactory
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static async Task<T> DispatchAsync<T>(Base query) where T : class
+        public async Task<T> DispatchAsync<T>(Base query) where T : class
         {
             var json = query.SerializeJSONObject();
             using (var client = new WebClient())
@@ -77,7 +77,7 @@ namespace AgvcWorkFactory
         /// </summary>
         /// <param name="mrid"></param>
         /// <returns></returns>
-        public static MRStatus GetMRStatus(string mrid)
+        public MRStatus GetMRStatus(string mrid)
         {
             var response = Dispatch<Protocol.Query.MRStatus.Response>(new Protocol.Query.MRStatus
             {
@@ -91,7 +91,7 @@ namespace AgvcWorkFactory
         /// </summary>
         /// <param name="mrid"></param>
         /// <returns></returns>
-        public static bool SendDockMission(string mrid)
+        public bool SendDockMission(string mrid)
         {
             var mission = new Dock {MRID = mrid, MissionID = Guid.NewGuid().ToString("N")};
             var response = AsyncHelper.RunSync(() => { return DispatchAsync<BaseMission.Response>(mission); });

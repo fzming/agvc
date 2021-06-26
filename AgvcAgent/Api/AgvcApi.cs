@@ -49,12 +49,12 @@ namespace AgvcAgent.Api
         }
 
         /// <summary>
-        ///     同意 iM 所有請求及回報。呼叫方式：http://localhost:5001/agvc/request?json=
+        ///     同意 iM 所有請求及回報。呼叫方式：http://localhost:5001/agvc/report?json=
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("request")]
+        [Route("report")]
         [IgnoreResultModel]
         public string ImRequest([FromQuery] string json)
         {

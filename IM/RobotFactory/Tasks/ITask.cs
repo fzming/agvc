@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Utility;
 
 namespace AgvcWorkFactory.Tasks
 {
-    public interface ITask
+    public interface ITask : ITransientDependency
     {
         /// <summary>
         ///     任务ID
@@ -23,5 +24,6 @@ namespace AgvcWorkFactory.Tasks
         ///     Tos
         /// </summary>
         List<TaskGoal> ToGoals { get; set; }
+
     }
 }

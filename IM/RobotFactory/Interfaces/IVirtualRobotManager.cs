@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RobotDefine;
 using Utility;
 
@@ -6,8 +7,8 @@ namespace AgvcWorkFactory.Interfaces
 {
     public interface IVirtualRobotManager : ISingletonDependency
     {
-        VirtualRobot FindRobot(string MRID);
-        IEnumerable<VirtualRobot> FindIdleRobots();
+        IVirtualRobot FindRobot(string MRID);
+        IEnumerable<IVirtualRobot> FindIdleRobots();
 
         /// <summary>
         ///     尝试刷新所有机器状态
@@ -27,7 +28,7 @@ namespace AgvcWorkFactory.Interfaces
         MRStatus GetMRStatusSync(string MRID);
 
         IEnumerable<string> ReadMrListFromIm();
-        void AddVirtualRobot(VirtualRobot virtualRobot);
-        IEnumerable<VirtualRobot> GetAllVirtualRobots();
+        void CreateVirtualRobot(string mrId,Action<IVirtualRobot> createAction);
+        IEnumerable<IVirtualRobot> GetAllVirtualRobots();
     }
 }
