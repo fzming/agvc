@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Utility
+namespace Utility.Helpers
 {
     public static class SafeCasting
     {

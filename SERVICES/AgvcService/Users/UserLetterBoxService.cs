@@ -8,12 +8,9 @@ using Utility.Extensions;
 
 namespace AgvcService.Users
 {
-    [Export(typeof(IUserLetterBoxService))]
     internal class UserLetterBoxService : AbstractService, IUserLetterBoxService
     {
         private IUserLetterBoxRepository Repository { get; }
-
-        [ImportingConstructor]
         public UserLetterBoxService(IUserLetterBoxRepository repository)
         {
             Repository = repository;

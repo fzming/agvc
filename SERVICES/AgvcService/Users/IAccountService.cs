@@ -68,11 +68,10 @@ namespace AgvcService.Users
         /// <param name="smsKey"></param>
         /// <param name="identify">[可选]移动设备登陆需要传递openid，appid</param>
         /// <param name="appUserInfo"></param>
-        /// <param name="referrer"></param>
         /// <param name="loginDomain"></param>
         /// <returns></returns>
         Task<Result<Account>> SmsLoginAndCreateAccountAsync(string mobile, string smsCode, string smsKey,
-            AppOpenIdentify identify, AppUserInfo appUserInfo, ActReferrer referrer, string loginDomain);
+            AppOpenIdentify identify, AppUserInfo appUserInfo, string loginDomain);
 
         /// <summary>
         /// Logins the account with auth key async.
@@ -91,37 +90,19 @@ namespace AgvcService.Users
         #endregion
 
         /// <summary>
-        /// 修复昵称拼音字母
-        /// </summary>
-        /// <returns></returns>
-        Task BatchFixNickPinyinAsync();
-        /// <summary>
         /// Creates the auth key async.
         /// </summary>
         /// <returns>The auth key async.</returns>
         /// <param name="clientId">Client identifier.</param>
         /// <param name="expires">AuthKey过期时间</param>
         Task<string> CreateAuthKeyAsync(string clientId, TimeSpan expires);
-        /// <summary>
-        /// 个人用户升级企业用户
-        /// </summary>
-        /// <param name="account">用户</param>
-        /// <param name="accountUpgrade">升级参数</param>
-        /// <returns></returns>
-        [Obsolete("此方法已废除")]
-        Task<bool> UpgradeEnterpriseAccountAsync(Account account, RequestAccountUpgrade accountUpgrade);
+
         /// <summary>
         /// 查询所有用户信息
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<Account>> QueryAllAsync();
-        /// <summary>
-        /// 我的推荐用户列表
-        /// </summary>
-        /// <param name="clientId"></param>
-        /// <param name="actId"></param>
-        /// <returns></returns>
-        Task<IEnumerable<Account>> QueryReferrersAsync(string clientId, string actId);
+
         /// <summary>
         /// 绑定小程序账号信息
         /// </summary>

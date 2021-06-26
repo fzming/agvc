@@ -14,6 +14,7 @@ using MongoDB.Driver.Linq;
 
 namespace AgvcRepository.Users
 {
+    
     public class DiscussMessageRepository : MongoRepository<DiscussMessage>, IDiscussMessageRepository
     {
         #region IOC
@@ -75,7 +76,7 @@ namespace AgvcRepository.Users
                     d => d.SenderId, a => a.Id, (dis, user) => new { dis, user }).Select(p => new DiscussMessageModel
                 {
                     Id = p.dis.Id,
-                    Sender = new IdentityUser
+                    Sender = new UserIdentity
                     {
                         Id = p.user.Id,
                         Name = p.user.Nick,
@@ -95,7 +96,7 @@ namespace AgvcRepository.Users
                     d => d.SenderId, a => a.Id, (dis, user) => new { dis, user }).Select(p => new DiscussMessageModel
                 {
                     Id = p.dis.Id,
-                    Sender = new IdentityUser
+                    Sender = new UserIdentity
                     {
                         Id = p.user.Id,
                         Name = p.user.Nick,
@@ -127,15 +128,15 @@ namespace AgvcRepository.Users
 
         }
 
-        public  async  Task<IdentityUser> GetSenderAsync(string clientId, bool isSys)
+        public  async  Task<UserIdentity> GetSenderAsync(string clientId, bool isSys)
         {
             var user =  isSys ? await SystemUserRepository.GetAsync(clientId) :
                 (await AccountRepository.GetAsync(clientId)) as UserAccountBase;
             if (user == null)
             {
-                return new IdentityUser();
+                return new UserIdentity();
             }
-            return new IdentityUser
+            return new UserIdentity
             {
                 Id = user.Id,
                 Name = user.Nick,

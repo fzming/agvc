@@ -9,6 +9,7 @@ using Protocol;
 using Protocol.Mission;
 using Protocol.Report;
 using Utility;
+using Utility.Helpers;
 
 namespace AgvcWorkFactory.Tasks
 {

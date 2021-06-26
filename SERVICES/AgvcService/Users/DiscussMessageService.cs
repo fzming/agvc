@@ -5,34 +5,31 @@ using System.Threading.Tasks;
 using AgvcCoreData.Users;
 using AgvcEntitys.Users;
 using AgvcRepository.Users.Interfaces;
+using AgvcService.System;
 using AgvcService.Users.Models;
+using AgvcService.Users.Models.Messages;
 using CoreData;
 using CoreService;
 using Microsoft.AspNetCore.Identity;
 using Utility.Extensions;
+using DiscussMessageModel = AgvcCoreData.Users.DiscussMessageModel;
 
 namespace AgvcService.Users
 {
     /// <summary>
     /// 讨论组消息服务实现
     /// </summary>
-    [Export(typeof(IDiscussMessageService))]
-    internal class DiscussMessageService : AbstractService, IDiscussMessageService
+    public class DiscussMessageService : AbstractService, IDiscussMessageService
     {
         #region IOC
 
         private IDiscussMessageRepository DiscussMessageRepository { get; }
         private IUploadService UploadService { get; }
-        private ISignalrService SignalrService { get; }
-
-        [ImportingConstructor]
         public DiscussMessageService(IDiscussMessageRepository discussMessageRepository,
-            IUploadService uploadService,
-            ISignalrService signalrService)
+            IUploadService uploadService)
         {
             DiscussMessageRepository = discussMessageRepository;
             UploadService = uploadService;
-            SignalrService = signalrService;
         }
 
         #endregion
@@ -131,20 +128,21 @@ namespace AgvcService.Users
         /// <param name="clientId"></param>
         /// <param name="isSys"></param>
         /// <returns></returns>
-        public Task<IdentityUser> GetSenderAsync(string clientId, bool isSys)
+        public Task<UserIdentity> GetSenderAsync(string clientId, bool isSys)
         {
             return DiscussMessageRepository.GetSenderAsync(clientId, isSys);
         }
 
         public Task<bool> BroadCastMessageToAsync(string orgId, string senderId, DiscussMessageModel dto)
         {
-
-            //广播消息
-            return SignalrService.BroadcastMessageAsync(new DiscussMessageBroadCast
-            {
-                Title = "讨论组附件消息",
-                Message = dto
-            }, orgId, senderId);
+            return Task.FromResult(true);
+            //
+            // //广播消息
+            // return SignalrService.BroadcastMessageAsync(new DiscussMessageBroadCast
+            // {
+            //     Title = "讨论组附件消息",
+            //     Message = dto
+            // }, orgId, senderId);
         }
 
         public async Task<List<DiscussMessage>> PostAttachmentMessageAsync(List<string> receiveOrgIds,

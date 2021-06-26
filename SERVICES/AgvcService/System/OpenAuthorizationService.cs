@@ -96,7 +96,6 @@ namespace AgvcService.System
                       smsLoginModel.SmsKey,
                       smsLoginModel.Identify,
                       smsLoginModel.AppUserInfo,
-                      smsLoginModel.Referrer,
                       smsLoginModel.LoginDomain);
         }
 

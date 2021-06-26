@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AgvcCoreData.System;
@@ -17,8 +16,7 @@ namespace AgvcService.System
     /// <summary>
     /// 创建系统管理人员
     /// </summary>
-    [Export(typeof(ISystemUserService))]
-    internal class SystemUserService : AbstractService, ISystemUserService
+    public class SystemUserService : AbstractService, ISystemUserService
     {
         #region 注入
 
@@ -27,7 +25,6 @@ namespace AgvcService.System
 
         private IOrganizationRepository OrganizationRepository { get; }
 
-        [ImportingConstructor]
         public SystemUserService(ISystemUserRepository systemUserRepository,
             IAuthorityService authorityService,
             IOrganizationRepository organizationRepository)
@@ -50,18 +47,6 @@ namespace AgvcService.System
             return SystemUserRepository.FindAsync(p => p.OrgId == orgId && p.RoleId == roleId);
         }
 
-        /// <summary>
-        /// 修复昵称拼音字母
-        /// </summary>
-        /// <returns></returns>
-        public async Task BatchFixNickPinyinAsync()
-        {
-            var users = await SystemUserRepository.FindAllAsync();
-            var tasks = users.Select(user =>
-                SystemUserRepository.UpdateAsync(user, p => p.NickPy, PingYinHelper.GetFirstSpell(user.Nick)));
-            await Task.WhenAll(tasks);
-        }
-
         public async Task<Result<SystemUser>> CreateSystemUserAsync(SystemUserCreateModel userCreateModel, string orgId)
         {
             var validate = userCreateModel.Validate();
@@ -79,7 +64,6 @@ namespace AgvcService.System
             //新建用户
             user = userCreateModel.MapTo(new SystemUser());
             user.OrgId = orgId;
-            user.NickPy = PingYinHelper.GetFirstSpell(user.Nick);
             await SystemUserRepository.InsertAsync(user);
             return Result<SystemUser>.Ok(user);
 
@@ -118,7 +102,6 @@ namespace AgvcService.System
             {
                 user.LoginPwd = oldPwd; //密码为空时，不修改密码
             }
-            user.NickPy = PingYinHelper.GetFirstSpell(user.Nick);
             #region 强制要求修改密码
 
             var needChangePwd = user.NeedChangePassword;
@@ -205,7 +188,6 @@ namespace AgvcService.System
             }
 
             model.MapTo(user);
-            user.NickPy = PingYinHelper.GetFirstSpell(user.Nick);
             return await SystemUserRepository.UpdateAsync(user);
         }
 

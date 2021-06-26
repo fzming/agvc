@@ -39,7 +39,7 @@ namespace CoreData
     /// <summary>
     /// 人员标识类
     /// </summary>
-    public class IdentityUser : Identity
+    public class UserIdentity : Identity
     {
         public string Avatar { get; set; }
     }

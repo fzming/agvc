@@ -12,16 +12,12 @@ namespace AgvcAgent.Api.System
     /// <summary>
     /// 功能差异配置接口
     /// </summary>
-    [Export(typeof(SystemFeatureController))]
     [Route("api/sys/feature")]
-    [ApiVersion("sys")]
     public class SystemFeatureController : CrudApiController<SystemFeature, SystemFeatureModel, UpdateSystemFeatureModel>
     {
         #region IOC
 
         private ISystemFeatureService SystemFeatureService { get; }
-
-        [ImportingConstructor]
         public SystemFeatureController(ISystemFeatureService systemFeatureService) : base(systemFeatureService)
         {
             SystemFeatureService = systemFeatureService;

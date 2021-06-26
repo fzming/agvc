@@ -39,21 +39,5 @@ namespace AgvcService.Users.Models
         /// </summary>
         public UploadOption Option { get; set; }
     }
-    /// <summary>
-    /// 消息标记
-    /// </summary>
-    public enum MessageFlag
-    {
-        已读=1,
-        已删=2
-    }
-    /// <summary>
-    /// 用户阅读或删除标记
-    /// </summary>
-    public class UserMsgFlag
-    {
-        public string Id { get; set; }
-        public DateTime Time { get; set; }
-        public MessageFlag Flag { get; set; }
-    }
+   
 }

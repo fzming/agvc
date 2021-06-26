@@ -20,11 +20,7 @@ namespace AgvcService.System
         /// <returns></returns>
         Task<PageResult<SystemUser>> QuerySystemUsersAsync(SystemUserPageQuery userPageQuery);
         Task<IEnumerable<SystemUser>> QueryRoleAccountsAsync(string orgId, string roleId);
-        /// <summary>
-        /// 修复昵称拼音字母
-        /// </summary>
-        /// <returns></returns>
-        Task BatchFixNickPinyinAsync();
+
         /// <summary>
         /// 创建系统用户
         /// </summary>

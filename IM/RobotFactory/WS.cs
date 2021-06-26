@@ -6,6 +6,7 @@ using Protocol;
 using Protocol.Mission;
 using Serialize;
 using Utility;
+using Utility.Helpers;
 using MRStatus = RobotDefine.MRStatus;
 
 namespace AgvcWorkFactory

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Utility
+namespace Utility.Helpers
 {
     [DebuggerStepThrough]
     public static class Check
@@ -90,11 +90,11 @@ namespace Utility
                     throw new ArgumentException(parameterName + " can not be null or empty!", parameterName);
                 if (value.Length < minLength)
                     throw new ArgumentException(
-                        $"{parameterName} length must be equal to or bigger than {minLength}!", parameterName);
+                        $"{(object)parameterName} length must be equal to or bigger than {(object)minLength}!", parameterName);
             }
             if (value != null && value.Length > maxLength)
                 throw new ArgumentException(
-                    $"{parameterName} length must be equal to or lower than {maxLength}!", parameterName);
+                    $"{(object)parameterName} length must be equal to or lower than {(object)maxLength}!", parameterName);
             return value;
         }
     }

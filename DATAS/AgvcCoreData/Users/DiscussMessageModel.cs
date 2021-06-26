@@ -11,7 +11,7 @@ namespace AgvcCoreData.Users
         /// <summary>
         /// 发送人员
         /// </summary>
-        public IdentityUser Sender { get; set; }
+        public UserIdentity Sender { get; set; }
         /// <summary>
         /// 讨论组名称
         /// </summary>

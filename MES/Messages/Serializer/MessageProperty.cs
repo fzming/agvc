@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Messages.Parser
+namespace Messages.Serializer
 {
     class MessageProperty
     {

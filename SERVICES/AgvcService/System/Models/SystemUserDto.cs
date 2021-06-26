@@ -1,4 +1,4 @@
-﻿using WeiMan.Datas.Dto.Users;
+﻿using AgvcService.Users.Models;
 
 namespace AgvcService.System.Models
 {

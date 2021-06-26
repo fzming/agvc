@@ -1,4 +1,5 @@
 ﻿using CoreData;
+using Utility.Extensions;
 
 namespace AgvcService.System.Models
 {

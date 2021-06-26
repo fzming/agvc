@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Messages.Parser
+namespace Messages.Serializer
 {
     class MessageMap
     {

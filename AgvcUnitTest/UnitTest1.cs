@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading;
-using Messages.Parser;
 using RobotDefine;
 using Xunit;
 using Xunit.Abstractions;

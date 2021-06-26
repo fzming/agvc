@@ -5,8 +5,6 @@ using AgvcEntitys.Users;
 using AgvcService.Users.Models;
 using CoreData;
 using CoreService.Interfaces;
-using Microsoft.AspNetCore.Identity;
-
 namespace AgvcService.Users
 {
     /// <summary>
@@ -63,7 +61,7 @@ namespace AgvcService.Users
         /// <param name="clientId"></param>
         /// <param name="isSys"></param>
         /// <returns></returns>
-        Task<IdentityUser> GetSenderAsync(string clientId, bool isSys);
+        Task<UserIdentity> GetSenderAsync(string clientId, bool isSys);
         /// <summary>
         /// 广播
         /// </summary>

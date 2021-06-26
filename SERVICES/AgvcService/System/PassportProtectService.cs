@@ -1,36 +1,34 @@
 ﻿using System.Threading.Tasks;
 using AgvcService.System.Models;
+using Cache.IRedis.Interfaces;
 using CoreService;
+using Microsoft.Extensions.Configuration;
 
 namespace AgvcService.System
 {
     /// <summary>
     /// 账号保护服务实现
     /// </summary>
-    [Export(typeof(IPassportProtectService))]
-    internal class PassportProtectService:AbstractService,IPassportProtectService
+    public class PassportProtectService:AbstractService,IPassportProtectService
     {
         private  CaptchaCredential _captchaCredential;
 
         #region IOC
 
         private IRedisHashCache RedisHashCache { get; }
-        private IConfigManager ConfigManager { get; }
+        private IConfiguration Configuration { get; }
 
         private CaptchaCredential CaptchaCredential
         {
             get
             {
-                return _captchaCredential ??=ConfigManager.GetConfig<CaptchaCredential>("TCaptcha");
+                return _captchaCredential ??= Configuration.GetSection("TCaptcha").Get<CaptchaCredential>();
             }
         }
-
-        [ImportingConstructor]
-        public PassportProtectService(IRedisHashCache redisHashCache,IConfigManager configManager)
+        public PassportProtectService(IRedisHashCache redisHashCache, IConfiguration configuration)
         {
             RedisHashCache = redisHashCache;
-            ConfigManager = configManager;
-           
+            Configuration = configuration;
         }
 
         #endregion

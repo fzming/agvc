@@ -4,7 +4,7 @@ using AgvcAgent.Api.Filters.GlobalFilters;
 using AgvcRepository;
 using AgvcWorkFactory.Interfaces;
 using CoreRepository;
-using Messages.Parser;
+using Messages.Serializer;
 using Microsoft.AspNetCore.Mvc;
 using Protocol;
 using Protocol.Query;

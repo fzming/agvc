@@ -12,15 +12,13 @@ using Utility.Extensions;
 
 namespace AgvcService.System
 {
-    [Export(typeof(ISystemFeatureService))]
-    internal class SystemFeatureService : AbstractCrudService<SystemFeature>, ISystemFeatureService
+    public class SystemFeatureService : AbstractCrudService<SystemFeature>, ISystemFeatureService
     {
         #region IOC
 
         private ISystemFeatureRepository SystemFeatureRepository { get; }
         private IOrganizationFeatureValueRepository OrganizationFeatureValueRepository { get; }
 
-        [ImportingConstructor]
         public SystemFeatureService(ISystemFeatureRepository systemFeatureRepository,
             IOrganizationFeatureValueRepository organizationFeatureValueRepository) :
             base(systemFeatureRepository)

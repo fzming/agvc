@@ -1,7 +1,7 @@
 ﻿using Messages.Transfers.Core;
 using Utility;
 
-namespace Messages.Parser
+namespace Messages.Serializer
 {
     public interface IMessageSerializer : ISingletonDependency
     {

@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 
-namespace Utility
+namespace Utility.Helpers
 {
     /// <summary>
     /// 路径转换辅助类

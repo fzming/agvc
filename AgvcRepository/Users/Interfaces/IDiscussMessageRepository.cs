@@ -12,6 +12,6 @@ namespace AgvcRepository.Users.Interfaces
         Task<bool> SetFlagAsync(string messageId, string userId, MessageFlag flag);
         Task<PageResult<DiscussMessageModel>> QueryGroupMessagesAsync(string orgId, DiscussMessagePageQuery query);
         Task<Dictionary<string, int>> GetUnReadMessageCountAsync(string orgId, string clientId, string[] groups);
-        Task<IdentityUser> GetSenderAsync(string clientId, bool isSys);
+        Task<UserIdentity> GetSenderAsync(string clientId, bool isSys);
     }
 }

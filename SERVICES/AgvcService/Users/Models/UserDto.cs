@@ -1,9 +1,8 @@
 ﻿using System;
 using AgvcService.System.Models;
 using Newtonsoft.Json;
-using WeiMan.Datas.Dto.System;
 
-namespace WeiMan.Datas.Dto.Users
+namespace AgvcService.Users.Models
 {
     public class UserDto : AbstractUserProfile
     {

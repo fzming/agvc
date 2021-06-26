@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\PingYinHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="MongoDB.Bson" Version="2.12.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

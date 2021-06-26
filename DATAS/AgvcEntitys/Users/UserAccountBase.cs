@@ -58,10 +58,7 @@ namespace AgvcEntitys.Users
         /// 用户昵称
         /// </summary>
         public string Nick { get; set; }
-        /// <summary>
-        /// 昵称拼音
-        /// </summary>
-        public string NickPy { get; set; }
+
         /// <summary>
         /// 介绍
         /// </summary>

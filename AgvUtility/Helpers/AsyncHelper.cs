@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
 
-namespace Utility
+namespace Utility.Helpers
 {
     /// <summary>
     /// 基于Nito.AsyncEx.AsyncContext的异步转同步执行器

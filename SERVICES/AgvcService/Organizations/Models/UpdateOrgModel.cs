@@ -1,4 +1,6 @@
-﻿namespace AgvcCoreData.System.Orgnizations
+﻿using AgvcCoreData.System;
+
+namespace AgvcService.Organizations.Models
 {
     /// <summary>
     /// 更新机构模型

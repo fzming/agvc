@@ -11,6 +11,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="System\Signal\ClientConnectionHelper.cs" />
+    <Compile Remove="System\Signal\GobangConnection.cs" />
+    <Compile Remove="System\Signal\ISignalrService.cs" />
+    <Compile Remove="System\Signal\SignalrConnection.cs" />
+    <Compile Remove="System\Signal\SignalRContractResolver.cs" />
+    <Compile Remove="System\Signal\SignalrService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
+    <PackageReference Include="UAParser" Version="3.1.47" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\AgvcRepository\AgvcRepository.csproj" />
     <ProjectReference Include="..\..\AgvUtility\Utility.csproj" />
     <ProjectReference Include="..\..\Cache.IRedis\Cache.IRedis.csproj" />

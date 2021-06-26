@@ -5,7 +5,7 @@ using System.Reflection;
 using Messages.Transfers.Core;
 using Utility.Extensions;
 
-namespace Messages.Parser
+namespace Messages.Serializer
 {
     public  class MessageSerializer : IMessageSerializer
     {

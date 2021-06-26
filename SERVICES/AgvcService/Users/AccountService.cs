@@ -7,25 +7,24 @@ using AgvcCoreData.Users;
 using AgvcEntitys.Users;
 using AgvcRepository.Orgnizations.Interfaces;
 using AgvcRepository.Users.Interfaces;
+using AgvcService.System;
 using AgvcService.System.Models;
+using AgvcService.System.Upload;
 using AgvcService.Users.Models;
+using Cache.IRedis.Interfaces;
 using CoreData;
-using CoreData.Core;
 using CoreService;
 using Utility.Extensions;
+using Utility.Helpers;
 
 namespace AgvcService.Users
 {
-
-    [Export(typeof(IAccountService))]
-    internal class AccountService : AbstractService, IAccountService
+    public class AccountService : AbstractService, IAccountService
     {
         #region IOC
 
-        [ImportingConstructor]
         public AccountService(IAccountRepository accountRepository,
             ISmsService smsService,
-            ICompanyService companyService,
             IOrganizationRepository organizationRepository,
             IRedisStringCache redisStringCache,
             IUpYunUploader upYunUploader,
@@ -33,7 +32,6 @@ namespace AgvcService.Users
         {
             AccountRepository = accountRepository;
             SmsService = smsService;
-            CompanyService = companyService;
             OrganizationRepository = organizationRepository;
             RedisStringCache = redisStringCache;
             UpYunUploader = upYunUploader;
@@ -41,7 +39,6 @@ namespace AgvcService.Users
         }
         private IAccountRepository AccountRepository { get; }
         private ISmsService SmsService { get; }
-        private ICompanyService CompanyService { get; }
         private IOrganizationRepository OrganizationRepository { get; }
         private IRedisStringCache RedisStringCache { get; }
         private IUpYunUploader UpYunUploader { get; }
@@ -109,7 +106,6 @@ namespace AgvcService.Users
             if (account != null)
             {
                 account = accountUserProfile.MapTo(account);//dto->entity
-                account.NickPy = PingYinHelper.GetFirstSpell(account.Nick);
                 return Result<bool>.From(await AccountRepository.ReplaceAsync(accountUserProfile.Id, account));//更新单个文档
             }
 
@@ -314,11 +310,10 @@ namespace AgvcService.Users
         /// <param name="smsKey">短信验证类型KEY</param>
         /// <param name="identify">设备识别</param>
         /// <param name="appUserInfo">用户授权信息</param>
-        /// <param name="referrer">推荐人信息</param>
         /// <param name="loginDomain"></param>
         /// <returns></returns>
         public async Task<Result<Account>> SmsLoginAndCreateAccountAsync(string mobile, string smsCode, string smsKey,
-            AppOpenIdentify identify, AppUserInfo appUserInfo, ActReferrer referrer, string loginDomain)
+            AppOpenIdentify identify, AppUserInfo appUserInfo, string loginDomain)
         {
             var smsLoginResult = await SmsLoginAsync(mobile, smsCode, smsKey, identify, appUserInfo, loginDomain);
             if (smsLoginResult.Success)
@@ -353,10 +348,7 @@ namespace AgvcService.Users
                     Mobile = mobile,
                     Nick = $"手机用户{mobile.Right(4)}",
                     Gender = "男",
-
-                    Referrer = referrer //推荐人
-                                        // Avatar = "",
-                                        // Email = 
+                    // Email = 
 
                 };
 
@@ -403,18 +395,6 @@ namespace AgvcService.Users
 
 
         /// <summary>
-        /// 修复昵称拼音字母
-        /// </summary>
-        /// <returns></returns>
-        public async Task BatchFixNickPinyinAsync()
-        {
-            var users = await AccountRepository.FindAllAsync();
-            var tasks = users.Select(user =>
-                AccountRepository.UpdateAsync(user, p => p.NickPy, PingYinHelper.GetFirstSpell(user.Nick)));
-            await Task.WhenAll(tasks);
-        }
-
-        /// <summary>
         /// Creates the auth key async.
         /// </summary>
         /// <returns>The auth key async.</returns>
@@ -427,38 +407,12 @@ namespace AgvcService.Users
             return authkey;
         }
 
-        /// <summary>
-        /// 个人用户升级企业用户
-        /// </summary>
-        /// <param name="account"></param>
-        /// <param name="accountUpgrade"></param>
-        /// <returns></returns>
-        public  Task<bool> UpgradeEnterpriseAccountAsync(Account account, RequestAccountUpgrade accountUpgrade)
-        {
-            // var enterprise = await EnterpriseService.AddEnterpriseAsync(accountUpgrade.EnterpriseName, accountUpgrade.USCC);
-            // //创建企业
-            // var company = await CompanyService.GetCreateCompany(enterprise, new Contacter
-            // {
-            //     User = account.Nick,
-            //     Mobile = account.Mobile
-            // });
-            // //营业执照
-            // var result = accountUpgrade.Certificate.Save();
-            // var certificate = await UpYunUploader.UploadFileAsync(result.PhysicalPath);
-            // return await CompanyService.SetCertificateAsync(company.Id, certificate);
-            return Task.FromResult(true);
-
-        }
 
         public Task<IEnumerable<Account>> QueryAllAsync()
         {
             return AccountRepository.FindAllAsync();
         }
 
-        public Task<IEnumerable<Account>> QueryReferrersAsync(string clientId, string actId)
-        {
-            return AccountRepository.FindAsync(p => p.Referrer.UserId == clientId && p.Referrer.ActId == actId);
-        }
 
         public async Task<bool> UpdateAppOpenIdentifyAsync(string clientId, AppOpenIdentify identify)
         {
@@ -514,7 +468,6 @@ namespace AgvcService.Users
                 account = await this.AccountRepository.FirstAsync(p => p.LoginId == createAccountModel.LoginId);
                 if (account != null)
                 {
-                    //将非货代用户升级为货代用户
                     if (account.OrgId.IsNullOrEmpty() || account.RoleId.IsNullOrEmpty())
                     {
                         if (account.LoginPwd.IsNullOrEmpty()) account.LoginPwd = createAccountModel.LoginPwd;
@@ -523,7 +476,6 @@ namespace AgvcService.Users
                         if (createAccountModel.Nick.IsNotNullOrEmpty())
                         {
                             account.Nick = createAccountModel.Nick;
-                            account.NickPy = PingYinHelper.GetFirstSpell(account.Nick);
                         }
                         account.Gender = "男";
                         await AccountRepository.UpdateAsync(account);
@@ -550,7 +502,6 @@ namespace AgvcService.Users
             //用户信息
             account.LoginPwd = createAccountModel.LoginPwd;
             account.Nick = createAccountModel.Nick;
-            account.NickPy = PingYinHelper.GetFirstSpell(account.Nick);
             account.Gender = "男";
             account.Avatar = createAccountModel.Avatar;
             //机构角色
@@ -629,7 +580,6 @@ namespace AgvcService.Users
             {
                 user.LoginPwd = oldPwd;
             }
-            user.NickPy = PingYinHelper.GetFirstSpell(user.Nick);
             await AccountRepository.UpdateAsync(user);
             return new UserUpdateResult<Account>
             {
@@ -698,11 +648,6 @@ namespace AgvcService.Users
                 throw new Exception(r.Error);
             }
 
-            if (user.Nick != model.Nick) //修改了昵称
-            {
-                //更改系统数据中相关该用户ID相关昵称
-                user.NickPy = PingYinHelper.GetFirstSpell(user.Nick);
-            }
 
             model.MapTo(user);
             return await AccountRepository.UpdateAsync(user);

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AgvcCoreData.System;
-using AgvcCoreData.System.Orgnizations;
+using AgvcEntitys.Organization;
 using AgvcEntitys.System;
 using AgvcEntitys.System.Authority;
 using AgvcRepository.System.Interfaces;
 using AgvcRepository.System.Interfaces.Authority;
+using AgvcService.Organizations;
+using AgvcService.Organizations.Models;
 using AgvcService.System.Models;
 using AutoMapper;
 using CoreService;
@@ -18,8 +20,7 @@ namespace AgvcService.System
     /// <summary>
     /// 系统菜单服务实现
     /// </summary>
-    [Export(typeof(IMenuService))]
-    internal class MenuService : AbstractService, IMenuService
+    public class MenuService : AbstractService, IMenuService
     {
         private readonly Lazy<MapperConfiguration> _mapperConfiguration;
 
@@ -30,7 +31,6 @@ namespace AgvcService.System
         private IAuthorityCodeRepository AuthorityCodeRepository { get; }
         private IOrgnizationService OrgnizationService { get; }
 
-        [ImportingConstructor]
         public MenuService(IMenuRepository menuRepository,
             IAuthorityService authorityService,
             IAuthorityCodeRepository authorityCodeRepository, IOrgnizationService orgnizationService)

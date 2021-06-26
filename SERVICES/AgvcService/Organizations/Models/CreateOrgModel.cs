@@ -1,4 +1,7 @@
-﻿namespace AgvcCoreData.System.Orgnizations
+﻿using AgvcCoreData.System;
+using AgvcEntitys.Organization;
+
+namespace AgvcService.Organizations.Models
 {
     /// <summary>
     /// 创建机构模型

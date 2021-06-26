@@ -13,6 +13,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Newtonsoft.Json.Linq;
 using Utility;
+using Utility.Helpers;
 
 namespace CoreRepository
 {

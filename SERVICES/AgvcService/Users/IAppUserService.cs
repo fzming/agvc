@@ -7,6 +7,5 @@ namespace AgvcService.Users
     public interface IAppUserService : ICrudService<AppUser>
     {
         Task<AppUser> FindAppUserAsync(string appId, string openid);
-        Task<bool> UpdateCompanyAsync(string clientId, Company company);
     }
 }

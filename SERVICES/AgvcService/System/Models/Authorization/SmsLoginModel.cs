@@ -16,7 +16,6 @@ namespace AgvcService.System.Models.Authorization
         public string SmsKey { get; set; }
 
         public bool JustLogin { get; set; }
-        public ActReferrer Referrer { get; set; }
     }
 
     public class PasswordLoginModel : CoreLoginModel

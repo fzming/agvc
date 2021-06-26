@@ -22,8 +22,6 @@ namespace AgvcAgent.Api.System
         private IAuthorityService AuthorityService { get; }
         private IAccountService AccountService { get; }
         private ISystemUserService SystemUserService { get; }
-
-        [ImportingConstructor]
         public AuthorityController(IAuthorityService authorityService, IAccountService accountService, ISystemUserService systemUserService)
         {
             AuthorityService = authorityService;

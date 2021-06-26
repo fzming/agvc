@@ -1,11 +1,28 @@
-﻿using AgvcCoreData.System;
-using AgvcCoreData.Users;
+﻿using System;
+using AgvcCoreData.System;
 using CoreData.Core;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace AgvcEntitys.Users
-{
+{ 
+    /// <summary>
+    /// 消息标记
+    /// </summary>
+    public enum MessageFlag
+    {
+        已读 = 1,
+        已删 = 2
+    }
+    /// <summary>
+    /// 用户阅读或删除标记
+    /// </summary>
+    public class UserMsgFlag
+    {
+        public string Id { get; set; }
+        public DateTime Time { get; set; }
+        public MessageFlag Flag { get; set; }
+    }
     /// <summary>
     /// 讨论组消息
     /// </summary>
