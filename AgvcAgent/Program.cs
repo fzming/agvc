@@ -11,6 +11,7 @@ namespace AgvcAgent
     internal class Program
     {
         private static IConfiguration _configuration;
+        private static string urls;
 
         private static void Main(string[] args)
         {
@@ -18,6 +19,7 @@ namespace AgvcAgent
             //Console.ForegroundColor = ConsoleColor.Green;
 
               _configuration = CreateConfiguration();
+            urls = _configuration.GetSection("AGVC").Get<AgvcConfig>().ListenUrls;
             var webHost = CreateWebHostBuilder(args).Build();
             DependencyInjection.ServiceProvider = webHost.Services;
            
@@ -32,7 +34,7 @@ namespace AgvcAgent
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 //.AddJsonFile("hosting.json", optional: true)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 //.AddCommandLine(args)
                 //.AddEnvironmentVariables()
                 .Build();
@@ -41,7 +43,8 @@ namespace AgvcAgent
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args).UseConfiguration(_configuration)
-                .UseUrls(_configuration.GetValue<string>("AGVC.ListenUrls"))
+                .UseUrls(urls)
+                //.UseUrls("http://*:5200;http://localhost:5300;")
                 .ConfigureServices(DependencyInjection.ConfigureServices)
                 .ConfigureKestrel((context, options) => { options.Limits.MaxRequestBodySize = 20000000; })
                 .ConfigureLogging((hostingContext, logging) =>

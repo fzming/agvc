@@ -14,7 +14,7 @@ namespace AgvcWorkFactory.Tasks
     public class RobotTransferTask : AbstractRobotTask
     {
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        public RobotTransferTask(IAgvReporter agvReporter, IWS ws) : base(agvReporter, ws)
+        public RobotTransferTask(IAgvReporter agvReporter, IAgvRequester agvRequester, IWS ws) : base(agvReporter,agvRequester, ws)
         {
         }
         /*

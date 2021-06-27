@@ -4,7 +4,7 @@
     {
         public string Goal { get; set; }
 
-        public string MissionID { get; set; }
+      //  public string MissionID { get; set; }
 
         public int Port { get; set; }
     }

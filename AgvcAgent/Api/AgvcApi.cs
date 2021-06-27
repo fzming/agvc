@@ -16,15 +16,17 @@ namespace AgvcAgent.Api
     [Route("agvc")]
     public class AgvcApi : ControllerBase
     {
-        public AgvcApi(IRobotTaskEngine taskEngine, IAgvReporter agvReporter, IMessageSerializer messageParser)
+        public AgvcApi(IRobotTaskEngine taskEngine, IAgvReporter agvReporter,IAgvRequester agvRequester, IMessageSerializer messageParser)
         {
             TaskEngine = taskEngine;
             AgvReporter = agvReporter;
+            AgvRequester = agvRequester;
             MessageParser = messageParser;
         }
 
         private IRobotTaskEngine TaskEngine { get; }
         private IAgvReporter AgvReporter { get; }
+        public IAgvRequester AgvRequester { get; }
         private IMessageSerializer MessageParser { get; }
 
         [Route("test1")]
@@ -87,7 +89,7 @@ namespace AgvcAgent.Api
             var serializeJson = o switch
             {
                 BaseReport report => AgvReporter.OnReport(report).SerializeJSONObject(),
-                BaseRequest request => request.GetResponse(true, "Allways True").SerializeJSONObject(),
+                BaseRequest request => AgvRequester.OnRequest(request).SerializeJSONObject(),
                 Echo echo => echo.GetResponse().SerializeJSONObject(),
                 _ => string.Empty
             };

@@ -9,7 +9,7 @@ namespace AgvcWorkFactory.Tasks
     public class RobotTrayTask : AbstractRobotTask
     {
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        public RobotTrayTask(IAgvReporter agvReporter, IWS ws) : base(agvReporter, ws)
+        public RobotTrayTask(IAgvReporter agvReporter, IAgvRequester agvRequester, IWS ws) : base(agvReporter,agvRequester, ws)
         {
         }
 

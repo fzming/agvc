@@ -8,6 +8,7 @@ using Messages.Transfers.Core;
 using Protocol;
 using Protocol.Mission;
 using Protocol.Report;
+using Protocol.Request;
 using Utility.Helpers;
 
 namespace AgvcWorkFactory.Tasks
@@ -20,12 +21,14 @@ namespace AgvcWorkFactory.Tasks
         #region IOC
 
         private IAgvReporter AgvReporter { get; }
+        public IAgvRequester AgvRequester { get; }
         private IWS Ws { get; }
 
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        protected AbstractRobotTask(IAgvReporter agvReporter,IWS ws)
+        protected AbstractRobotTask(IAgvReporter agvReporter,IAgvRequester agvRequester, IWS ws)
         {
             AgvReporter = agvReporter;
+            AgvRequester = agvRequester;
             Ws = ws;
         }
 
@@ -191,7 +194,58 @@ namespace AgvcWorkFactory.Tasks
                 throw new Exception($"<<ERR>><<{reportKey}>> 失败：获取Report失败");
             }
         }
+        /// <summary>
+        ///     等待IM请求
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="recvFunc"></param>
+        protected void WaitRequest<T>(Func<T, bool> recvFunc) where T : BaseRequest
+        {
+            var waitHandle = new AutoResetEvent(false);
+            var requestTask = new AgvRequest(MRID, Id, typeof(T), waitHandle)
+            {
+                AgreeCall = baseRequest => { return recvFunc?.Invoke(baseRequest as T) ?? true; }
+            };
+          
+            var agvError = false;
+            var requestKey = requestTask.GetKey();
+            Thread.Sleep(10);
+            if (AgvRequester.TryAddWatch(requestTask)) //IM Report是不受控制的。有可能这里还没有AddWatch,通知却已经到达了。
+                while (requestTask.Request == null && !agvError)
+                {
+                    VirtualRobot.State = $"等待AGV信号：{requestKey}中";
+                    waitHandle.WaitOne(60 * 1000); //等待60s[可配置]
+                    //======================================================================
+                    //_waitHandle.WaitOne();
+                    //挂起綫程等待，直到有任务上报或者轮询AGV为故障状态。
+                    //=======================================================================
+                    //在等待上报期间：如果AGV发生了故障或者通讯异常，那么需要每隔一分钟去轮询AGV状态，
+                    //如果轮询到AGV IO 狀態=Initialize 时：此任务已无效。
+                    //注意：机器人初始化之后没有接收到任务就标志为initial状态
+                    //=======================================================================
+                    if (requestTask.Request != null) //收到信号
+                        break;
+                    //检查agv状态
+                    VirtualRobot.RequestUpdateStatusSync();
+                    if (VirtualRobot.IsInitialize()) //agv状态有误
+                        agvError = true; //抛弃本次任务
+                }
 
+            //已经成功Report
+            var request = AgvRequester.GetRequest(requestKey);
+            if (request != null)
+            {
+          
+                Console.WriteLine($"<<OK>><<{requestKey}>> 实际耗时：{requestTask.Ms} ms");
+                AgvRequester.RemoveWatch(requestKey);
+            }
+            else
+            {
+                if (agvError)
+                    throw new Exception($"<<ERR>><<{requestKey}>> 失败：AGV设备重启");
+                throw new Exception($"<<ERR>><<{requestKey}>> 失败：获取Request失败");
+            }
+        }
         /// <summary>
         ///     發送Mission
         /// </summary>
@@ -265,6 +319,10 @@ namespace AgvcWorkFactory.Tasks
                 reportAction?.Invoke(arrived);
                 return true; //ack
             });
+            //3.1 Transport Confirm
+            WaitRequest<TransportConfirm>(transportConfirm=> {
+                return true;//ack
+            });
             //4.Transfer End
             WaitReport<TransportEnd>(transportEnd =>
             {
@@ -295,6 +353,10 @@ namespace AgvcWorkFactory.Tasks
             {
                 reportAction?.Invoke(arrived);
                 return true; //ack
+            });
+            //3.1 Transport Confirm
+            WaitRequest<TransportConfirm>(transportConfirm => {
+                return true;//ack
             });
             //4.Transfer End
             WaitReport<TransportEnd>(transportEnd =>

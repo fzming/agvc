@@ -75,7 +75,7 @@ namespace AgvcWorkFactory
 
             return report.GetResponse(received);
         }
-
+        
         public BaseReport GetReport(string key)
         {
             if (Watchs.TryGetValue(key, out var wc)) return wc.Report;

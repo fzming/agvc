@@ -2,6 +2,6 @@
 {
     public class UnbindConfirm : BaseRequest
     {
-        public string MissionID { get; set; }
+       // public string MissionID { get; set; }
     }
 }
