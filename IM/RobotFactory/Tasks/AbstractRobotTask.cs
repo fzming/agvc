@@ -210,7 +210,7 @@ namespace AgvcWorkFactory.Tasks
             var agvError = false;
             var requestKey = requestTask.GetKey();
             Thread.Sleep(10);
-            if (AgvRequester.TryAddWatch(requestTask)) //IM Report是不受控制的。有可能这里还没有AddWatch,通知却已经到达了。
+            if (AgvRequester.TryAddWatch(requestTask)) //IM Request是不受控制的。有可能这里还没有AddWatch,通知却已经到达了。
                 while (requestTask.Request == null && !agvError)
                 {
                     VirtualRobot.State = $"等待AGV信号：{requestKey}中";
@@ -231,7 +231,7 @@ namespace AgvcWorkFactory.Tasks
                         agvError = true; //抛弃本次任务
                 }
 
-            //已经成功Report
+            //已经成功Request
             var request = AgvRequester.GetRequest(requestKey);
             if (request != null)
             {
