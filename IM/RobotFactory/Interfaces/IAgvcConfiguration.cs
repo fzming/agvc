@@ -32,6 +32,10 @@ namespace AgvcWorkFactory.Interfaces
         /// 当机器人有待处理的任务，但忙碌或充电时，轮询检查间隔MS
         /// </summary>
         public int RobotIdleStatusInterval { get; set; }
+        /// <summary>
+        /// 在等待Agv的Report和Request过程中，轮询检查Agv是否被重置的间隔MS 
+        /// </summary>
+        public int InitializeCheckInterval { get; set; }
     }
 
     /// <summary>

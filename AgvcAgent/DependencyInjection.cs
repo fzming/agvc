@@ -16,14 +16,23 @@ namespace AgvcAgent
         public static void ConfigureServices(WebHostBuilderContext webHostBuilderContext, IServiceCollection services)
         {
             // ServiceProvider = services.BuildServiceProvider();
-            var configuration = webHostBuilderContext.Configuration;
+           // var configuration = webHostBuilderContext.Configuration;
             // services.Configure<MongoConfig>(configuration.GetSection("Mongo"));
 
             // services.AddSingleton(typeof(IMongoRepository<>),typeof(MongoRepository<>));
-            services.ScanAndInjectService("^AgvcWorkFactory|^Utility|^Messages");
-            services.ScanAndInjectService("^CoreService|^AgvcService");
-            services.ScanAndInjectService("^AgvcRepository|^CoreRepository");
-            services.ScanAndInjectService("^Cache.IRedis");
+            try
+            {
+                services.ScanAndInjectService("^AgvcWorkFactory|^Utility|^Messages");
+                services.ScanAndInjectService("^CoreService|^AgvcService");
+                services.ScanAndInjectService("^AgvcRepository|^CoreRepository");
+                services.ScanAndInjectService("^Cache.IRedis");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                
+            }
+          
             // services.Add(new ServiceDescriptor(typeof(IMongoRepository<>), typeof(MongoRepository<>), ServiceLifetime.Singleton));
 
             //services.AddSingleton(typeof(IRepository<>),typeof(MongoRepository<>));
@@ -37,7 +46,7 @@ namespace AgvcAgent
         /// <param name="matchAssemblies">要扫描的程序集名称,默认为[^Shop.Utils|^Shop.]多个使用|分隔</param>
         /// <returns></returns>
         public static IServiceCollection ScanAndInjectService(this IServiceCollection services,
-            string matchAssemblies = "^Shop.Utils|^Shop.")
+            string matchAssemblies)
         {
             bool Match(string assemblyName)
             {
@@ -51,7 +60,6 @@ namespace AgvcAgent
 
             #region 依赖注入
 
-            //services.AddScoped<IUserService, UserService>();           
             var baseType = typeof(IDependency);
             var path = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
             var getFiles = Directory.GetFiles(path, "*.dll").Where(Match); //.Where(o=>o.Match())

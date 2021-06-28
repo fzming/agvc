@@ -18,14 +18,34 @@ namespace AgvcAgent
             Console.Title = "AgvcAgentV1.0";
             //Console.ForegroundColor = ConsoleColor.Green;
 
-              _configuration = CreateConfiguration();
-            urls = _configuration.GetSection("AGVC").Get<AgvcConfig>().ListenUrls;
-            var webHost = CreateWebHostBuilder(args).Build();
-            DependencyInjection.ServiceProvider = webHost.Services;
+            _configuration = CreateConfiguration();
+            var agvConfig = _configuration.GetSection("AGVC").Get<AgvcConfig>();
+            urls = agvConfig?.ListenUrls;
+            var webHostBuilder = CreateWebHostBuilder(args);
+            if (webHostBuilder==null)
+            {
+                throw new Exception("webHostBuilder Create Failed");
+            }
+
+            IWebHost webHost = null;
+            try
+            {
+                webHost =webHostBuilder.Build();
+                DependencyInjection.ServiceProvider = webHost.Services;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("webHostBuilder.Build() Failed:");
+                Console.WriteLine(e);
+            }
            
             var agvc = DependencyInjection.GetService<IAgvcCenter>();
+            if (agvc==null)
+            {
+                throw new Exception("Fail to Create IAgvcCenter");
+            }
             agvc.Run();
-            webHost.Run();
+            webHost?.Run();
             agvc.Stop();
         }
 
@@ -46,7 +66,10 @@ namespace AgvcAgent
                 .UseUrls(urls)
                 //.UseUrls("http://*:5200;http://localhost:5300;")
                 .ConfigureServices(DependencyInjection.ConfigureServices)
-                .ConfigureKestrel((context, options) => { options.Limits.MaxRequestBodySize = 20000000; })
+                .ConfigureKestrel((context, options) =>
+                {
+                    options.Limits.MaxRequestBodySize = 20000000;
+                })
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     // var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);

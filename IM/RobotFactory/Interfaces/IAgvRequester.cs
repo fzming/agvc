@@ -8,7 +8,7 @@ namespace AgvcWorkFactory.Interfaces
     {
         bool TryAddWatch(AgvRequest agvRequest);
         void RemoveWatch(string key);
-
+        int GetAgvInitializeInterval();
         /// <summary>
         ///     IM->AGVC  请求了状态
         /// </summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using AgvcWorkFactory.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Protocol;
 using Protocol.Report;
 
@@ -11,8 +12,16 @@ namespace AgvcWorkFactory
     /// </summary>
     public class AgvReporter : IAgvReporter
     {
+        private IConfiguration Configuration { get; }
+
         private readonly ConcurrentDictionary<string, AgvReport> Watchs =
             new();
+
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public AgvReporter(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
         public bool TryAddWatch(AgvReport agvReport)
         {
@@ -27,6 +36,11 @@ namespace AgvcWorkFactory
                 agvReport.WaitHandle?.Close();
                 Console.WriteLine($"[移除监控] {agvReport.MrId} {key}");
             }
+        }
+
+        public int GetAgvInitializeInterval()
+        {
+            return Configuration.GetSection("AGVC").Get<AgvcConfig>().InitializeCheckInterval;
         }
 
         /// <summary>

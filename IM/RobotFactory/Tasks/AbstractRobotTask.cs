@@ -161,7 +161,7 @@ namespace AgvcWorkFactory.Tasks
                 while (reportTask.Report == null && !agvError)
                 {
                     VirtualRobot.State = $"等待AGV信号：{reportKey}中";
-                    waitHandle.WaitOne(60 * 1000); //等待60s[可配置]
+                    waitHandle.WaitOne(AgvReporter.GetAgvInitializeInterval()); //等待60s[可配置]
                     //======================================================================
                     //_waitHandle.WaitOne();
                     //挂起綫程等待，直到有任务上报或者轮询AGV为故障状态。
@@ -214,7 +214,7 @@ namespace AgvcWorkFactory.Tasks
                 while (requestTask.Request == null && !agvError)
                 {
                     VirtualRobot.State = $"等待AGV信号：{requestKey}中";
-                    waitHandle.WaitOne(60 * 1000); //等待60s[可配置]
+                    waitHandle.WaitOne(AgvReporter.GetAgvInitializeInterval()); //等待60s[可配置]
                     //======================================================================
                     //_waitHandle.WaitOne();
                     //挂起綫程等待，直到有任务上报或者轮询AGV为故障状态。
@@ -255,7 +255,13 @@ namespace AgvcWorkFactory.Tasks
             mission.MRID = MRID;
             mission.MissionID = Id;
              
-            return AsyncHelper.RunSync(() => { return Ws.DispatchAsync<BaseMission.Response>(mission); });
+            var response =   AsyncHelper.RunSync(() => { return Ws.DispatchAsync<BaseMission.Response>(mission); });
+            if (response==null)
+            {
+                throw new Exception($"无法对AGV执行{nameof(BaseMission)}操作。请检查网络通讯是否正常。");
+            }
+
+            return response;
         }
 
         /// <summary>
@@ -307,7 +313,7 @@ namespace AgvcWorkFactory.Tasks
         ///     执行标准Pick操作
         /// </summary>
         /// <param name="pick"></param>
-        protected void RunPickMission(Pick pick, Action<BaseReport> reportAction = null)
+        protected void RunPickMission(Pick pick, Action<Base> action = null)
         {
             //1.MrStatus 任务执行前已经获取了状态,这里不需要重新获取
             //VirtualRobot.RequestUpdateStatusAsync(); 
@@ -316,23 +322,24 @@ namespace AgvcWorkFactory.Tasks
             //3.Arrived
             WaitReport<Arrived>(arrived =>
             {
-                reportAction?.Invoke(arrived);
+                action?.Invoke(arrived);
                 return true; //ack
             });
             //3.1 Transport Confirm
             WaitRequest<TransportConfirm>(transportConfirm=> {
+                action?.Invoke(transportConfirm);
                 return true;//ack
             });
             //4.Transfer End
             WaitReport<TransportEnd>(transportEnd =>
             {
-                reportAction?.Invoke(transportEnd);
+                action?.Invoke(transportEnd);
                 return true; //ack
             });
             //5.Pick MissionDone
             WaitReport<MissionDone>(missionDone =>
             {
-                reportAction?.Invoke(missionDone);
+                action?.Invoke(missionDone);
                 return true; //ack
             });
         }
@@ -341,8 +348,8 @@ namespace AgvcWorkFactory.Tasks
         ///     执行标准Drop操作
         /// </summary>
         /// <param name="drop"></param>
-        /// <param name="reportAction"></param>
-        protected void RunDropMission(Drop drop, Action<BaseReport> reportAction = null)
+        /// <param name="action"></param>
+        protected void RunDropMission(Drop drop, Action<Base> action = null)
         {
             //1.MrStatus
             //VirtualRobot.RequestUpdateStatusAsync(); 
@@ -351,23 +358,24 @@ namespace AgvcWorkFactory.Tasks
             //3.Arrived
             WaitReport<Arrived>(arrived =>
             {
-                reportAction?.Invoke(arrived);
+                action?.Invoke(arrived);
                 return true; //ack
             });
             //3.1 Transport Confirm
             WaitRequest<TransportConfirm>(transportConfirm => {
+                action?.Invoke(transportConfirm);
                 return true;//ack
             });
             //4.Transfer End
             WaitReport<TransportEnd>(transportEnd =>
             {
-                reportAction?.Invoke(transportEnd);
+                action?.Invoke(transportEnd);
                 return true; //ack
             });
             //5.Pick MissionDone
             WaitReport<MissionDone>(missionDone =>
             {
-                reportAction?.Invoke(missionDone);
+                action?.Invoke(missionDone);
                 return true; //ack
             });
         }
