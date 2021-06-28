@@ -5,7 +5,7 @@ using Utility;
 
 namespace AgvcWorkFactory.Interfaces
 {
-    public interface IVirtualRobotManager : ISingletonDependency
+    public interface IVirtualRobotManager :IMrEventHandler, ISingletonDependency
     {
         IVirtualRobot FindRobot(string MRID);
         IEnumerable<IVirtualRobot> FindIdleRobots();
@@ -26,10 +26,6 @@ namespace AgvcWorkFactory.Interfaces
         /// <param name="MRID"></param>
         /// <returns></returns>
         MRStatus GetMRStatusSync(string MRID);
-        /// <summary>
-        /// 当MR完成了所有队列任务时触发
-        /// </summary>
-        event MrIdleEventHandler OnMrIdle;
         IEnumerable<string> ReadMrListFromIm();
         void CreateVirtualRobot(string mrId,Action<IVirtualRobot> createAction);
         IEnumerable<IVirtualRobot> GetAllVirtualRobots();

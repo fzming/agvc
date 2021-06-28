@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using AgvcWorkFactory.Interfaces;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using Protocol.Query;
+
 using Utility.Helpers;
+
 using MRStatus = RobotDefine.MRStatus;
 
 namespace AgvcWorkFactory
@@ -90,11 +95,6 @@ namespace AgvcWorkFactory
         }
 
         /// <summary>
-        /// 当MR完成了所有队列任务时触发
-        /// </summary>
-        public event MrIdleEventHandler OnMrIdle;
-
-        /// <summary>
         ///     调用IM读取所有在线MR列表
         /// </summary>
         /// <returns></returns>
@@ -128,13 +128,17 @@ namespace AgvcWorkFactory
                     createAction?.Invoke(robot);
                 }
 
-                if (robot!=null)
+                if (robot != null)
                 {
                     robot.OnMrRequestStatusRefresh += (sender, e) => { TryRefreshMRStatus(e.MRID); };
+
                     if (OnMrIdle != null) robot.OnMrIdle += OnMrIdle;
+                    if (OnMrTaskComplete != null) robot.OnMrTaskComplete += OnMrTaskComplete;
+                    if (OnMrTaskError != null) robot.OnMrTaskError += OnMrTaskError;
+
                     VirtualRobots.Add(robot);
                 }
-              
+
             }
         }
 
@@ -163,5 +167,29 @@ namespace AgvcWorkFactory
             var robot = FindRobot(e.MrStatus.MRID);
             robot?.SetMRStatus(e.MrStatus);
         }
+
+        #region Implementation of IMrEventHandler
+
+        /// <summary>
+        ///     请求更新实时状态
+        /// </summary>
+        public event MrRequestStatusRefreshEventHandler OnMrRequestStatusRefresh;
+
+        /// <summary>
+        /// 当MR完成了所有队列任务时触发
+        /// </summary>
+        public event MrIdleEventHandler OnMrIdle;
+
+        /// <summary>
+        /// 当MR执行单个任务时发生错误触发
+        /// </summary>
+        public event MrTaskErrorEventHandler OnMrTaskError;
+
+        /// <summary>
+        /// 当MR完成了单个任务时触发
+        /// </summary>
+        public event MrTaskCompleteEventHandler OnMrTaskComplete;
+
+        #endregion
     }
 }

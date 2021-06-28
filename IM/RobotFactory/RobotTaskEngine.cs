@@ -29,11 +29,30 @@ namespace AgvcWorkFactory
         public RobotTaskEngine(IVirtualRobotManager robotManager, IRobotTaskFactory robotTaskFactory, IAgvcConfiguration agvcConfiguration)
         {
             RobotManager = robotManager;
+            //绑定事件
             RobotManager.OnMrIdle += RobotManager_OnMrIdle;
+            RobotManager.OnMrTaskComplete += RobotManager_OnMrTaskComplete; ;
+            RobotManager.OnMrTaskError += RobotManager_OnMrTaskError; ;
             RobotTaskFactory = robotTaskFactory;
             _taskAssignMs = agvcConfiguration.GetConfig().TaskAssignMs;
         }
 
+        #region Robot Events
+
+        private void RobotManager_OnMrTaskError(object sender, MrTaskErrorArg e)
+        {
+             //todo:记录Mr任务错误
+        }
+
+        private void RobotManager_OnMrTaskComplete(object sender, MrTaskCompleteArg e)
+        {
+             //todo:记录Mr任务完成
+        }
+        /// <summary>
+        /// 当MR空闲时
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RobotManager_OnMrIdle(object sender, MrIdArg e)
         {
             lock (_locker)
@@ -45,7 +64,9 @@ namespace AgvcWorkFactory
             }
 
         }
+        
 
+        #endregion
         private IVirtualRobotManager RobotManager { get; }
         private IRobotTaskFactory RobotTaskFactory { get; }
 

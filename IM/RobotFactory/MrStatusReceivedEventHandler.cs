@@ -8,6 +8,8 @@ namespace AgvcWorkFactory
 
     public delegate void MrRequestStatusRefreshEventHandler(object sender, MrIdArg e);
     public delegate void MrIdleEventHandler(object sender, MrIdArg e);
+    public delegate void MrTaskErrorEventHandler(object sender, MrTaskErrorArg e);
+    public delegate void MrTaskCompleteEventHandler(object sender, MrTaskCompleteArg e);
 
     public class MrIdArg : EventArgs
     {
@@ -17,5 +19,22 @@ namespace AgvcWorkFactory
     public class MrStatusErrorArg : MrIdArg
     {
         public string Error { get; set; }
+    }
+
+    public class MrTaskErrorArg : MrIdArg
+    {
+        /// <summary>
+        /// 任务ID
+        /// </summary>
+        public string TaskId { get; set; }
+        public string Error { get; set; }
+    }
+
+    public class MrTaskCompleteArg : MrIdArg
+    {
+        /// <summary>
+        /// 任务ID
+        /// </summary>
+        public string TaskId { get; set; }
     }
 }

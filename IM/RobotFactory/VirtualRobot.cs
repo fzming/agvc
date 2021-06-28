@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+
 using AgvcWorkFactory.Interfaces;
 using AgvcWorkFactory.Tasks;
+
 using RobotDefine;
 
 namespace AgvcWorkFactory
@@ -46,6 +48,8 @@ namespace AgvcWorkFactory
         /// </summary>
         public event MrRequestStatusRefreshEventHandler OnMrRequestStatusRefresh;
         public event MrIdleEventHandler OnMrIdle;
+        public event MrTaskErrorEventHandler OnMrTaskError;
+        public event MrTaskCompleteEventHandler OnMrTaskComplete;
 
         /// <summary>
         ///     请求异步更新MR状态
@@ -214,11 +218,19 @@ namespace AgvcWorkFactory
                                 task.Run(this); //運行任務
                                 Console.WriteLine($"[{MRStatus.MRID}：结束任务->{task.Id}]");
                                 SetWorkingStatus(false);
+                                OnMrTaskComplete?.Invoke(this, new MrTaskCompleteArg
+                                {
+                                    TaskId = task?.Id
+                                });
                             }
                             catch (Exception e)
                             {
                                 Console.WriteLine(e);
-                                throw;
+                                OnMrTaskError?.Invoke(this, new MrTaskErrorArg
+                                {
+                                    TaskId = task?.Id,
+                                    Error = e.Message
+                                });
                             }
                             finally
                             {

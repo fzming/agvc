@@ -32,7 +32,7 @@ namespace AgvcWorkFactory
         /// <summary>
         ///     IM->AGVC 请求
         /// </summary>
-        /// <param name="report"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         public Response OnRequest(BaseRequest request)
         {
