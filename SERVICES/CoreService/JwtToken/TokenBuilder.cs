@@ -75,9 +75,12 @@ namespace CoreService.JwtToken
                 new(ClaimTypes.Email, authUser.Email??string.Empty), //身份单元项
                 new(ClaimTypes.Name, authUser.Name),
                 new(ClaimTypes.NameIdentifier, authUser.UserID.ToString()),
-                new(ClaimTypes.Role, authUser.Role ?? string.Empty)
+                new(ClaimTypes.Role, authUser.Role ?? string.Empty),
+                new(ClaimTypes.GroupSid,authUser.OrgId??string.Empty)
             };
             return claimList;
         }
+
+       
     }
 }

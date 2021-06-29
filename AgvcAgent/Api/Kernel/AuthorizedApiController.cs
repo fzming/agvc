@@ -1,6 +1,8 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using AgvcService.Users.Models;
 using CoreData;
+using CoreService.JwtToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharpCompress;
@@ -15,47 +17,59 @@ namespace AgvcAgent.Api.Kernel
     [ApiController]
     public class AuthorizedApiController : ControllerBase
     {
-        private Lazy<string> lzUserClams;
+        private Lazy<JwtTokenUser> _lazyTokenUser;
 
         public AuthorizedApiController()
         {
-            lzUserClams = new Lazy<string>(() => {
+
+            _lazyTokenUser = new Lazy<JwtTokenUser>(() => {
+                 
+                if (HttpContext.User.Identity is ClaimsIdentity identity)
+                {
+                    return GetTokenUser(identity);
+
+                }
                 var clams = User.Claims;
-                return string.Empty;
+                return null;
             });
         }
 
+        [NonAction]
+        private JwtTokenUser GetTokenUser(ClaimsIdentity identity)
+        {
+
+            return new JwtTokenUser
+            {
+                UserID =  User.FindFirstValue(ClaimTypes.NameIdentifier),
+                Email = User.FindFirstValue(ClaimTypes.Email),
+                Name = User.FindFirstValue(ClaimTypes.Name),
+                Role = User.FindFirstValue(ClaimTypes.Role),
+                OrgId = User.FindFirstValue(ClaimTypes.GroupSid)
+            };
+        }
         /// <summary>
         ///     用户ID
         /// </summary>
-        public string ClientId
-        {
-            get
-            {
-                return lzUserClams.Value;
-            }
-        }
+        public string ClientId => _lazyTokenUser.Value.UserID;
 
         /// <summary>
         ///     机构ID
         /// </summary>
-        public string OrgId => AuthorizedUser.OrgId;
+        public string OrgId => _lazyTokenUser.Value.OrgId;
+        /// <summary>
+        ///  角色ID
+        /// </summary>
+        public string RoleId => _lazyTokenUser.Value.Role;
 
         /// <summary>
         ///     当前授权用户
         /// </summary>
         protected Identity CurrentUser => new()
         {
-            Name = AuthorizedUser.ClientName,
+            Name = _lazyTokenUser.Value.Name,
             Id = ClientId
         };
 
-        #region 构造函数
-
-        public AuthorizedUser AuthorizedUser { get; }
-
-
-        #endregion
 
        
     }

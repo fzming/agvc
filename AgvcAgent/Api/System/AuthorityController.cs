@@ -53,7 +53,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("role/create")]
-        public async Task<Role> CreateRoleAsync([FromBody] CreateRoleModel model)
+        public async Task<Role> CreateRoleAsync([FromForm] CreateRoleModel model)
         {
             return await AuthorityService.CreateRoleAsync(model, OrgId);
         }
@@ -65,7 +65,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("role/update")]
-        public async Task<bool> UpdateRoleAsync([FromBody] UpdateRoleModel model)
+        public async Task<bool> UpdateRoleAsync([FromForm] UpdateRoleModel model)
         {
             return await AuthorityService.UpdateRoleAsync(model);
         }
@@ -107,7 +107,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("user/update")]
-        public Task<bool> SyncUserAuthoritysAsync([FromBody] UpdateUserAuthorityModel model)
+        public Task<bool> SyncUserAuthoritysAsync([FromForm] UpdateUserAuthorityModel model)
         {
             return AuthorityService.SyncUserAuthoritysAsync(model.Authorizes, model.RoleId, model.UserId);
         }
@@ -120,7 +120,7 @@ namespace AgvcAgent.Api.System
         [Route("user-codes")]
         public async Task<IEnumerable<RoleAuthorityCodeDto>> QueryUserAuthorityCodesAsync()
         {
-            return await AuthorityService.QueryUserAuthorityCodesAsync(AuthorizedUser.RoleId, ClientId);
+            return await AuthorityService.QueryUserAuthorityCodesAsync(RoleId, ClientId);
         }
 
         #endregion
@@ -146,14 +146,14 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("code/create")]
-        public async Task<AuthorityCode> CreateCodeAsync([FromBody] CreateCodeModel model)
+        public async Task<AuthorityCode> CreateCodeAsync([FromForm] CreateCodeModel model)
         {
             return await AuthorityService.CreateCodeAsync(model);
         }
 
         [HttpPost]
         [Route("code/update")]
-        public async Task<bool> UpdateCodeAsync([FromBody] UpdateCodeModel model)
+        public async Task<bool> UpdateCodeAsync([FromForm] UpdateCodeModel model)
         {
             return await AuthorityService.UpdateCodeAsync(model);
         }

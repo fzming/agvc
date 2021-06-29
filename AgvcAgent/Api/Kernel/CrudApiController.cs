@@ -37,7 +37,7 @@ namespace AgvcAgent.Api.Kernel
         /// <returns></returns>
         [HttpPost]
         [Route("update")]
-        public virtual Task<T> UpdateAsync([FromBody] TUpdateModel updateModel)
+        public virtual Task<T> UpdateAsync([FromForm] TUpdateModel updateModel)
         {
             return CrudService.UpdateAsync(updateModel);
         }
@@ -83,7 +83,7 @@ namespace AgvcAgent.Api.Kernel
         /// <returns></returns>
         [HttpPost]
         [Route("create")]
-        public virtual Task<T> CreateAsync([FromBody] TModel model)
+        public virtual Task<T> CreateAsync([FromForm] TModel model)
         {
             return CrudService.CreateAsync(OrgId, model);
         }
@@ -119,7 +119,7 @@ namespace AgvcAgent.Api.Kernel
         /// <returns></returns>
         [HttpPost]
         [Route("page-query")]
-        public virtual Task<PageResult<T>> PageQueryAsync([FromBody] PageQuery page)
+        public virtual Task<PageResult<T>> PageQueryAsync([FromForm] PageQuery page)
         {
             return CrudService.PageQueryAsync(page);
         }
@@ -131,7 +131,7 @@ namespace AgvcAgent.Api.Kernel
         /// <returns></returns>
         [HttpPost]
         [Route("org-page-query")]
-        public virtual Task<PageResult<T>> OrgPageQueryAsync([FromBody] PageQuery page)
+        public virtual Task<PageResult<T>> OrgPageQueryAsync([FromForm] PageQuery page)
         {
             return CrudService.PageQueryAsync(new OrgPageQuery(OrgId, page));
         }

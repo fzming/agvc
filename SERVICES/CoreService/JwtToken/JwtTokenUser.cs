@@ -13,7 +13,13 @@
             Role = role;
         }
 
+        /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
+        public JwtTokenUser()
+        {
+        }
+
         public string UserID { get; set; }
+        public string OrgId { get; set; }
         public string Email { get; set; }
 
         public string Name { get; set; }

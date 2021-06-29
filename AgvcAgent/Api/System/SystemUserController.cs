@@ -46,7 +46,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("query")]
-        public async Task<PageResult<SystemUserDto>> QuerySystemUsersAsync([FromBody] SystemUserPageQuery userPageQuery)
+        public async Task<PageResult<SystemUserDto>> QuerySystemUsersAsync([FromForm] SystemUserPageQuery userPageQuery)
         {
             var pageResult = await SystemUserService.QuerySystemUsersAsync(userPageQuery);
             var users = pageResult.Datas.ToListEx();
@@ -80,7 +80,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("create")]
-        public Task<Result<SystemUser>> CreateSystemUserAsync([FromBody] SystemUserCreateModel userCreateModel)
+        public Task<Result<SystemUser>> CreateSystemUserAsync([FromForm] SystemUserCreateModel userCreateModel)
         {
             return SystemUserService.CreateSystemUserAsync(userCreateModel, OrgId);
         }
@@ -92,7 +92,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("update")]
-        public async Task<Result<SystemUser>> UpdateSystemUserAsync([FromBody] SystemUserUpdateModel userUpdateModel)
+        public async Task<Result<SystemUser>> UpdateSystemUserAsync([FromForm] SystemUserUpdateModel userUpdateModel)
         {
             var us = await SystemUserService.UpdateSystemUserAsync(userUpdateModel);
             if (us.Success)
@@ -139,7 +139,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("update-profile")]
-        public Task<bool> UpdateUserProfileAsync([FromBody] UpdateProfileModel model)
+        public Task<bool> UpdateUserProfileAsync([FromForm] UpdateProfileModel model)
         {
             return SystemUserService.UpdateUserProfileAsync(ClientId, model);
         }
@@ -151,7 +151,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("change-password")]
-        public Task<bool> ChangeUserPasswordAsync([FromBody] ChangePasswordModel model)
+        public Task<bool> ChangeUserPasswordAsync([FromForm] ChangePasswordModel model)
         {
             return SystemUserService.ChangeUserPasswordAsync(ClientId, model);
         }

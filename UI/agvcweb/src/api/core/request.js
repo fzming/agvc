@@ -1,8 +1,5 @@
 import axios from "axios";
-import {
-  WEBAPI_BASE_URL,
-  WEBAPI_REQUEST_TIMEOUT
-} from "@/global/const"
+import { WEBAPI_BASE_URL, WEBAPI_REQUEST_TIMEOUT } from "@/global/const";
 import { Notification, MessageBox } from "element-ui";
 
 import store from "@/store";
@@ -26,8 +23,7 @@ service.interceptors.request.use(
     var s = store.state.user.token;
     // 判断是否存在token，如果存在的话，则每个http header都加上token
     if (s && s.token) {
-      config.headers.Authorization =
-         "Bearer " + s.token.access_token;
+      config.headers.Authorization = "Bearer " + s.token.access_token;
     }
 
     return config;
@@ -43,6 +39,7 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   (response) => {
+    //console.log(response);
     try {
       // console.log("response=>", response);
       const disposition = response.headers["content-disposition"];
@@ -69,10 +66,10 @@ service.interceptors.response.use(
     // console.log("error=>", error.response); // for debug
     // console.error("response错误", error);
     let err = error.message;
+    console.log(err);
     let err_title = "操作失败";
 
     if (error.response) {
-
       err_title = `操作失败`;
       err = error.response.statusText;
       const data = error.response.data; // 有数据响应，接口调用成功
@@ -88,21 +85,16 @@ service.interceptors.response.use(
           };
           return;
         }
-        if (data.messageDetail) {
-          // 404错误描述
-          err = `接口错误：${data.messageDetail}`;
-        } else if (data.message) {
-          err = data.message;
-        } else if (data.error_description) {
-          err = data.error_description;
-        } else if (data.error) {
+
+        if (data.error) {
           err = `${data.error}`;
         }
       } else {
         err = error.response.error || "服务端错误";
       }
     }
-    if (error.response.status==401) {
+    console.log(error);
+    if (error.response.status == 401) {
       console.log(err);
       err = "您的登录状态已失效，请重新登录";
       err_title = "认证失败";
@@ -119,6 +111,7 @@ service.interceptors.response.use(
         position: "bottom-right",
         customClass: "NotificationZindex",
       });
+      return Promise.reject(new Error(err));
     }
   }
 );

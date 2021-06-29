@@ -1,13 +1,18 @@
-﻿using AgvcAgent.Api.Filters.GlobalFilters;
+﻿using System.Globalization;
+using System.Linq;
+using AgvcAgent.Api.Filters.GlobalFilters;
 using CoreService.JwtToken;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Utility.Converters;
 
 namespace AgvcAgent
 {
@@ -41,19 +46,27 @@ namespace AgvcAgent
                 configure.EnableEndpointRouting = false;
             }).AddNewtonsoftJson(options =>
             {
+                //使用驼峰样式的key
+       
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.UseCamelCasing(false);
                 //忽略循环引用
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                //使用驼峰样式的key
-                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+             
 
                 //日期类型默认格式化处理
                 options.SerializerSettings.DateFormatHandling = Newtonsoft.Json.DateFormatHandling.MicrosoftDateFormat;
                 options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
- 
+                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
+                options.SerializerSettings.Culture = CultureInfo.GetCultureInfo("zh-cn");
+                //对于double类型 默认保留2个小数点
+                if (options.SerializerSettings.Converters.FirstOrDefault(p => p.GetType() == typeof(JsonCustomDoubleConvert)) == null)
+                {
+                    options.SerializerSettings.Converters.Add(new JsonCustomDoubleConvert(2));
+                }
+
                 //空值处理
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-  
-                options.UseMemberCasing();
             });
             // services.AddControllers();
             // services.AddSwaggerGen(c =>

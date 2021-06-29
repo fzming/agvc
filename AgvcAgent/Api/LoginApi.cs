@@ -47,7 +47,10 @@ namespace AgvcAgent.Api
             if (result.Success)
             {
                 var data = result.Data;//account user => jwtTokenUser
-                var user = new JwtTokenUser(data.Id, data.Nick, data.Email, data.RoleId);
+                var user = new JwtTokenUser(data.Id, data.Nick, data.Email, data.RoleId)
+                {
+                    OrgId = data.OrgId
+                };
                 var signToken = TokenBuilder.CreateJwtToken(user);
                 return new 
                 {

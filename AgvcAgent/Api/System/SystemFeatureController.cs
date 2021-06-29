@@ -60,7 +60,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("org-features")]
-        public Task<PageResult<OrgFeatureDto>> QueryOrgFeaturesAsync([FromBody] QrgFeatureQuery query)
+        public Task<PageResult<OrgFeatureDto>> QueryOrgFeaturesAsync([FromForm] QrgFeatureQuery query)
         {
             return SystemFeatureService.QueryOrganizationFeaturesAsync(query.OrgId, query);
         }
@@ -72,7 +72,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("set-org-feature")]
-        public Task<bool> QueryOrgFeaturesAsync([FromBody] OrganizationFeatureValue featureValue)
+        public Task<bool> QueryOrgFeaturesAsync([FromForm] OrganizationFeatureValue featureValue)
         {
             return SystemFeatureService.SetOrganizationFeatureValueAsync(OrgId, featureValue);
         }
@@ -90,7 +90,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("reset-org-feature")]
-        public Task<bool> RemoveOrgFeaturesAsync([FromBody] ResetFeatureModel resetFeatureModel)
+        public Task<bool> RemoveOrgFeaturesAsync([FromForm] ResetFeatureModel resetFeatureModel)
         {
             return SystemFeatureService.ResetOrganizationFeaturesAsync(resetFeatureModel.OrgId,
                 resetFeatureModel.FeatureId);

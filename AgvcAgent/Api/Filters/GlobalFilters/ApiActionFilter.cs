@@ -30,6 +30,7 @@ namespace AgvcAgent.Api.Filters.GlobalFilters
                 Status = response.StatusCode,
                 Success = response.StatusCode==200
             };
+            
             var returnType = context.Result.GetType();
             //根据实际需求进行具体实现
             if (context.Result is ObjectResult objectResult)

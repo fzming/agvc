@@ -6,11 +6,11 @@
       @click="handleClickOutside"
     />
     <Sidebar class="sidebar-container" />
-    <VSignalr
+    <!-- <VSignalr
       :autoreconnected="true"
       :client-id="clientId"
       @on-received="on_received"
-    />
+    /> -->
     <div :class="{ hasTagsView: needTagsView }" class="main-container">
       <div :class="{ 'fixed-header': fixedHeader }">
         <!-- <div class="glim">
@@ -30,7 +30,7 @@
 
 <script>
 import { AppMain, Navbar, Sidebar, TagsView } from "./components";
-import VSignalr from "./components/VSignalr";
+// import VSignalr from "./components/VSignalr";
 import { mapState } from "vuex";
 import { SIG_EVENT } from "@/global/const";
 export default {
@@ -40,7 +40,7 @@ export default {
     Navbar,
     Sidebar,
     TagsView,
-    VSignalr,
+    //  VSignalr,
   },
   computed: {
     ...mapState({

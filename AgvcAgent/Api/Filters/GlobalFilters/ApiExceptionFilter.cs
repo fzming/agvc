@@ -12,6 +12,7 @@ namespace AgvcAgent.Api.Filters.GlobalFilters
     {
         public override void OnException(ExceptionContext context)
         {
+            context.ExceptionHandled = true;
             context.Result = BuildExceptionResult(context.Exception);
             base.OnException(context);
         }
@@ -41,6 +42,7 @@ namespace AgvcAgent.Api.Filters.GlobalFilters
             if (ex.InnerException != null && ex.Message != ex.InnerException.Message)
                 exception += "," + ex.InnerException.Message;
 
+            
             return new ObjectResult(new ApiResult<string>()
             {
                 Status = code,

@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using AgvcCoreData.System;
 using AgvcEntitys.System;
 using AgvcService.System.Models;
+using CoreService.Interfaces;
 
 namespace AgvcService.System
 {
     /// <summary>
     ///     菜单服务
     /// </summary>
-    public interface IMenuService
+    public interface IMenuService : IService
     {
         /// <summary>
         ///     获取路由菜单

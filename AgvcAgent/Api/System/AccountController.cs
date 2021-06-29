@@ -86,7 +86,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost, AllowAnonymous]
         [Route("is-app-user")]
-        public async Task<bool> IsAppUserExistsAsync([FromBody] DomainAppUserInfo appUser)
+        public async Task<bool> IsAppUserExistsAsync([FromForm] DomainAppUserInfo appUser)
         {
             var org = await OrgnizationService.GetOrgByDomainAsync(appUser.Domain);
             var accounts = await AccountService.FindAppAccountsAsync(appUser, org?.Id);
@@ -99,7 +99,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost, AllowAnonymous]
         [Route("find-app-user")]
-        public async Task<IEnumerable<Account>> FindAppUsersAsync([FromBody] DomainAppUserInfo appUser)
+        public async Task<IEnumerable<Account>> FindAppUsersAsync([FromForm] DomainAppUserInfo appUser)
         {
             var org = await OrgnizationService.GetOrgByDomainAsync(appUser.Domain);
             var accounts = await AccountService.FindAppAccountsAsync(appUser, org?.Id);
@@ -113,7 +113,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("kickoff")]
-        public async Task<bool> KickOffAsync([FromBody] KickOffModel model)
+        public async Task<bool> KickOffAsync([FromForm] KickOffModel model)
         {
             var user = await AccountService.FindAccountAsync(ClientId);
             if (user.Mobile.IsMobile() == false)
@@ -145,7 +145,7 @@ namespace AgvcAgent.Api.System
 
         [HttpPost]
         [Route("regsiter"), AllowAnonymous]
-        public async Task<bool> Regsiter([FromBody] RegisterModel registerModel)
+        public async Task<bool> Regsiter([FromForm] RegisterModel registerModel)
         {
             var r = await AccountService.RegsiterAsync(registerModel);
             if (r.Success)
@@ -273,7 +273,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("bind-mobile")]
-        public Task<Result<bool>> BindAccountMobileAsync([FromBody] MobileValidateModel model)
+        public Task<Result<bool>> BindAccountMobileAsync([FromForm] MobileValidateModel model)
         {
             return AccountService.BindMobileAsync(ClientId, model.Mobile,
                 model.SmsCode);
@@ -285,7 +285,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("unbind-mobile")]
-        public Task<Result<bool>> UnBindAccountMobileAsync([FromBody] SmsCodeType smsCode)
+        public Task<Result<bool>> UnBindAccountMobileAsync([FromForm] SmsCodeType smsCode)
         {
             return AccountService.UnBindMobileAsync(ClientId, smsCode);
         }
@@ -299,7 +299,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("update-profile")]
-        public Task<bool> UpdateUserProfileAsync([FromBody] UpdateProfileModel model)
+        public Task<bool> UpdateUserProfileAsync([FromForm] UpdateProfileModel model)
         {
 
             return AccountService.UpdateUserProfileAsync(ClientId, model);
@@ -323,7 +323,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("change-password")]
-        public Task<bool> ChangeUserPasswordAsync([FromBody] ChangePasswordModel model)
+        public Task<bool> ChangeUserPasswordAsync([FromForm] ChangePasswordModel model)
         {
 
             return AccountService.ChangeUserPasswordAsync(ClientId, model);
@@ -334,7 +334,7 @@ namespace AgvcAgent.Api.System
         /// </summary>
         [HttpPost, AllowAnonymous]
         [Route("find-password")]
-        public Task<Result<IdentSecurity>> FindUserPasswordAsync([FromBody] MobileValidateModel model)
+        public Task<Result<IdentSecurity>> FindUserPasswordAsync([FromForm] MobileValidateModel model)
         {
             return AccountService.FindUserPasswordAsync(model);
         }
@@ -344,7 +344,7 @@ namespace AgvcAgent.Api.System
         /// </summary>
         [HttpPost, AllowAnonymous]
         [Route("reset-password")]
-        public Task<Result<bool>> ReSetPasswordAsync([FromBody] ReSetPasswordModel model)
+        public Task<Result<bool>> ReSetPasswordAsync([FromForm] ReSetPasswordModel model)
         {
             return AccountService.ReSetPasswordAsync(model);
         }
@@ -368,7 +368,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("balance_query")]
-        public async Task<PageResult<AccountBalance>> QueryBalanceLogs([FromBody] BalanceLogQuery query)
+        public async Task<PageResult<AccountBalance>> QueryBalanceLogs([FromForm] BalanceLogQuery query)
         {
             return await AccountBalanceService.QueryBalanceLogsAsync(ClientId, BalanceType.Bean, query);
 
@@ -386,7 +386,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("update_identify")]
-        public async Task<bool> UpdateAppOpenIdentify([FromBody] AppOpenIdentify identify)
+        public async Task<bool> UpdateAppOpenIdentify([FromForm] AppOpenIdentify identify)
         {
             return await AccountService.UpdateAppOpenIdentifyAsync(ClientId, identify);
         }
@@ -395,7 +395,7 @@ namespace AgvcAgent.Api.System
 
         [HttpPost]
         [Route("query")]
-        public async Task<PageResult<UserDto>> QueryAccountUsersAsync([FromBody] AccountUserPageQuery userPageQuery)
+        public async Task<PageResult<UserDto>> QueryAccountUsersAsync([FromForm] AccountUserPageQuery userPageQuery)
         {
             var pageResult = await AccountService.QueryAccountUsersAsync(userPageQuery, OrgId);
             var users = pageResult.Datas.ToListEx();
@@ -437,7 +437,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("create")]
-        public Task<Result<Account>> CreateAccountUserAsync([FromBody] CreateAccountModel userCreateModel)
+        public Task<Result<Account>> CreateAccountUserAsync([FromForm] CreateAccountModel userCreateModel)
         {
             return AccountService.CreateAccountAsync(userCreateModel, OrgId);
         }
@@ -448,7 +448,7 @@ namespace AgvcAgent.Api.System
         /// <returns></returns>
         [HttpPost]
         [Route("update")]
-        public async Task<UserUpdateResult<Account>> UpdateAccountUserAsync([FromBody] AccountUserUpdateModel userUpdateModel)
+        public async Task<UserUpdateResult<Account>> UpdateAccountUserAsync([FromForm] AccountUserUpdateModel userUpdateModel)
         {
             var result = await AccountService.UpdateAccountUserAsync(userUpdateModel);
             return result;

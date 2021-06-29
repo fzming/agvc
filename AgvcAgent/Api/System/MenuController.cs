@@ -48,7 +48,7 @@ namespace AgvcAgent.Api.System
         [Route("query/{hasCode:bool=false}")]
         public Task<IEnumerable<RouteMenuDto>> QueryRouteMenuAsync([FromQuery] bool hasCode)
         {
-            return MenuService.QueryRouteMenuAsync(OrgId, AuthorizedUser.RoleId, ClientId, false, string.Empty,
+            return MenuService.QueryRouteMenuAsync(OrgId, RoleId, ClientId, false, string.Empty,
                 string.Empty, hasCode);
         }
 
@@ -57,22 +57,22 @@ namespace AgvcAgent.Api.System
         /// </summary>
         [HttpPost]
         [Route("user-auth-query")]
-        public Task<IEnumerable<RouteMenuDto>> QueryUserAuthRouteMenuAsync([FromBody] RoleUser user)
+        public Task<IEnumerable<RouteMenuDto>> QueryUserAuthRouteMenuAsync([FromForm] RoleUser user)
         {
-            return MenuService.QueryRouteMenuAsync(OrgId, AuthorizedUser.RoleId, ClientId,
+            return MenuService.QueryRouteMenuAsync(OrgId, RoleId, ClientId,
                 true, user.RoleId, user.UserId, true);
         }
 
         [HttpPost]
         [Route("create")]
-        public Task<bool> CreateMenuAsync([FromBody] RouteMenuModel menu)
+        public Task<bool> CreateMenuAsync([FromForm] RouteMenuModel menu)
         {
             return MenuService.CreateMenuAsync(menu);
         }
 
         [HttpPost]
         [Route("update")]
-        public Task<bool> UpdateMenuAsync([FromBody] RouteMenuModel menu)
+        public Task<bool> UpdateMenuAsync([FromForm] RouteMenuModel menu)
         {
             return MenuService.UpdateMenuAsync(menu);
         }
@@ -86,7 +86,7 @@ namespace AgvcAgent.Api.System
 
         [HttpPost]
         [Route("update-order")]
-        public Task<bool> UpdateMenuOrderAsync([FromBody] UpdateMenuOrderModel orderModel)
+        public Task<bool> UpdateMenuOrderAsync([FromForm] UpdateMenuOrderModel orderModel)
         {
             return MenuService.UpdateMenuOrderAsync(orderModel.MenuId, orderModel.Direction);
         }
