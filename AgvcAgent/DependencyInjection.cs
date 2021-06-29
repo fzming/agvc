@@ -20,18 +20,12 @@ namespace AgvcAgent
             // services.Configure<MongoConfig>(configuration.GetSection("Mongo"));
 
             // services.AddSingleton(typeof(IMongoRepository<>),typeof(MongoRepository<>));
-            try
-            {
-                services.ScanAndInjectService("^AgvcWorkFactory|^Utility|^Messages");
-                services.ScanAndInjectService("^CoreService|^AgvcService");
-                services.ScanAndInjectService("^AgvcRepository|^CoreRepository");
-                services.ScanAndInjectService("^Cache.IRedis");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                
-            }
+           
+                services.ScanAndInjectService("^AgvcWorkFactory.dll|^Utility|^Messages.dll");
+                services.ScanAndInjectService("^AgvcService.dll|^CoreService.dll");
+                services.ScanAndInjectService("^AgvcRepository.dll|^CoreRepository.dll");
+                services.ScanAndInjectService("^Cache.IRedis.dll");
+         
           
             // services.Add(new ServiceDescriptor(typeof(IMongoRepository<>), typeof(MongoRepository<>), ServiceLifetime.Singleton));
 
@@ -45,7 +39,7 @@ namespace AgvcAgent
         /// <param name="services"></param>
         /// <param name="matchAssemblies">要扫描的程序集名称,默认为[^Shop.Utils|^Shop.]多个使用|分隔</param>
         /// <returns></returns>
-        public static IServiceCollection ScanAndInjectService(this IServiceCollection services,
+        internal static IServiceCollection ScanAndInjectService(this IServiceCollection services,
             string matchAssemblies)
         {
             bool Match(string assemblyName)
@@ -62,9 +56,10 @@ namespace AgvcAgent
 
             var baseType = typeof(IDependency);
             var path = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
-            var getFiles = Directory.GetFiles(path, "*.dll").Where(Match); //.Where(o=>o.Match())
+            Console.WriteLine(path);
+            var getFiles = Directory.GetFiles(path, "*.dll").Where(Match); 
             var referencedAssemblies =
-                getFiles.Select(Assembly.LoadFrom).ToList(); //.Select(o=> Assembly.LoadFrom(o))         
+                getFiles.Select(Assembly.LoadFrom).ToList();      
 
             var ss = referencedAssemblies.SelectMany(o => o.GetTypes());
 
@@ -79,19 +74,28 @@ namespace AgvcAgent
                 {
                     var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
                     if (interfaceType != null)
+                    {
+                        Console.WriteLine($"[AddScope] {interfaceType.Name}>{implementType.Name}");
                         services.AddScoped(interfaceType, implementType);
+                    }
                 }
                 else if (typeof(ISingletonDependency).IsAssignableFrom(implementType))
                 {
                     var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
                     if (interfaceType != null)
+                    {
+                        Console.WriteLine($"[AddSingleton] {interfaceType.Name}>{implementType.Name}");
                         services.AddSingleton(interfaceType, implementType);
+                    }
                 }
                 else
                 {
                     var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
                     if (interfaceType != null)
+                    {
+                        Console.WriteLine($"[AddTransient] {interfaceType.Name}>{implementType.Name}");
                         services.AddTransient(interfaceType, implementType);
+                    }
                 }
 
             #endregion

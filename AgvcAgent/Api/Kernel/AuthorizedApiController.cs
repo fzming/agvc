@@ -3,6 +3,7 @@ using AgvcService.Users.Models;
 using CoreData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharpCompress;
 
 namespace AgvcAgent.Api.Kernel
 {
@@ -14,6 +15,16 @@ namespace AgvcAgent.Api.Kernel
     [ApiController]
     public class AuthorizedApiController : ControllerBase
     {
+        private Lazy<string> lzUserClams;
+
+        public AuthorizedApiController()
+        {
+            lzUserClams = new Lazy<string>(() => {
+                var clams = User.Claims;
+                return string.Empty;
+            });
+        }
+
         /// <summary>
         ///     用户ID
         /// </summary>
@@ -21,7 +32,7 @@ namespace AgvcAgent.Api.Kernel
         {
             get
             {
-                return User.Claims.
+                return lzUserClams.Value;
             }
         }
 
@@ -46,18 +57,6 @@ namespace AgvcAgent.Api.Kernel
 
         #endregion
 
-        #region Overrides of ControllerBase
-
-        /// <summary>
-        /// Creates a <see cref="T:Microsoft.AspNetCore.Mvc.SignInResult" />.
-        /// </summary>
-        /// <param name="principal">The <see cref="T:System.Security.Claims.ClaimsPrincipal" /> containing the user claims.</param>
-        /// <returns>The created <see cref="T:Microsoft.AspNetCore.Mvc.SignInResult" /> for the response.</returns>
-        public override SignInResult SignIn(ClaimsPrincipal principal)
-        {
-            return base.SignIn(principal);
-        }
-
-        #endregion
+       
     }
 }
