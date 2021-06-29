@@ -474,6 +474,7 @@ export default {
           }
         })
         .catch((s) => {
+          !!s;
           this.$message({
             message: "无法下移",
             type: "warning",

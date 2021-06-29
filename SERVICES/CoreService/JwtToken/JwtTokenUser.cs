@@ -5,7 +5,7 @@
     /// </summary>
     public class JwtTokenUser
     {
-        public JwtTokenUser(int userID, string name, string email, string role)
+        public JwtTokenUser(string userID, string name, string email, string role)
         {
             UserID = userID;
             Name = name;
@@ -13,7 +13,7 @@
             Role = role;
         }
 
-        public int UserID { get; set; }
+        public string UserID { get; set; }
         public string Email { get; set; }
 
         public string Name { get; set; }

@@ -30,7 +30,7 @@ namespace AgvcAgent.Api
         private IMessageSerializer MessageParser { get; }
 
         [Route("test1")]
-        [IgnoreResultModel]
+        [SkipActionFilter]
         public string test()
         {
             return "Abc";
@@ -80,7 +80,7 @@ namespace AgvcAgent.Api
         /// <returns></returns>
         [HttpGet]
         [Route("report")]
-        [IgnoreResultModel]
+        [SkipActionFilter]
         public string ImRequest([FromQuery] string json)
         {
             //Console.WriteLine(">>" + json);

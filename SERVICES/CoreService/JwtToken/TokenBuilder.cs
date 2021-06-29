@@ -72,7 +72,7 @@ namespace CoreService.JwtToken
             //身份单元项项集合
             var claimList = new List<Claim>
             {
-                new(ClaimTypes.Email, authUser.Email), //身份单元项
+                new(ClaimTypes.Email, authUser.Email??string.Empty), //身份单元项
                 new(ClaimTypes.Name, authUser.Name),
                 new(ClaimTypes.NameIdentifier, authUser.UserID.ToString()),
                 new(ClaimTypes.Role, authUser.Role ?? string.Empty)

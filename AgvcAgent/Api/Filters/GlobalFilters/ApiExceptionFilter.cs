@@ -24,26 +24,29 @@ namespace AgvcAgent.Api.Filters.GlobalFilters
         private ObjectResult BuildExceptionResult(Exception ex)
         {
             var code = 0;
-            var msg = "";
             var exception = "";
             //应用程序业务级异常
             if (ex is ApplicationException)
             {
                 code = 501;
-                msg = ex.Message;
+                exception = ex.Message;
             }
             else
             {
                 // exception 系统级别异常，不直接明文显示的
                 code = 500;
-                msg = "发生系统级别异常";
                 exception = ex.Message;
             }
 
             if (ex.InnerException != null && ex.Message != ex.InnerException.Message)
                 exception += "," + ex.InnerException.Message;
 
-            return new ObjectResult(new {code, msg, innerMessage = exception});
+            return new ObjectResult(new ApiResult<string>()
+            {
+                Status = code,
+                Error = exception,
+                Success = false
+            });
         }
     }
 }

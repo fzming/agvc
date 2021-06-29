@@ -92,34 +92,6 @@ export const constantRoutes = [
         },
       },
     ],
-  },
-  //mobile 
-  {
-    path: "/m",
-    component: () => import("@/layout/mobile"),
-    hidden: true,
-     redirect: "/m/index",
-    children: [
-       {
-         path: "index",
-         component: () => import("@/views/mobile/index"),
-         name: "index",
-         meta: {
-           title: "在线打码",
-           icon: "profile",
-         },
-       },
-       {
-         path: "login",
-         component: () => import("@/views/mobile/login"),
-         name: "login",
-         meta: {
-           title: "登录",
-           icon: "profile",
-         },
-       },
-    ]
-    
   }
 ];
 

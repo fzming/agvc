@@ -38,6 +38,7 @@ export default {
   },
   methods: {
     getImageStyle({ index, image }) {
+      !!index;
       // const count = allBackgroundImages.length;
       return {
         backgroundImage: `url(${image})`,

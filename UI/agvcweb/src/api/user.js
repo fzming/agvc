@@ -2,11 +2,11 @@ import $http from "./core/http";
 
 export default {
   async login(data) {
-    var d = await $http.post(`/token`, data);
+    var d = await $http.post(`/user/token`, data);
     return d;
   },
   async orglogin(data) {
-    var d = await $http.post(`/token`, data);
+    var d = await $http.post(`/user/token`, data);
     return d;
   },
   async getInfo() {

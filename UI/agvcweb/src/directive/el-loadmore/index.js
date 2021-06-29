@@ -8,5 +8,4 @@ if (window.Vue) {
   Vue.use(install); // eslint-disable-line
 }
 
-drag.install = install
-export default drag
+ 

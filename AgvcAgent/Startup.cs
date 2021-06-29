@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace AgvcAgent
 {
@@ -23,19 +25,42 @@ namespace AgvcAgent
         {
             // services.Configure<TimedExecuteServiceSettings>(Configuration.GetSection("TCS"));
             // services.AddSingleton<IHostedService, TimedExecuteService>();
+            services.AddCors(c => c.AddPolicy("cors", policy =>
+            {
+                policy
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+
+            }));
             services.AddControllers(configure =>
             {
                 configure.Filters.Add(typeof(ApiActionFilter));
                 configure.Filters.Add(typeof(ApiExceptionFilter));
                 configure.RespectBrowserAcceptHeader = true;
                 configure.EnableEndpointRouting = false;
-            }).AddNewtonsoftJson(options => options.UseMemberCasing());
+            }).AddNewtonsoftJson(options =>
+            {
+                //忽略循环引用
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                //使用驼峰样式的key
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+                //日期类型默认格式化处理
+                options.SerializerSettings.DateFormatHandling = Newtonsoft.Json.DateFormatHandling.MicrosoftDateFormat;
+                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+ 
+                //空值处理
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+  
+                options.UseMemberCasing();
+            });
             // services.AddControllers();
             // services.AddSwaggerGen(c =>
             // {
             //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplication1", Version = "v1" });
             // });
-
+           
             #region JWT CONFIG
 
             services.Configure<JwtTokenOptions>(Configuration.GetSection("JwtTokenOptions"));

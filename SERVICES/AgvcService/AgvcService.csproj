@@ -11,6 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="ILoginService.cs" />
+    <Compile Remove="LoginService.cs" />
     <Compile Remove="System\Signal\ClientConnectionHelper.cs" />
     <Compile Remove="System\Signal\GobangConnection.cs" />
     <Compile Remove="System\Signal\ISignalrService.cs" />

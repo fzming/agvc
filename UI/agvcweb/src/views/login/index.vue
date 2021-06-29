@@ -50,12 +50,7 @@
                 autocomplete="on"
               />
             </el-form-item>
-            <el-tooltip
-              v-model="capsTooltip"
-              content="大写模式已打开"
-              placement="right"
-              manual
-            >
+
               <el-form-item prop="password">
                 <span class="svg-container">
                   <svg-icon icon-class="password" />
@@ -69,8 +64,6 @@
                   name="password"
                   tabindex="2"
                   autocomplete="on"
-                  @keyup.native="checkCapslock"
-                  @blur="capsTooltip = false"
                   @keyup.enter.native="handleLogin"
                 />
                 <span class="show-pwd" @click="showPwd">
@@ -81,7 +74,7 @@
                   />
                 </span>
               </el-form-item>
-            </el-tooltip>
+           
             <el-button
               :loading="loading"
               type="primary"
@@ -143,7 +136,6 @@ export default {
         ],
       },
       passwordType: "password",
-      capsTooltip: false,
       loading: false,
       showDialog: false,
       redirect: undefined,
@@ -184,21 +176,6 @@ export default {
     cancelCaptcha() {
       this.loginForm.vaptchaToken = "";
       this.setNeedSafetyValidation(false);
-    },
-    checkCapslock({ shiftKey, key } = {}) {
-      if (key && key.length === 1) {
-        if (
-          (shiftKey && key >= "a" && key <= "z") ||
-          (!shiftKey && key >= "A" && key <= "Z")
-        ) {
-          this.capsTooltip = true;
-        } else {
-          this.capsTooltip = false;
-        }
-      }
-      if (key === "CapsLock" && this.capsTooltip === true) {
-        this.capsTooltip = false;
-      }
     },
     showPwd() {
       if (this.passwordType === "password") {

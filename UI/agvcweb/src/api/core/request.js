@@ -27,7 +27,7 @@ service.interceptors.request.use(
     // 判断是否存在token，如果存在的话，则每个http header都加上token
     if (s && s.token) {
       config.headers.Authorization =
-        s.token.token_type + " " + s.token.access_token;
+         "Bearer " + s.token.access_token;
     }
 
     return config;
@@ -70,53 +70,8 @@ service.interceptors.response.use(
     // console.error("response错误", error);
     let err = error.message;
     let err_title = "操作失败";
-    const backoff = new Promise(function (resolve) {
-      setTimeout(function () {
-        resolve();
-      }, 1000); // 1000ms
-    });
 
     if (error.response) {
-      switch (error.response.status) {
-        case 401: {
-          // var s = getToken("Admin-Token");
-          var s = store.state.user.token;
-          if (s && s.token) {
-            var config = error.config;
-            // console.log(store);
-            var token_refreshing = store.state.route.token_refreshing;
-            console.log("token_refreshing：", token_refreshing);
-            if (token_refreshing) {
-              // 当前有其他请求正在刷新token，1秒后再试试
-              console.warn("当前有其他请求正在刷新token，1秒后再试试");
-              return backoff.then(function () {
-                return service(config);
-              });
-            }
-            var ticket = s.token.refresh_token; //refresh_token
-            if (ticket) {
-              // 刷新获取token
-              console.warn("401未授权：尝试使用" + ticket + "刷新Token");
-              store.dispatch("route/set_token_refreshing", true);
-
-              var token = await store.dispatch("user/refresh_ticket", ticket);
-              if (token) {
-                // 获取token成功
-                console.info("刷新token成功，尝试重发axios请求");
-
-                return backoff.then(function () {
-                  store.dispatch("route/set_token_refreshing", false);
-                  return service(config);
-                });
-              } else {
-                store.dispatch("route/set_token_refreshing", false);
-              }
-            }
-            // await store.dispatch("user/resetToken");
-          }
-          return;
-        }
-      }
 
       err_title = `操作失败`;
       err = error.response.statusText;
@@ -147,7 +102,7 @@ service.interceptors.response.use(
         err = error.response.error || "服务端错误";
       }
     }
-    if (err === "invalid_grant") {
+    if (error.response.status==401) {
       console.log(err);
       err = "您的登录状态已失效，请重新登录";
       err_title = "认证失败";

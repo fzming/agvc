@@ -110,7 +110,6 @@
 
 <script>
 import SystemFeatureApi from "@/api/Feature";
-import _ from "lodash";
 function initState() {
   return {
     sysFeatureId: "",

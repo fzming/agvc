@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace CoreData
 {
@@ -11,10 +12,15 @@ namespace CoreData
 
     public class Result<T> : IResult<T>
     {
+        [JsonIgnore]
         public static Result<T> Failed => Fail();
+        [JsonIgnore]
         public static Result<bool> Successed => Result<bool>.Ok(true);
+        [JsonProperty("data")]
         public T Data { get; set; }
+        [JsonProperty("error")]
         public string Error { get; set; }
+        [JsonProperty("success")]
         public bool Success { get; set; }
 
         public static Result<T> Ok(T data)

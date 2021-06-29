@@ -6,7 +6,7 @@ export const NET_WORK_ERROR_URL = ["/syslogin", "/login","/m/login",];
 
 //本地调试API地址
 export const WEBAPI_BASE_URL = process.env.NODE_ENV === "development"
-? 'http://localhost:56096' : 'http://gps.e6erp.com:8080'
+? 'http://localhost:5000' : 'http://gps.e6erp.com:8080'
 //局域网主机调试
 //WEBAPI_BASE_URL = 'http://192.168.10.72:8096'
 export const WEBAPI_REQUEST_TIMEOUT = 1360000
