@@ -46,7 +46,7 @@ namespace AgvcAgent.Api
         public bool testFromTo(string file, string mrid)
         {
             var builder = new ConfigurationBuilder();
-            builder.AddJsonFile($"{file}.json", optional: false, reloadOnChange: true);
+            builder.AddJsonFile($"{file}.json");
             var configuration = builder.Build();
             var froms = configuration.GetSection("from").Get<List<TaskGoal>>();
             var tos = configuration.GetSection("to").Get<List<TaskGoal>>();

@@ -25,6 +25,10 @@ namespace AgvcAgent.Api.Filters.GlobalFilters
         {
             if (context.HttpContext.GetEndpoint()?.Metadata.GetMetadata<SkipActionFilterAttribute>() != null) return;
             var response = context.HttpContext.Response;
+            if (context.Result is ApplicationErrorResult)
+            {
+                return;
+            }
             var result = new ApiResult<dynamic>
             {
                 Status = response.StatusCode,

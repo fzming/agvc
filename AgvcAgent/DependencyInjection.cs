@@ -15,21 +15,10 @@ namespace AgvcAgent
 
         public static void ConfigureServices(WebHostBuilderContext webHostBuilderContext, IServiceCollection services)
         {
-            // ServiceProvider = services.BuildServiceProvider();
-           // var configuration = webHostBuilderContext.Configuration;
-            // services.Configure<MongoConfig>(configuration.GetSection("Mongo"));
-
-            // services.AddSingleton(typeof(IMongoRepository<>),typeof(MongoRepository<>));
-           
-                services.ScanAndInjectService("^AgvcWorkFactory.dll|^Utility|^Messages.dll");
-                services.ScanAndInjectService("^AgvcService.dll|^CoreService.dll");
-                services.ScanAndInjectService("^AgvcRepository.dll|^CoreRepository.dll");
-                services.ScanAndInjectService("^Cache.IRedis.dll");
-         
-          
-            // services.Add(new ServiceDescriptor(typeof(IMongoRepository<>), typeof(MongoRepository<>), ServiceLifetime.Singleton));
-
-            //services.AddSingleton(typeof(IRepository<>),typeof(MongoRepository<>));
+            services.ScanAndInjectService("^AgvcWorkFactory.dll|^Utility|^Messages.dll");
+            services.ScanAndInjectService("^AgvcService.dll|^CoreService.dll");
+            services.ScanAndInjectService("^AgvcRepository.dll|^CoreRepository.dll");
+            services.ScanAndInjectService("^Cache.IRedis.dll");
         }
 
 
@@ -57,9 +46,9 @@ namespace AgvcAgent
             var baseType = typeof(IDependency);
             var path = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
             Console.WriteLine(path);
-            var getFiles = Directory.GetFiles(path, "*.dll").Where(Match); 
+            var getFiles = Directory.GetFiles(path, "*.dll").Where(Match);
             var referencedAssemblies =
-                getFiles.Select(Assembly.LoadFrom).ToList();      
+                getFiles.Select(Assembly.LoadFrom).ToList();
 
             var ss = referencedAssemblies.SelectMany(o => o.GetTypes());
 
@@ -105,7 +94,7 @@ namespace AgvcAgent
 
         public static T GetService<T>() where T : class
         {
-            return (T) ServiceProvider.GetService(typeof(T));
+            return (T)ServiceProvider.GetService(typeof(T));
         }
     }
 }

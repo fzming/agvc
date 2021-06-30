@@ -86,7 +86,7 @@
           </el-form>
         </div>
       </template>
-      <div class="copy">上海杰燊科技有限公司</div>
+      <div class="copy">友上智能</div>
     </div>
     <Wave width="100%" height="100%"></Wave>
   </div>

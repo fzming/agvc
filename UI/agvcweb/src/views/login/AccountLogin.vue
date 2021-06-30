@@ -5,14 +5,14 @@
       <div id="featuredInformation">
         <section>
           <h1>
-            <span class="title">AGVC支持系统V1.0</span>
+            <span class="title">友上智能</span>
           </h1>
           <p class="description">
-            专业从事半导体技术平台研发的高科技企业,创业团队拥有多年的半导体工业控制运营经验和强大的技术研发能力
+            友上智能自动化搬运系统MCS
           </p>
           <p class="action">欢迎登入进行体验。</p>
           <p class="copyright">
-            © 2021 Reserve, Inc. 版权所有 本服务由上海杰燊科技有限公司提供
+            © 2021 Reserve, Inc. 版权所有 本服务由友上智能提供
           </p>
         </section>
       </div>
@@ -120,7 +120,7 @@
                   placeholder="请输入密码"
                 />
               </el-form-item>
-              <p class="form-forgot-password">
+              <p class="form-forgot-password" v-if="false">
                 忘了你的密码？
                 <a @click="forgetPwd = true" class="find">找回密码</a>
               </p>
@@ -167,7 +167,7 @@
       <div class="policy">
         点选
         <b>登录</b>按钮，表示已阅读并且同意
-        <a>《杰燊科技隐私条款》</a>
+        <a>《友上智能隐私条款》</a>
       </div>
     </section>
   </div>

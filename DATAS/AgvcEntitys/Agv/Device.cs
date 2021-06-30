@@ -1,13 +1,12 @@
-﻿namespace DeviceDefine
-{
-    public class Device : IDevice
-    {
-        #region Implementation of IDevice
+﻿using CoreData.Core;
 
-        /// <summary>
-        ///     设备ID
-        /// </summary>
-        public string Id { get; set; }
+namespace AgvcEntitys.Agv
+{
+    /// <summary>
+    /// Stock Or EQP
+    /// </summary>
+    public class Device : MongoEntity
+    {
 
         /// <summary>
         ///     设备名称
@@ -20,10 +19,14 @@
         public DeviceType DeviceType { get; set; }
 
         /// <summary>
-        ///     负载端口
+        ///     负载端口配置
         /// </summary>
-        public string[] Ports { get; set; }
+        public int[] Ports { get; set; }
 
-        #endregion
+    }
+    public enum DeviceType
+    {
+        Stock,
+        EQP
     }
 }
