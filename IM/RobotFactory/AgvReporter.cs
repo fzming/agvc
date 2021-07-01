@@ -12,15 +12,14 @@ namespace AgvcWorkFactory
     /// </summary>
     public class AgvReporter : IAgvReporter
     {
-        private IConfiguration Configuration { get; }
-
+        private IAgvcConfiguration AgvcConfiguration { get; }
         private readonly ConcurrentDictionary<string, AgvReport> Watchs =
             new();
 
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
-        public AgvReporter(IConfiguration configuration)
+        public AgvReporter(IAgvcConfiguration  agvcConfiguration)
         {
-            Configuration = configuration;
+            AgvcConfiguration = agvcConfiguration;
         }
 
         public bool TryAddWatch(AgvReport agvReport)
@@ -40,7 +39,7 @@ namespace AgvcWorkFactory
 
         public int GetAgvInitializeInterval()
         {
-            return Configuration.GetSection("AGVC").Get<AgvcConfig>().InitializeCheckInterval;
+            return AgvcConfiguration.GetConfig().InitializeCheckInterval;
         }
 
         /// <summary>

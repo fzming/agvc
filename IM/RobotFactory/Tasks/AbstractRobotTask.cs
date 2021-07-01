@@ -21,7 +21,7 @@ namespace AgvcWorkFactory.Tasks
         #region IOC
 
         private IAgvReporter AgvReporter { get; }
-        public IAgvRequester AgvRequester { get; }
+        private IAgvRequester AgvRequester { get; }
         private IWS Ws { get; }
 
         /// <summary>Initializes a new instance of the <see cref="T:System.Object" /> class.</summary>
@@ -37,7 +37,7 @@ namespace AgvcWorkFactory.Tasks
         /// <summary>
         ///     Transfer Request [TX501I]
         /// </summary>
-        public List<IMessage> TrxRequestMessages { get; set; } = new();
+        protected List<IMessage> TrxRequestMessages { get; set; } = new();
 
         /// <summary>
         ///     当前任务执行的机器人对象
@@ -156,7 +156,6 @@ namespace AgvcWorkFactory.Tasks
             // }
             var agvError = false;
             var reportKey = reportTask.GetKey();
-            Thread.Sleep(10);
             if (AgvReporter.TryAddWatch(reportTask)) //IM Report是不受控制的。有可能这里还没有AddWatch,通知却已经到达了。
                 while (reportTask.Report == null && !agvError)
                 {
@@ -209,7 +208,6 @@ namespace AgvcWorkFactory.Tasks
           
             var agvError = false;
             var requestKey = requestTask.GetKey();
-            Thread.Sleep(10);
             if (AgvRequester.TryAddWatch(requestTask)) //IM Request是不受控制的。有可能这里还没有AddWatch,通知却已经到达了。
                 while (requestTask.Request == null && !agvError)
                 {

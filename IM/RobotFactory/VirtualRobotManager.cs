@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using AgvcWorkFactory.Interfaces;
-
 using Microsoft.Extensions.DependencyInjection;
-
 using Protocol.Query;
-
 using Utility.Helpers;
-
 using MRStatus = RobotDefine.MRStatus;
 
 namespace AgvcWorkFactory
