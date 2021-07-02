@@ -47,7 +47,7 @@ namespace AgvcWorkFactory
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public Response OnRequest(BaseRequest request)
+        public BaseRequest.Response OnRequest(BaseRequest request)
         {
             Console.WriteLine($"<<Request>> {request.MRID}->{request.Type.FullName}");
             var requestType = request.Type; //当前请求的任务类别

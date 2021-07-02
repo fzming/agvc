@@ -47,7 +47,7 @@ namespace AgvcWorkFactory
         /// </summary>
         /// <param name="report"></param>
         /// <returns></returns>
-        public Response OnReport(BaseReport report)
+        public BaseReport.Response OnReport(BaseReport report)
         {
             Console.WriteLine($"<<Report>> {report.MRID}->{report.Type.FullName}");
             var reportType = report.Type; //当前报告的任务类别

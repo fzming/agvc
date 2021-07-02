@@ -14,7 +14,7 @@ namespace AgvcWorkFactory.Interfaces
         /// </summary>
         /// <param name="report"></param>
         /// <returns></returns>
-        Response OnReport(BaseReport report);
+        BaseReport.Response OnReport(BaseReport report);
         
 
         BaseReport GetReport(string key);

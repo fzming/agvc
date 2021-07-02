@@ -1,6 +1,4 @@
-﻿using Protocol.Report;
-
-namespace Protocol
+﻿namespace Protocol
 {
     public abstract class BaseReport : Base
     {
@@ -13,7 +11,10 @@ namespace Protocol
         ///     机器人编号
         /// </summary>
         public string MRID { get; set; }
-
+        public class Response : Base
+        {
+            public bool Received { get; set; }
+        }
         public Response GetResponse(bool received)
         {
             return new()

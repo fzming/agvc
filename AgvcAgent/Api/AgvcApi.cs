@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AgvcAgent.Api.Filters.GlobalFilters;
 using AgvcWorkFactory.Interfaces;
 using AgvcWorkFactory.Tasks;
@@ -93,7 +94,7 @@ namespace AgvcAgent.Api
                 Echo echo => echo.GetResponse().SerializeJSONObject(),
                 _ => string.Empty
             };
-            // Console.WriteLine("<< " + str);
+            Console.WriteLine("<< " + serializeJson);
             return serializeJson;
         }
     }
